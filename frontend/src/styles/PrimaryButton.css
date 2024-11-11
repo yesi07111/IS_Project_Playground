@@ -1,0 +1,15 @@
+.primary-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    /* Verde */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.primary-button:hover {
+    background-color: #45a049;
+    /* Verde más oscuro */
+}
