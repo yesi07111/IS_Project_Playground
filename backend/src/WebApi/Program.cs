@@ -16,6 +16,7 @@ builder.Services.AddFastEndpoints()
 
 var app = builder.Build();
 
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -28,5 +29,7 @@ app.UseCors("AllowLocalhost");
 
 if (app.Environment.IsDevelopment())
     app.UseSwaggerGen();
+
+await app.Services.SeedRoles();
 
 app.Run();
