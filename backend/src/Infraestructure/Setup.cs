@@ -20,10 +20,17 @@ public static class Setup
                               mig => mig.MigrationsAssembly("Infraestructure"));
         });
 
-
-        builder.AddDefaultIdentity<User>(opt => { opt.SignIn.RequireConfirmedEmail = true; })
-             .AddRoles<IdentityRole>()
-             .AddEntityFrameworkStores<DefaultDbContext>();
+        builder.AddIdentity<User, IdentityRole>(options =>
+        {
+            // Configuraciones opcionales de password
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequiredLength = 8;
+        })
+        .AddEntityFrameworkStores<DefaultDbContext>()
+        .AddDefaultTokenProviders();
 
         builder.Configure<JwtConfiguration>(configuration.GetRequiredSection("Jwt"));
         builder.Configure<EmailConfiguration>(configuration.GetRequiredSection("Email"));

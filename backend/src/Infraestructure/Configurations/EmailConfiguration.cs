@@ -9,4 +9,5 @@ public class EmailConfiguration
     public string SmtpPass { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public string SupportEmail { get; set; } = string.Empty;
+    public bool DebugMode { get; set; } = false;
 }

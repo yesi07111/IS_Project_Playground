@@ -31,6 +31,11 @@ public class EmailSenderService : IEmailSenderService
 
     public async Task<OneOf<ErrorResponse, string>> QueueSendEmailAsync(string to, string subject, string message)
     {
+        if (_options.DebugMode)
+        {
+            Console.WriteLine($"EMAIL SENDED\nFrom: ${_options.EmailFrom}\nTo: ${to}\nSubject: ${subject}\n${message}");
+            return "DEBUG";
+        }
         try
         {
             if (!_smtpClient.IsConnected || !_smtpClient.IsAuthenticated)

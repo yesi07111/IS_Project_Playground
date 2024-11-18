@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using Playground.Domain.Entities.Auth;
+using Playground.Infraestructure.Data.DbContexts;
 
 namespace Playground.WebApi;
 
@@ -27,7 +30,13 @@ public static class Setup
             };
         });
 
-        services.AddAuthorization();
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("RequireEducatorRole", policy => policy.RequireRole("Educator"));
+            options.AddPolicy("RequireParentRole", policy => policy.RequireRole("Parent"));
+        });
 
         services.AddCors(opt =>
         {
@@ -40,5 +49,22 @@ public static class Setup
         });
 
         return services;
+    }
+
+    public static async Task SeedRoles(this IServiceProvider serviceProvider)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        string[] roleNames = { "Admin", "Educator", "Parent" };
+
+        foreach (var roleName in roleNames)
+        {
+            var roleExists = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExists)
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
     }
 }
