@@ -19,8 +19,9 @@ public class RegisterCommandValidator : Validator<RegisterCommand>
             {
                 var scope = CreateScope();
                 var userManager = scope.Resolve<UserManager<User>>();
-
-                return await userManager.FindByNameAsync(usn) == null;
+                var usr = await userManager.FindByNameAsync(usn);
+                Console.WriteLine(usr?.UserName);
+                return usr == null;
             }).WithMessage("Username is already used");
 
         RuleFor(x => x.Email)
