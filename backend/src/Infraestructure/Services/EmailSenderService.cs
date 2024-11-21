@@ -14,16 +14,22 @@ public class EmailSenderService : IEmailSenderService
 {
     private readonly EmailConfiguration _options;
     private readonly SmtpClient _smtpClient;
+    private readonly ICodeGenerator _codeGenerator;
 
-    public EmailSenderService(IOptions<EmailConfiguration> _options)
+    public EmailSenderService(IOptions<EmailConfiguration> options, ICodeGenerator codeGenerator)
     {
-        this._options = _options.Value;
-
+        _options = options.Value;
         _smtpClient = new SmtpClient();
+        _codeGenerator = codeGenerator;
     }
-    public async Task SendConfirmationLinkAsync(User user, string email, string confirmationLink)
+
+    public async Task SendConfirmationLinkAsync(User user, string email, string code)
     {
-        await QueueSendEmailAsync(email, "Activate user", confirmationLink);
+        string reducedCode = _codeGenerator.GenerateReducedCode(code);
+
+        string message = $"Username: {user.UserName} \nCode: {reducedCode}";
+
+        await QueueSendEmailAsync(email, "Activate user", message);
     }
 
     public Task SendPasswordResetCodeAsync(User user, string email, string resetCode) => throw new NotImplementedException();
@@ -59,7 +65,7 @@ public class EmailSenderService : IEmailSenderService
 
             await _smtpClient.SendAsync(email);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             return (OneOf<ErrorResponse, string>)new ErrorResponse { Detail = ex.Message };
         }

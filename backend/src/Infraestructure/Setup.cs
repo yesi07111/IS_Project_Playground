@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Identity;
 using Playground.Infraestructure.Configurations;
 using Playground.Application.Services;
 using Playground.Infraestructure.Services;
+using Playground.Application.Factories;
+using Playground.Infraestructure.Factories;
+using Playground.Application.Repositories;
+using Playground.Infraestructure.Repositories;
 
 namespace Playground.Infraestructure;
 
@@ -39,6 +43,9 @@ public static class Setup
                .AddScoped<IDateTimeService, DateTimeService>()
                .AddScoped<IEmailSenderService, EmailSenderService>()
                .AddScoped<IActiveSession, ActiveSession>()
+               .AddScoped<IRepositoryFactory, RepositoryFactory>()
+               .AddScoped<IUnitOfWork, UnitOfWork>()
+               .AddScoped<ICodeGenerator, CodeGenerator>()
                .AddScoped<UserManager<User>>();
 
 

@@ -9,7 +9,7 @@ public class ConfirmEmailCommandValidator : Validator<ConfirmEmailCommand>
 {
     public ConfirmEmailCommandValidator()
     {
-        RuleFor(x => x.Username)
+        RuleFor(x => x.UserName)
             .NotEmpty().WithMessage("Username must not be empty")
             .NotNull().WithMessage("Username must not be null")
             .MustAsync(async (usn, ct) =>
