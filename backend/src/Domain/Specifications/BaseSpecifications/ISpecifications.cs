@@ -1,4 +1,4 @@
-namespace Playground.Domain.Specifications;
+namespace Playground.Domain.Specifications.BaseSpecifications;
 public interface ISpecification<T>
 {
     bool IsSatisfiedBy(T entity);
