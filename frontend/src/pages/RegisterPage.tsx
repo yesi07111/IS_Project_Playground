@@ -13,9 +13,9 @@ import {
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { authService } from '../services/authService';
 import decoration1 from '../assets/images/decorative/toy-train.png';
 import decoration2 from '../assets/images/decorative/swing.png';
+import { authService } from '../services/authService';
 
 const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
@@ -38,19 +38,25 @@ const RegisterPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(''); // Limpiar el mensaje de error antes de intentar registrar
+        setError('');
 
         try {
-            await authService.register(formData);
-            localStorage.setItem('pendingVerificationEmail', formData.email);
+            await authService.register({
+                FirstName: formData.firstName,
+                LastName: formData.lastName,
+                Username: formData.userName,
+                Password: formData.password,
+                Email: formData.email,
+                Roles: ['Parent']
+            });
+            localStorage.setItem('pendingVerificationEmail', formData.userName);
             navigate('/verify-email');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error during registration:', error);
-            setError('There was an error during registration. Please try again.'); // Establecer el mensaje de error
+            setError('There was an error during registration. Please try again.');
         }
     };
 
-    // Estilo común para todos los TextField
     const textFieldSx = {
         mb: 2,
         '& .MuiInputBase-root': {

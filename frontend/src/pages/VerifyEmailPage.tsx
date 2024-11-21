@@ -5,20 +5,44 @@ import {
     Paper,
     TextField,
     Button,
-    Typography
+    Typography,
+    Alert,
+    IconButton,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import kidsPlay from '../assets/images/decorative/xylophone.png';
 import stars from '../assets/images/decorative/toy-train.png';
 import { authService } from '../services/authService';
+import Swal from 'sweetalert2';
 
 const VerifyEmailPage: React.FC = () => {
     const navigate = useNavigate();
     const [verificationCode, setVerificationCode] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        const userName = localStorage.getItem('pendingVerificationEmail');
+
+        if (!userName) {
+            setError('No user found for verification');
+            return;
+        }
+        try {
+            const response = await authService.verifyEmail(userName, verificationCode);
+            if (response.token) {
+                localStorage.setItem('token', response.token);
+                localStorage.removeItem('pendingVerificationEmail');
+                navigate('/');
+            }
+        } catch {
+            setError(error);
+        }
+    };
+
+    const handleResendCode = async () => {
         const email = localStorage.getItem('pendingVerificationEmail');
 
         if (!email) {
@@ -27,16 +51,28 @@ const VerifyEmailPage: React.FC = () => {
         }
 
         try {
-            const response = await authService.verifyEmail(email, verificationCode);
-            // Si la verificación es exitosa, el backend devolverá un token JWT
-            if (response.token) {
-                localStorage.setItem('token', response.token);
-                localStorage.removeItem('pendingVerificationEmail');
+            await authService.resendVerificationCode(email);
+            setSuccess('Verification code resent successfully');
+        } catch {
+            setError('Error resending verification code');
+        }
+    };
+
+    const handleBackClick = () => {
+        Swal.fire({
+            title: 'Confirmación de regreso',
+            text: 'Si no verifica su correo, su acceso será limitado. Tiene hasta hoy para confirmar su correo. ¿Desea regresar a la página principal?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirmar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
                 navigate('/');
             }
-        } catch (error) {
-            setError('Invalid verification code');
-        }
+        });
     };
 
     const textFieldSx = {
@@ -62,6 +98,22 @@ const VerifyEmailPage: React.FC = () => {
                 overflow: 'hidden'
             }}
         >
+            {/* Botón de regresar */}
+            <IconButton
+                sx={{
+                    position: 'absolute',
+                    top: 16,
+                    left: 16,
+                    zIndex: 2,
+                    '&:focus': {
+                        outline: 'none'
+                    }
+                }}
+                onClick={handleBackClick}
+            >
+                <ArrowBackIcon />
+            </IconButton>
+
             {/* Decoración superior derecha */}
             <Box
                 component="img"
@@ -105,13 +157,12 @@ const VerifyEmailPage: React.FC = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         backgroundColor: 'transparent',
-                        backdropFilter: 'none', // Eliminado el blur
                         borderRadius: 2,
                         border: '2px solid rgba(0, 0, 0, 0.2)',
                         transition: 'all 0.3s ease',
                         transform: 'scale(1)',
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                        background: 'rgba(255, 255, 255, 0)', // Fondo completamente transparente
+                        background: 'rgba(255, 255, 255, 0)',
                         '&:hover': {
                             transform: 'scale(1.02) translateY(-5px)',
                             boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
@@ -142,6 +193,18 @@ const VerifyEmailPage: React.FC = () => {
                         Hemos enviado un código de verificación a tu correo electrónico.
                         Por favor, introdúcelo a continuación para completar tu registro.
                     </Typography>
+
+                    {error && (
+                        <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
+                            {error}
+                        </Alert>
+                    )}
+
+                    {success && (
+                        <Alert severity="success" sx={{ width: '100%', mb: 3 }}>
+                            {success}
+                        </Alert>
+                    )}
 
                     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
                         <TextField
@@ -183,14 +246,26 @@ const VerifyEmailPage: React.FC = () => {
                             color="primary"
                             sx={{
                                 mt: 1,
+                                mb: 0.5, // Ajustado para reducir el espacio
                                 '&:hover': {
                                     backgroundColor: 'rgba(25, 118, 210, 0.04)'
                                 }
                             }}
-                            onClick={() => {/* Lógica para reenviar el código */ }}
+                            onClick={handleResendCode}
                         >
                             Reenviar código
                         </Button>
+
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                mt: 0.5, // Ajustado para reducir el espacio
+                                textAlign: 'center',
+                                color: 'text.secondary'
+                            }}
+                        >
+                            ¿No es tu correo? <Button component={Link} to="/change-email" color="primary" sx={{ textTransform: 'none' }}>Cámbialo aquí</Button>.
+                        </Typography>
                     </Box>
                 </Paper>
             </Container>
