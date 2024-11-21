@@ -3,4 +3,4 @@ using FastEndpoints;
 
 namespace Playground.Application.Commands.Auth.ConfirmEmail;
 
-public record ConfirmEmailCommand(string Username, string Code) : ICommand<UserActionResponse>;
+public record ConfirmEmailCommand(string UserName, string Code) : ICommand<UserActionResponse>;
