@@ -12,10 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Ignorar todos los directorios obj y bin en cualquier parte del proyecto
-**/obj/
-**/bin/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
