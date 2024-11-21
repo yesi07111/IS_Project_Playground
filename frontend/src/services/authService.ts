@@ -1,85 +1,69 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5117/api'; // Ajusta según tu configuración
+const API_URL = 'http://localhost:5117/api';
 
 interface RegisterData {
-    firstName: string;
-    lastName: string;
-    email: string;
-    userName: string;
-    password: string;
-}
-
-interface LoginData {
-    userNameOrEmail: string;
-    password: string;
-}
-
-interface AuthResponse {
-    id: string;
-    userName: string;
-    token?: string;
+    FirstName: string;
+    LastName: string;
+    Username: string;
+    Password: string;
+    Email: string;
+    Roles: string[];
 }
 
 export const authService = {
-    async register(data: RegisterData): Promise<AuthResponse> {
+    register: async (data: RegisterData) => {
         try {
             const response = await axios.post(`${API_URL}/auth/register`, data);
             return response.data;
-        } catch (error: any) {
-            throw this.handleError(error);
-        }
-    },
-
-    async login(data: LoginData): Promise<AuthResponse> {
-        try {
-            const response = await axios.post(`${API_URL}/login`, data);
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data));
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                // Si el error es un AxiosError y tiene una respuesta
+                throw error.response.data || 'Error during registration';
+            } else {
+                // Si el error no es un AxiosError o no tiene respuesta
+                throw 'An unexpected error occurred during registration';
             }
-            return response.data;
-        } catch (error: any) {
-            throw this.handleError(error);
         }
     },
 
-    async verifyEmail(username: string, code: string): Promise<AuthResponse> {
+    verifyEmail: async (Username: string, code: string) => {
         try {
-            const response = await axios.get(
-                `${API_URL}/auth/confirm-email?username=${username}&code=${code}`
-            );
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data));
-            }
+            const response = await axios.get(`${API_URL}/auth/confirm-email`, {
+                params: { username: Username, code }
+            });
             return response.data;
-        } catch (error: any) {
-            throw this.handleError(error);
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error during email verification';
+            } else {
+                throw 'An unexpected error occurred during email verification';
+            }
+        }
+    },
+    resendVerificationCode: async (email: string) => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/resend-verification-email`, { email });
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error resending verification code';
+            } else {
+                throw 'An unexpected error occurred while resending verification code';
+            }
         }
     },
 
-    logout(): void {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-    },
-
-    getCurrentUser(): AuthResponse | null {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            return JSON.parse(userStr);
+    changeEmail: async (email: string) => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/change-profile`, { email: email });
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error changing email';
+            } else {
+                throw 'An unexpected error occurred while changing email';
+            }
         }
-        return null;
-    },
-
-    isAuthenticated(): boolean {
-        return !!localStorage.getItem('token');
-    },
-
-    handleError(error: any): Error {
-        if (error.response?.data?.detail) {
-            return new Error(error.response.data.detail);
-        }
-        return new Error('An unexpected error occurred');
     }
 };
