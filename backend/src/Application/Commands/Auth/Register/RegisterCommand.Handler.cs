@@ -4,16 +4,19 @@ using Playground.Application.Services;
 using Playground.Domain.Entities.Auth;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
+using Playground.Application.Factories;
+using Playground.Application.Repositories;
 
 namespace Playground.Application.Commands.Auth.Register;
 
-public class RegisterCommandHandler(UserManager<User> userManager, IEmailSenderService emailSender, IActiveSession activeSession) : CommandHandler<RegisterCommand, UserCreationResponse>
+public class RegisterCommandHandler(UserManager<User> userManager, IEmailSenderService emailSender, IRepositoryFactory repositoryFactory, IUnitOfWork unitOfWork) : CommandHandler<RegisterCommand, UserCreationResponse>
 {
     public override async Task<UserCreationResponse> ExecuteAsync(RegisterCommand command, CancellationToken ct = default)
     {
         var user = new User
         {
+            FirstName = command.FirstName,
+            LastName = command.LastName,
             UserName = command.Username,
             Email = command.Email
         };
@@ -29,11 +32,15 @@ public class RegisterCommandHandler(UserManager<User> userManager, IEmailSenderS
             ThrowError("Could not add roles to user");
 
         var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-        var confirmUrl = $"{activeSession.BaseUrl()}/api/auth/confirm-email?username={user.UserName}$code={code}";
+        user.FullCode = code;
 
-        await emailSender.SendConfirmationLinkAsync(user, user.Email!, confirmUrl);
+        var userRepository = repositoryFactory.CreateRepository<User>();
+        userRepository.Update(user);
+
+        await unitOfWork.CommitAsync();
+
+        await emailSender.SendConfirmationLinkAsync(user, user.Email!, code);
 
         return new UserCreationResponse(Guid.Parse(user.Id), user.UserName);
     }
