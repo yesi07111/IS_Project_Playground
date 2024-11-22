@@ -25,7 +25,7 @@ El frontend de este proyecto está construido con React utilizando Vite. Sigue l
    npm install
    ```
 
-   > **Nota**: Los `node_modules` ocupan aproximadamente ~560 MB.
+   > **Nota**: Los `node_modules` ocupan aproximadamente ~210 MB.
 
 ### 🚀 Ejecutar el Frontend
 
