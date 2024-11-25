@@ -1,7 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Playground.Application.Repositories;
+using Playground.Domain.Entities.Auth;
 using Playground.Domain.Specifications.BaseSpecifications;
 using Playground.Infraestructure.Data.DbContexts;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Playground.Infraestructure.Repositories
 {
@@ -21,12 +25,31 @@ namespace Playground.Infraestructure.Repositories
 
         public async Task<IEnumerable<T>> GetBySpecificationAsync(ISpecification<T> specification)
         {
-            return await _context.Set<T>().Where(entity => specification.IsSatisfiedBy(entity)).ToListAsync();
+            Expression<Func<T, bool>> expression = specification.ToExpression();
+            return await _context.Set<T>().Where(expression).ToListAsync();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetAllAdminsAsync()
+        {
+            return await _context.Users
+                .Where(u => _context.UserRoles
+                    .Any(ur => ur.UserId == u.Id && _context.Roles
+                        .Any(r => r.Id == ur.RoleId && r.Name == "Admin")))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetAllEducatorsAsync()
+        {
+            return await _context.Users
+                .Where(u => _context.UserRoles
+                    .Any(ur => ur.UserId == u.Id && _context.Roles
+                        .Any(r => r.Id == ur.RoleId && r.Name == "Educator")))
+                .ToListAsync();
         }
 
         public async Task AddAsync(T entity)
@@ -42,6 +65,23 @@ namespace Playground.Infraestructure.Repositories
         public void Delete(T entity)
         {
             _context.Set<T>().Remove(entity);
+        }
+
+        public void MarkDeleted(User entity)
+        {
+            string dateSuffix = "_deleted_" + DateTime.UtcNow.ToString("dd_MM_yyyy_HH_mm_ss_fff");
+
+            entity.IsDeleted = true;
+            entity.DeletedAt = DateTime.UtcNow;
+
+            entity.UserName += dateSuffix;
+            entity.FirstName += dateSuffix;
+            entity.LastName += dateSuffix;
+            entity.Email += dateSuffix;
+            entity.NormalizedUserName += dateSuffix;
+            entity.NormalizedEmail += dateSuffix;
+
+            _context.Set<User>().Update(entity);
         }
     }
 }
