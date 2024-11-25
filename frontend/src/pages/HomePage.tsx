@@ -7,8 +7,8 @@ import StatsSummary from '../components/features/StatsSummary';
 
 import heroBg from '../assets/images/home-bg.jpg';
 import artWorkshop from '../assets/images/activities/art-workshop-1.jpg';
-import sportsGames from '../assets/images/activities/kids-sport.jpg';
-import scienceClub from '../assets/images/activities/kids-science.jpg';
+import decoration1 from '../assets/images/activities/kids-sport.jpg';
+import decoration2 from '../assets/images/activities/kids-science.jpg';
 import pattern1 from '../assets/images/decorative/hand-print.png';
 import pattern2 from '../assets/images/decorative/kindergarten.png';
 
@@ -34,7 +34,7 @@ const mockActivities: Activity[] = [
         id: 2,
         name: "Juegos Deportivos",
         description: "Actividades físicas y deportivas para niños",
-        image: sportsGames,
+        image: decoration1,
         rating: 4.8,
         color: '#4ECDC4'
     },
@@ -42,7 +42,7 @@ const mockActivities: Activity[] = [
         id: 3,
         name: "Club de Ciencias",
         description: "Experimentos y descubrimientos científicos divertidos",
-        image: scienceClub,
+        image: decoration2,
         rating: 4.6,
         color: '#FFD93D'
     }
@@ -101,7 +101,7 @@ const HomePage: React.FC = () => {
                             mb: 2
                         }}
                     >
-                        Bienvenido a KidsParks
+                        Bienvenido al Parque Infantil
                     </Typography>
                     <Typography
                         variant="h4"
