@@ -9,7 +9,7 @@ public class LoginEndpoint : Endpoint<LoginCommand, UserActionResponse>
     public override void Configure()
     {
         AllowAnonymous();
-        Post("/login");
+        Post("/auth/login");
     }
 
     public override Task<UserActionResponse> ExecuteAsync(LoginCommand req, CancellationToken ct)
