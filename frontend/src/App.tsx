@@ -10,6 +10,7 @@ import VerifyEmailPage from './pages/VerifyEmailPage';
 import UserTypePage from './pages/UserTypePage';
 import { AuthProvider } from './components/auth/authContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import AdminPage from './pages/AdminPage';
 
 const theme = createTheme({
   palette: {
@@ -58,7 +59,8 @@ const App: React.FC = () => {
       <AuthProvider>
         <Router>
           <Navbar />
-          <Routes>
+          {/* En esta sección se agregan las rutas de las páginas a usar */}
+        <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -77,7 +79,8 @@ const App: React.FC = () => {
                   <UserTypePage />
                 </ProtectedRoute>
               }
-            />
+            />          
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </Router>
       </AuthProvider>
