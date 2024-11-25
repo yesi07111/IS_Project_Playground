@@ -1,20 +1,21 @@
+using System.Linq.Expressions;
+using Playground.Domain.Entities.Auth;
+using Playground.Domain.Specifications.BaseSpecifications;
+
 namespace Playground.Domain.Specifications
 {
-    using Playground.Domain.Entities.Auth;
-    using Playground.Domain.Specifications.BaseSpecifications;
-
     public class UserSpecification : ISpecification<User>
     {
-        private readonly Func<User, bool> _expression;
+        private readonly Expression<Func<User, bool>> _expression;
 
-        public UserSpecification(Func<User, bool> expression)
+        public UserSpecification(Expression<Func<User, bool>> expression)
         {
             _expression = expression;
         }
 
-        public bool IsSatisfiedBy(User user)
+        public Expression<Func<User, bool>> ToExpression()
         {
-            return _expression(user);
+            return _expression;
         }
 
         public ISpecification<User> And(ISpecification<User> other)
@@ -47,21 +48,6 @@ namespace Playground.Domain.Specifications
             return new UserSpecification(user => user.FullCode == fullCode);
         }
 
-        public static UserSpecification ByCreatedAt(DateTime createdAt)
-        {
-            return new UserSpecification(user => user.CreatedAt == createdAt);
-        }
-
-        public static UserSpecification ByUpdateAt(DateTime updateAt)
-        {
-            return new UserSpecification(user => user.UpdateAt == updateAt);
-        }
-
-        public static UserSpecification ByDeleteAt(DateTime deleteAt)
-        {
-            return new UserSpecification(user => user.DeleteAt == deleteAt);
-        }
-
         public static UserSpecification ByUserName(string userName)
         {
             return new UserSpecification(user => user.UserName == userName);
@@ -81,5 +67,69 @@ namespace Playground.Domain.Specifications
         {
             return new UserSpecification(user => user.PasswordHash == passwordHash);
         }
+
+        public static UserSpecification ByDeleteToken(Guid deleteToken)
+        {
+            return new UserSpecification(user => user.DeleteToken == deleteToken);
+        }
+
+        public static UserSpecification ByIsDeleted(bool isDeleted)
+        {
+            return new UserSpecification(user => user.IsDeleted == isDeleted);
+        }
+
+        public static UserSpecification ByRole(DefaultDbContext context, string roleName)
+        {
+            return new UserSpecification(user =>
+                context.UserRoles
+                    .Where(ur => ur.UserId == user.Id)
+                    .Select(ur => ur.Role)
+                    .Any(role => role.Name == roleName));
+        }
+
+        public static UserSpecification ByCreatedAt(DateTime createdAt, string comparison = "equal")
+        {
+            return new UserSpecification(CreateDateComparisonExpression(user => user.CreatedAt, createdAt, comparison));
+        }
+
+        public static UserSpecification ByUpdateAt(DateTime updateAt, string comparison = "equal")
+        {
+            return new UserSpecification(CreateDateComparisonExpression(user => user.UpdateAt, updateAt, comparison));
+        }
+
+        public static UserSpecification ByDeleteAt(DateTime deleteAt, string comparison = "equal")
+        {
+            return new UserSpecification(CreateDateComparisonExpression(user => user.DeletedAt, deleteAt, comparison));
+        }
+
+
+        private static Expression<Func<User, bool>> CreateDateComparisonExpression(
+                Expression<Func<User, DateTime>> dateSelector, DateTime date, string comparison)
+        {
+            switch (comparison)
+            {
+                case "greater":
+                    return Expression.Lambda<Func<User, bool>>(
+                        Expression.GreaterThan(dateSelector.Body, Expression.Constant(date)),
+                        dateSelector.Parameters);
+                case "greater-or-equal":
+                    return Expression.Lambda<Func<User, bool>>(
+                        Expression.GreaterThanOrEqual(dateSelector.Body, Expression.Constant(date)),
+                        dateSelector.Parameters);
+                case "less":
+                    return Expression.Lambda<Func<User, bool>>(
+                        Expression.LessThan(dateSelector.Body, Expression.Constant(date)),
+                        dateSelector.Parameters);
+                case "less-or-equal":
+                    return Expression.Lambda<Func<User, bool>>(
+                        Expression.LessThanOrEqual(dateSelector.Body, Expression.Constant(date)),
+                        dateSelector.Parameters);
+                default:
+                    return Expression.Lambda<Func<User, bool>>(
+                        Expression.Equal(dateSelector.Body, Expression.Constant(date)),
+                        dateSelector.Parameters);
+            }
+        }
+
     }
 }

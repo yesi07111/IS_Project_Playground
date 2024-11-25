@@ -1,32 +1,34 @@
-namespace Playground.Domain.Specifications.BaseSpecifications;
-public class AndSpecification<T> : ISpecification<T>
+using System.Linq.Expressions;
+
+namespace Playground.Domain.Specifications.BaseSpecifications
 {
-    private readonly ISpecification<T> _left;
-    private readonly ISpecification<T> _right;
-
-    public AndSpecification(ISpecification<T> left, ISpecification<T> right)
+    public class AndSpecification<T> : ISpecification<T>
     {
-        _left = left;
-        _right = right;
-    }
+        private readonly ISpecification<T> _left;
+        private readonly ISpecification<T> _right;
 
-    public bool IsSatisfiedBy(T entity)
-    {
-        return _left.IsSatisfiedBy(entity) && _right.IsSatisfiedBy(entity);
-    }
+        public AndSpecification(ISpecification<T> left, ISpecification<T> right)
+        {
+            _left = left;
+            _right = right;
+        }
 
-    public ISpecification<T> And(ISpecification<T> other)
-    {
-        return new AndSpecification<T>(this, other);
-    }
+        public Expression<Func<T, bool>> ToExpression()
+        {
+            var leftExpression = _left.ToExpression();
+            var rightExpression = _right.ToExpression();
 
-    public ISpecification<T> Or(ISpecification<T> other)
-    {
-        return new OrSpecification<T>(this, other);
-    }
+            var parameter = Expression.Parameter(typeof(T));
+            var body = Expression.AndAlso(
+                Expression.Invoke(leftExpression, parameter),
+                Expression.Invoke(rightExpression, parameter)
+            );
 
-    public ISpecification<T> Not()
-    {
-        return new NotSpecification<T>(this);
+            return Expression.Lambda<Func<T, bool>>(body, parameter);
+        }
+
+        public ISpecification<T> And(ISpecification<T> other) => new AndSpecification<T>(this, other);
+        public ISpecification<T> Or(ISpecification<T> other) => new OrSpecification<T>(this, other);
+        public ISpecification<T> Not() => new NotSpecification<T>(this);
     }
 }

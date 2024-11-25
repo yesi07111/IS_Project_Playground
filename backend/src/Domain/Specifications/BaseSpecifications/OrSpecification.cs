@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace Playground.Domain.Specifications.BaseSpecifications
 {
     public class OrSpecification<T> : ISpecification<T>
@@ -11,14 +13,22 @@ namespace Playground.Domain.Specifications.BaseSpecifications
             _right = right;
         }
 
-        public bool IsSatisfiedBy(T entity)
+        public Expression<Func<T, bool>> ToExpression()
         {
-            return _left.IsSatisfiedBy(entity) || _right.IsSatisfiedBy(entity);
+            var leftExpression = _left.ToExpression();
+            var rightExpression = _right.ToExpression();
+
+            var parameter = Expression.Parameter(typeof(T));
+            var body = Expression.OrElse(
+                Expression.Invoke(leftExpression, parameter),
+                Expression.Invoke(rightExpression, parameter)
+            );
+
+            return Expression.Lambda<Func<T, bool>>(body, parameter);
         }
 
         public ISpecification<T> And(ISpecification<T> other) => new AndSpecification<T>(this, other);
         public ISpecification<T> Or(ISpecification<T> other) => new OrSpecification<T>(this, other);
         public ISpecification<T> Not() => new NotSpecification<T>(this);
     }
-
 }

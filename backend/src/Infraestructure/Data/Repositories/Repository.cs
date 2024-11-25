@@ -4,8 +4,6 @@ using Playground.Domain.Entities.Auth;
 using Playground.Domain.Specifications.BaseSpecifications;
 using Playground.Infraestructure.Data.DbContexts;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Playground.Infraestructure.Repositories
 {
@@ -49,6 +47,15 @@ namespace Playground.Infraestructure.Repositories
                 .Where(u => _context.UserRoles
                     .Any(ur => ur.UserId == u.Id && _context.Roles
                         .Any(r => r.Id == ur.RoleId && r.Name == "Educator")))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetAllParentsAsync()
+        {
+            return await _context.Users
+                .Where(u => _context.UserRoles
+                    .Any(ur => ur.UserId == u.Id && _context.Roles
+                        .Any(r => r.Id == ur.RoleId && r.Name == "Parent")))
                 .ToListAsync();
         }
 
