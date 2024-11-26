@@ -24,7 +24,7 @@ namespace Playground.Infrastructure.Services
         public async Task NotifyAdminsAsync(RoleRequestedEvent roleRequestedEvent, CancellationToken cancellationToken = default)
         {
             var userRepository = _repositoryFactory.CreateRepository<User>();
-            var admins = await userRepository.GetAllAdminAsync();
+            var admins = await userRepository.GetAllAdminsAsync();
 
             foreach (var admin in admins)
             {
