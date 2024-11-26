@@ -78,15 +78,6 @@ namespace Playground.Domain.Specifications
             return new UserSpecification(user => user.IsDeleted == isDeleted);
         }
 
-        public static UserSpecification ByRole(DefaultDbContext context, string roleName)
-        {
-            return new UserSpecification(user =>
-                context.UserRoles
-                    .Where(ur => ur.UserId == user.Id)
-                    .Select(ur => ur.Role)
-                    .Any(role => role.Name == roleName));
-        }
-
         public static UserSpecification ByCreatedAt(DateTime createdAt, string comparison = "equal")
         {
             return new UserSpecification(CreateDateComparisonExpression(user => user.CreatedAt, createdAt, comparison));
