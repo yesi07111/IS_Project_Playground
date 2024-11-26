@@ -18,11 +18,9 @@ export const authService = {
             return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
-                // Si el error es un AxiosError y tiene una respuesta
-                throw error.response.data || 'Error during registration';
+                throw error.response.data;
             } else {
-                // Si el error no es un AxiosError o no tiene respuesta
-                throw 'An unexpected error occurred during registration';
+                throw new Error('Ha ocurrido un error inesperado durante el registro.');
             }
         }
     },
@@ -35,34 +33,49 @@ export const authService = {
             return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
-                throw error.response.data || 'Error during email verification';
+                throw error.response.data || 'Error al verificar el email.';
             } else {
-                throw 'An unexpected error occurred during email verification';
+                throw 'Ha ocurrido un error inesperado al verificar el email.';
             }
         }
     },
-    resendVerificationCode: async (email: string) => {
+    resendVerificationCode: async (userName: string) => {
         try {
-            const response = await axios.post(`${API_URL}/auth/resend-verification-email`, { email });
+            const response = await axios.post(`${API_URL}/auth/resend-verification-email`, { userName });
             return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
-                throw error.response.data || 'Error resending verification code';
+                throw error.response.data || 'Error reenviando el código de verificación.';
             } else {
-                throw 'An unexpected error occurred while resending verification code';
+                throw 'Ha ocurrido un error inesperado al reenviar el código de verificación.';
             }
         }
     },
 
-    changeEmail: async (email: string) => {
+    deleteUserFromDB: async (firstName: string, lastName: string, userName: string, email: string, userType: string, deleteToken: string) => {
         try {
-            const response = await axios.post(`${API_URL}/auth/change-profile`, { email: email });
-            return response.data;
+            await axios.post(`${API_URL}/auth/delete-unverified-user`, {
+                firstName,
+                lastName,
+                userName,
+                email,
+                userType,
+                deleteToken
+            })
+        } catch (error) {
+            console.error('Error al borrar al usuario:', error);
+        }
+    },
+
+    login: async (Identifier: string, Password: string) => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/login`, { Identifier, Password });
+            return response.data;;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
-                throw error.response.data || 'Error changing email';
+                throw error.response.data;
             } else {
-                throw 'An unexpected error occurred while changing email';
+                throw new Error('Ha ocurrido un error inesperado al iniciar sesión.');
             }
         }
     }

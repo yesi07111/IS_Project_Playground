@@ -16,5 +16,10 @@ namespace Playground.Infraestructure.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public void Commit()
+        {
+            _context.SaveChanges();
+        }
     }
 }

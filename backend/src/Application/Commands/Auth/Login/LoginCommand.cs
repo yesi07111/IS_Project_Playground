@@ -3,4 +3,4 @@ using Playground.Application.Commands.Dtos;
 
 namespace Playground.Application.Commands.Auth.Login;
 
-public record LoginCommand(string Username, string Password) : ICommand<UserActionResponse>;
+public record LoginCommand(string Identifier, string Password) : ICommand<UserActionResponse>;

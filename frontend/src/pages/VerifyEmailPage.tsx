@@ -1,26 +1,51 @@
-import React, { useState } from 'react';
-import {
-    Box,
-    Container,
-    Paper,
-    TextField,
-    Button,
-    Typography,
-    Alert,
-    IconButton,
-} from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import React, { useState, useEffect } from 'react';
+import { Box, Container, Paper, TextField, Button, Typography, Alert } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
 import kidsPlay from '../assets/images/decorative/xylophone.png';
 import stars from '../assets/images/decorative/toy-train.png';
 import { authService } from '../services/authService';
-import Swal from 'sweetalert2';
+import { useAuth } from '../components/auth/authContext';
 
 const VerifyEmailPage: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { login } = useAuth();
     const [verificationCode, setVerificationCode] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
+    const [isResendDisabled, setIsResendDisabled] = useState(false);
+    const [timeLeft, setTimeLeft] = useState<number>(0);
+
+    useEffect(() => {
+        const storedEmail = localStorage.getItem('formData');
+        if (storedEmail) {
+            const parsedData = JSON.parse(storedEmail);
+            setEmail(parsedData.email);
+        }
+    }, []);
+
+    useEffect(() => {
+        const handleRouteChange = () => {
+            const currentPage = window.location.pathname;
+            const storedData = localStorage.getItem('formData');
+            const deleteToken = localStorage.getItem('DeleteToken');
+
+            if (storedData && deleteToken) {
+                localStorage.setItem("ToDelete", "true");
+            }
+            if (currentPage !== '/register' && currentPage !== '/verify-email') {
+                clearLocalStorage();
+            }
+        };
+
+        handleRouteChange();
+    }, [location]);
+
+    const clearLocalStorage = async () => {
+        await localStorage.removeItem('formData');
+        await localStorage.removeItem('pendingVerificationEmail');
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -34,45 +59,41 @@ const VerifyEmailPage: React.FC = () => {
             const response = await authService.verifyEmail(userName, verificationCode);
             if (response.token) {
                 localStorage.setItem('token', response.token);
-                localStorage.removeItem('pendingVerificationEmail');
+                await clearLocalStorage();
+                login()
                 navigate('/');
             }
         } catch {
-            setError(error);
+            setError('Error during verification');
         }
     };
 
     const handleResendCode = async () => {
-        const email = localStorage.getItem('pendingVerificationEmail');
+        const userName = localStorage.getItem('pendingVerificationEmail');
 
-        if (!email) {
-            setError('No email found for verification');
+        if (!userName) {
+            setError('No user found for verification');
             return;
         }
-
         try {
-            await authService.resendVerificationCode(email);
-            setSuccess('Verification code resent successfully');
-        } catch {
-            setError('Error resending verification code');
-        }
-    };
+            await authService.resendVerificationCode(userName);
+            setSuccess('Código de verificación reenviado con éxito');
+            setIsResendDisabled(true);
+            setTimeLeft(180); // 180 seconds = 3 minutes
 
-    const handleBackClick = () => {
-        Swal.fire({
-            title: 'Confirmación de regreso',
-            text: 'Si no verifica su correo, su acceso será limitado. Tiene hasta hoy para confirmar su correo. ¿Desea regresar a la página principal?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Confirmar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                navigate('/');
-            }
-        });
+            const timer = setInterval(() => {
+                setTimeLeft((prevTime) => {
+                    if (prevTime <= 1) {
+                        clearInterval(timer);
+                        setIsResendDisabled(false);
+                        return 0;
+                    }
+                    return prevTime - 1;
+                });
+            }, 1000);
+        } catch {
+            setError('Error al reenviar el código de verificación');
+        }
     };
 
     const textFieldSx = {
@@ -98,23 +119,6 @@ const VerifyEmailPage: React.FC = () => {
                 overflow: 'hidden'
             }}
         >
-            {/* Botón de regresar */}
-            <IconButton
-                sx={{
-                    position: 'absolute',
-                    top: 16,
-                    left: 16,
-                    zIndex: 2,
-                    '&:focus': {
-                        outline: 'none'
-                    }
-                }}
-                onClick={handleBackClick}
-            >
-                <ArrowBackIcon />
-            </IconButton>
-
-            {/* Decoración superior derecha */}
             <Box
                 component="img"
                 src={kidsPlay}
@@ -129,7 +133,6 @@ const VerifyEmailPage: React.FC = () => {
                 }}
             />
 
-            {/* Decoración centro-izquierda */}
             <Box
                 component="img"
                 src={stars}
@@ -190,7 +193,7 @@ const VerifyEmailPage: React.FC = () => {
                             color: 'text.secondary'
                         }}
                     >
-                        Hemos enviado un código de verificación a tu correo electrónico.
+                        Hemos enviado un código de verificación a tu correo electrónico {email}.
                         Por favor, introdúcelo a continuación para completar tu registro.
                     </Typography>
 
@@ -246,26 +249,22 @@ const VerifyEmailPage: React.FC = () => {
                             color="primary"
                             sx={{
                                 mt: 1,
-                                mb: 0.5, // Ajustado para reducir el espacio
+                                mb: 0.2,
                                 '&:hover': {
                                     backgroundColor: 'rgba(25, 118, 210, 0.04)'
                                 }
                             }}
                             onClick={handleResendCode}
+                            disabled={isResendDisabled}
                         >
                             Reenviar código
                         </Button>
 
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                mt: 0.5, // Ajustado para reducir el espacio
-                                textAlign: 'center',
-                                color: 'text.secondary'
-                            }}
-                        >
-                            ¿No es tu correo? <Button component={Link} to="/change-email" color="primary" sx={{ textTransform: 'none' }}>Cámbialo aquí</Button>.
-                        </Typography>
+                        {isResendDisabled && (
+                            <Typography variant="body2" sx={{ mt: 1, textAlign: 'center' }}>
+                                Puedes reenviar el código en {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')} minutos.
+                            </Typography>
+                        )}
                     </Box>
                 </Paper>
             </Container>

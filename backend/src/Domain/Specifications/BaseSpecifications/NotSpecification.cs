@@ -1,19 +1,26 @@
-namespace Playground.Domain.Specifications.BaseSpecifications;
-public class NotSpecification<T> : ISpecification<T>
+using System.Linq.Expressions;
+
+namespace Playground.Domain.Specifications.BaseSpecifications
 {
-    private readonly ISpecification<T> _specification;
-
-    public NotSpecification(ISpecification<T> specification)
+    public class NotSpecification<T> : ISpecification<T>
     {
-        _specification = specification;
-    }
+        private readonly ISpecification<T> _specification;
 
-    public bool IsSatisfiedBy(T entity)
-    {
-        return !_specification.IsSatisfiedBy(entity);
-    }
+        public NotSpecification(ISpecification<T> specification)
+        {
+            _specification = specification;
+        }
 
-    public ISpecification<T> And(ISpecification<T> other) => new AndSpecification<T>(this, other);
-    public ISpecification<T> Or(ISpecification<T> other) => new OrSpecification<T>(this, other);
-    public ISpecification<T> Not() => new NotSpecification<T>(this);
+        public Expression<Func<T, bool>> ToExpression()
+        {
+            var expression = _specification.ToExpression();
+            var parameter = expression.Parameters[0];
+            var body = Expression.Not(expression.Body);
+            return Expression.Lambda<Func<T, bool>>(body, parameter);
+        }
+
+        public ISpecification<T> And(ISpecification<T> other) => new AndSpecification<T>(this, other);
+        public ISpecification<T> Or(ISpecification<T> other) => new OrSpecification<T>(this, other);
+        public ISpecification<T> Not() => new NotSpecification<T>(this);
+    }
 }

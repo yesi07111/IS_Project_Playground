@@ -8,20 +8,46 @@ import {
     Typography,
     Link as MuiLink,
     InputAdornment,
-    IconButton
+    IconButton,
+    Alert
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import kidsBalloons from '../assets/images/decorative/learning.png';
 import kidsStudying from '../assets/images/decorative/tree-house.png';
+import { useAuth } from '../components/auth/authContext';
+import { authService } from '../services/authService';
 
 const LoginPage: React.FC = () => {
-    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const { login, setCanAccessUserType } = useAuth();
+    const navigate = useNavigate();
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        email: '',
+        identifier: '',
         password: ''
     });
+
+    type FieldErrors = {
+        statusCode: number;
+        message: string;
+        errors: {
+            [key: string]: string[];
+            generalErrors: string[];
+        };
+    };
+
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+        statusCode: 0,
+        message: '',
+        errors: {
+            generalErrors: []
+        }
+    });
+
+    const handleUserTypeAccess = () => {
+        setCanAccessUserType(true);
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -30,8 +56,39 @@ const LoginPage: React.FC = () => {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
+        setFieldErrors({
+            statusCode: 0,
+            message: '',
+            errors: {
+                generalErrors: []
+            }
+        });
+
+        try {
+            const response = await authService.login(
+                formData.identifier,
+                formData.password
+            );
+            if (response) {
+                login()
+                navigate('/');
+            }
+
+        } catch (error) {
+            const apiError = error as FieldErrors;
+            if (apiError && apiError.errors) {
+                setFieldErrors({
+                    statusCode: apiError.statusCode || 400,
+                    message: apiError.message || 'Ocurrieron errores de validación.',
+                    errors: apiError.errors
+                });
+            } else {
+                setError('Hubo un error durante el inicio de sesión. Por favor, inténtalo de nuevo.');
+            }
+        }
     };
 
     return (
@@ -125,75 +182,65 @@ const LoginPage: React.FC = () => {
                         ¡Bienvenido de nuevo!
                     </Typography>
 
-                    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            id="email"
-                            label="Nombre de Usuario o Correo Electrónico"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            value={formData.email}
-                            onChange={handleChange}
-                            required={false}
-                            sx={{
-                                mb: 2,
-                                '& .MuiInputBase-root': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.7)'
-                                }
-                            }}
-                        />
+                    {error && (
+                        <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
+                            {error}
+                        </Alert>
+                    )}
 
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            name="password"
-                            label="Contraseña"
-                            type={showPassword ? 'text' : 'password'}
-                            id="password"
-                            autoComplete="current-password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required={false}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            edge="end"
-                                            disableRipple
-                                            sx={{
-                                                '&:focus': {
-                                                    backgroundColor: 'transparent',
-                                                    outline: 'none'
-                                                },
-                                                '&:hover': {
-                                                    backgroundColor: 'transparent'
-                                                },
-                                                '&:active': {
-                                                    backgroundColor: 'transparent'
-                                                },
-                                                '&.MuiIconButton-root': {
-                                                    transition: 'none',
-                                                    '&::after': {
-                                                        display: 'none'
-                                                    }
-                                                }
-                                            }}
-                                        >
-                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                            sx={{
-                                mb: 3,
-                                '& .MuiInputBase-root': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.7)'
+                    {fieldErrors.errors.generalErrors.length > 0 && (
+                        <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
+                            {fieldErrors.errors.generalErrors.join(' ')}
+                        </Alert>
+                    )}
+
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
+                        {(['identifier', 'password'] as const).map((field) => (
+                            <TextField
+                                key={field}
+                                margin="normal"
+                                fullWidth
+                                name={field}
+                                label={
+                                    <span>
+                                        {field === 'identifier' && 'Nombre de Usuario o Correo Electrónico '}
+                                        {field === 'password' && 'Contraseña '}
+                                        <span style={{ color: '#ff0000' }}>*</span>
+                                    </span>
                                 }
-                            }}
-                        />
+                                type={field === 'password' ? (showPassword ? 'text' : 'password') : 'text'}
+                                id={field}
+                                value={formData[field]}
+                                onChange={handleChange}
+                                error={!!fieldErrors.errors[field]}
+                                helperText={fieldErrors.errors[field]?.join(' ')}
+                                InputProps={{
+                                    endAdornment: field === 'password' ? (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                edge="end"
+                                                sx={{
+                                                    '&:focus, &:hover, &:active, &.MuiIconButton-root': {
+                                                        backgroundColor: 'transparent',
+                                                        outline: 'none',
+                                                        transition: 'none'
+                                                    }
+                                                }}
+                                            >
+                                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ) : undefined
+                                }}
+                                sx={{
+                                    mb: 3,
+                                    '& .MuiInputBase-root': {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.7)'
+                                    }
+                                }}
+                            />
+                        ))}
 
                         <Button
                             type="submit"
@@ -215,7 +262,7 @@ const LoginPage: React.FC = () => {
                         <Box sx={{ textAlign: 'center' }}>
                             <MuiLink
                                 component={Link}
-                                to="/register"
+                                to="/user-type"
                                 variant="body2"
                                 sx={{
                                     color: 'primary.main',
@@ -224,6 +271,7 @@ const LoginPage: React.FC = () => {
                                         textDecoration: 'underline'
                                     }
                                 }}
+                                onClick={handleUserTypeAccess}
                             >
                                 ¿No tienes una cuenta? ¡Regístrate para la diversión!
                             </MuiLink>
