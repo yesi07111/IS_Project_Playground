@@ -2,13 +2,13 @@
 
 namespace Playground.Domain.Entities
 {
-    public class Facility(int id, string name, string location, string type, int maximumCapacity, string usagePolicy)
+    public class Facility
     {
-        public int Id { get; private set; } = id;
-        public string Name { get; private set; } = name;
-        public string Location { get; private set; } = location;
-        public string Type { get; private set; } = type;
-        public int MaximumCapacity { get; private set; } = maximumCapacity;
-        public string UsagePolicy { get; private set; } = usagePolicy;
+        public int Id { get; set; } 
+        public string Name { get; set; } 
+        public string Location { get; set; } 
+        public string Type { get; set; } 
+        public int MaximumCapacity { get; set; } 
+        public string UsagePolicy { get; set; } 
     }
 }
