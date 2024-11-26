@@ -1,31 +1,25 @@
-using System;
+//newLaura 
+
+using Playground.Domain.Entities.Auth;
 
 namespace Playground.Domain.Entities
 {
-    public class Activity
+    public class Activity(int id, string name, DateTime date, string description, User educatorId, string type, int recommendedAge, bool itsPrivate, Facility facility)
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public DateTime Date { get; private set; }
-        public string Description { get; private set; }
-        public int MaxParticipants { get; private set; }
-        public int CurrentParticipants { get; private set; }
-        public Guid EducatorId { get; private set; }
-
-        public Activity(string name, DateTime date, string description, int maxParticipants, Guid educatorId)
-        {
-            Id = Guid.NewGuid();
-            Name = name;
-            Date = date;
-            Description = description;
-            MaxParticipants = maxParticipants;
-            EducatorId = educatorId;
-            CurrentParticipants = 0;
-        }
+        public int Id { get; set; } = id;
+        public string Name { get; private set; } = name;
+        public DateTime Date { get; private set; } = date;
+        public string Description { get; private set; } = description;
+        public int CurrentParticipants { get; private set; } = 0;
+        public User EducatorId { get; private set; } = educatorId;
+        public string Type { get; private set; } = type; 
+        public int RecommendedAge { get; private set; } = recommendedAge; 
+        public bool ItsPrivate { get; private set; } = itsPrivate; 
+        public Facility Facility { get; private set; } = facility; 
 
         public void AddParticipant()
         {
-            if (CurrentParticipants < MaxParticipants)
+            if (CurrentParticipants < Facility.MaximumCapacity)
             {
                 CurrentParticipants++;
             }
