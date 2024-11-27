@@ -6,7 +6,7 @@ namespace Playground.Domain.Entities
 {
     public class Review
     {
-        public int Id { get; set; } 
+        public Guid Id { get; set; } 
         public DateTime Date { get; set; } 
         public User ParentId { get; set; } 
         public Facility Facility { get; set; } 
