@@ -6,7 +6,7 @@ namespace Playground.Domain.Entities
 {
     public class Reservation
     {
-        public Guid Id { get; set; } 
+        public string Id { get; set; } 
         public DateTime Date { get; set; } 
         public User ParentId { get; set; } 
         public Facility Facility { get; set; }
