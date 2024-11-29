@@ -24,12 +24,12 @@ public class RegisterCommandHandler(UserManager<User> userManager, IEmailSenderS
         var result = await userManager.CreateAsync(user, command.Password);
 
         if (!result.Succeeded)
-            ThrowError("Could not create user");
+            ThrowError("No se pudo crear al usuario.");
 
         var roleResult = await userManager.AddToRolesAsync(user, command.Roles);
 
         if (!roleResult.Succeeded)
-            ThrowError("Could not add roles to user");
+            ThrowError("No se pudieron añadir los roles al usuario.");
 
         var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
