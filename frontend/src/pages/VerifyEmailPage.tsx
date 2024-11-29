@@ -12,10 +12,23 @@ const VerifyEmailPage: React.FC = () => {
     const { login } = useAuth();
     const [verificationCode, setVerificationCode] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+        statusCode: 0,
+        message: '',
+        errors: {}
+    });
     const [success, setSuccess] = useState<string | null>(null);
     const [email, setEmail] = useState<string | null>(null);
     const [isResendDisabled, setIsResendDisabled] = useState(false);
     const [timeLeft, setTimeLeft] = useState<number>(0);
+
+    type FieldErrors = {
+        statusCode: number;
+        message: string;
+        errors: {
+            [key: string]: string[];
+        };
+    };
 
     useEffect(() => {
         const storedEmail = localStorage.getItem('formData');
@@ -52,7 +65,7 @@ const VerifyEmailPage: React.FC = () => {
         const userName = localStorage.getItem('pendingVerificationEmail');
 
         if (!userName) {
-            setError('No user found for verification');
+            setError('No se encontró un usuario para la verificación.');
             return;
         }
         try {
@@ -60,11 +73,23 @@ const VerifyEmailPage: React.FC = () => {
             if (response.token) {
                 localStorage.setItem('token', response.token);
                 await clearLocalStorage();
-                login()
+                login();
                 navigate('/');
             }
-        } catch {
-            setError('Error during verification');
+        } catch (err) {
+            const apiError = err as FieldErrors;
+
+            if (apiError && apiError.errors) {
+                const errorData = apiError.errors;
+
+                setFieldErrors({
+                    statusCode: apiError.statusCode || 400,
+                    message: apiError.message || 'Ocurrieron errores de validación.',
+                    errors: errorData
+                });
+            } else {
+                setError('Error durante la verificación.');
+            }
         }
     };
 
@@ -72,12 +97,12 @@ const VerifyEmailPage: React.FC = () => {
         const userName = localStorage.getItem('pendingVerificationEmail');
 
         if (!userName) {
-            setError('No user found for verification');
+            setError('No se encontró un usuario para la verificación.');
             return;
         }
         try {
             await authService.resendVerificationCode(userName);
-            setSuccess('Código de verificación reenviado con éxito');
+            setSuccess('Código de verificación reenviado con éxito.');
             setIsResendDisabled(true);
             setTimeLeft(180); // 180 seconds = 3 minutes
 
@@ -92,7 +117,14 @@ const VerifyEmailPage: React.FC = () => {
                 });
             }, 1000);
         } catch {
-            setError('Error al reenviar el código de verificación');
+            setError('Error al reenviar el código de verificación.');
+        }
+    };
+
+    const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        if (inputValue.length <= 6) { // Limit the length to 6
+            setVerificationCode(inputValue);
         }
     };
 
@@ -209,23 +241,38 @@ const VerifyEmailPage: React.FC = () => {
                         </Alert>
                     )}
 
-                    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="verificationCode"
-                            label="Código de Verificación"
-                            type="text"
-                            id="verificationCode"
-                            value={verificationCode}
-                            onChange={(e) => setVerificationCode(e.target.value)}
-                            sx={textFieldSx}
-                            inputProps={{
-                                maxLength: 6,
-                                style: { letterSpacing: '0.5em', textAlign: 'center' }
-                            }}
-                        />
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
+                        {(['code'] as const).map((field) => (
+                            <TextField
+                                key={field}
+                                margin="normal"
+                                fullWidth
+                                name={field}
+                                label={
+                                    <span>
+                                        {field === 'code' && 'Código de Verificación '}
+                                        <span style={{ color: '#ff0000' }}>*</span>
+                                    </span>
+                                }
+                                type="text"
+                                id={field}
+                                value={verificationCode}
+                                onChange={handleVerificationCodeChange}
+                                error={!!fieldErrors.errors[field]}
+                                helperText={fieldErrors.errors[field]?.join(' ')}
+                                sx={{
+                                    ...textFieldSx,
+                                    '& .MuiInputBase-input': {
+                                        textAlign: 'center'
+                                    }
+                                }}
+                                slotProps={{
+                                    input: {
+                                        style: { textAlign: 'center', textAlignLast: 'center' }
+                                    }
+                                }}
+                            />
+                        ))}
 
                         <Button
                             type="submit"
