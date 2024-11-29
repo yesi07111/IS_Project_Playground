@@ -8,7 +8,7 @@ public class CleanUpUnverifiedUsersEndpoint : Endpoint<CleanUpUnverifiedUsersCom
 {
     public override void Configure()
     {
-        Post("auth/cleanup-unverified-users");
+        Delete("auth/cleanup-unverified-users");
         AllowAnonymous();
     }
 
