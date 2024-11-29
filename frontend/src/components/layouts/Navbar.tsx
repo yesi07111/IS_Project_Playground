@@ -5,24 +5,22 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Confetti from 'react-confetti';
 import { useAuth } from '../auth/authContext';
 import styled, { keyframes } from 'styled-components';
-import decorative1 from '../../assets/images/decorative/playground.png';
-import decorative2 from '../../assets/images/decorative/learning.png';
 import UserProfile from '../auth/UserProfile';
 
 const gradientAnimation = keyframes`
-0% { background-position: 0% 50%; }
-100% { background-position: 100% 50%; }
-`;
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+    `;
 
 const GradientText = styled.span`
-background: linear-gradient(90deg, #ff0000, #006400, #0000ff, #ff0000);
-background-size: 300% 300%;
--webkit-background-clip: text;
-background-clip: text;
-color: transparent;
-animation: ${gradientAnimation} 5s linear infinite;
-font-size: 1.5rem; /* Tamaño de letra más grande */
-`;
+    background: linear-gradient(90deg, #ff0000, #006400, #0000ff, #ff0000);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: ${gradientAnimation} 5s linear infinite;
+    font-size: 1.5rem;
+    `;
 
 const Navbar: React.FC = () => {
     const location = useLocation();
@@ -118,8 +116,6 @@ const Navbar: React.FC = () => {
                                 onMouseEnter={handleMouseEnter}
                             >
                                 <GradientText>Parque Infantil </GradientText>
-                                <img src={decorative1} alt="Decorative 1" style={{ marginLeft: '0.5rem', width: '28px', height: '28px' }} />
-                                <img src={decorative2} alt="Decorative 2" style={{ marginLeft: '0.1rem', width: '28px', height: '28px' }} />
                             </Typography>
                         )}
                     </Box>
@@ -161,7 +157,9 @@ const Navbar: React.FC = () => {
                             Reservas
                         </Button>
                         {isAuthenticated ? (
-                            <UserProfile /> // Usa el nuevo componente
+                            <>
+                                <UserProfile />
+                            </>
                         ) : (
                             <Button
                                 color="inherit"
