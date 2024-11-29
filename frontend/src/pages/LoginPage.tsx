@@ -73,6 +73,9 @@ const LoginPage: React.FC = () => {
                 formData.password
             );
             if (response) {
+                localStorage.setItem('authToken', response.token);
+                localStorage.setItem('authId', response.id);
+                localStorage.setItem('authUserName', response.username);
                 login()
                 navigate('/');
             }
@@ -188,7 +191,7 @@ const LoginPage: React.FC = () => {
                         </Alert>
                     )}
 
-                    {fieldErrors.errors.generalErrors.length > 0 && (
+                    {fieldErrors.errors.generalErrors && fieldErrors.errors.generalErrors.length > 0 && (
                         <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
                             {fieldErrors.errors.generalErrors.join(' ')}
                         </Alert>
@@ -214,24 +217,26 @@ const LoginPage: React.FC = () => {
                                 onChange={handleChange}
                                 error={!!fieldErrors.errors[field]}
                                 helperText={fieldErrors.errors[field]?.join(' ')}
-                                InputProps={{
-                                    endAdornment: field === 'password' ? (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                edge="end"
-                                                sx={{
-                                                    '&:focus, &:hover, &:active, &.MuiIconButton-root': {
-                                                        backgroundColor: 'transparent',
-                                                        outline: 'none',
-                                                        transition: 'none'
-                                                    }
-                                                }}
-                                            >
-                                                {showPassword ? <Visibility /> : <VisibilityOff />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ) : undefined
+                                slotProps={{
+                                    input: field === 'password' ? {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    edge="end"
+                                                    sx={{
+                                                        '&:focus, &:hover, &:active, &.MuiIconButton-root': {
+                                                            backgroundColor: 'transparent',
+                                                            outline: 'none',
+                                                            transition: 'none'
+                                                        }
+                                                    }}
+                                                >
+                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    } : undefined
                                 }}
                                 sx={{
                                     mb: 3,
@@ -279,7 +284,7 @@ const LoginPage: React.FC = () => {
                     </Box>
                 </Paper>
             </Container>
-        </Box>
+        </Box >
     );
 }
 
