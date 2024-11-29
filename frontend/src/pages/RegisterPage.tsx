@@ -161,7 +161,7 @@ const RegisterPage: React.FC = () => {
 
                 setFieldErrors({
                     statusCode: apiError.statusCode || 400,
-                    message: apiError.message || 'Validation errors occurred',
+                    message: apiError.message || 'Ocurrieron errores de validación.',
                     errors: errorData
                 });
             } else {
