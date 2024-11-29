@@ -10,11 +10,11 @@ public class LoginCommandValidator : Validator<LoginCommand>
     public LoginCommandValidator()
     {
         RuleFor(x => x.Identifier)
-            .NotNull().WithMessage("El nombre de usuario o correo electrónico no puede ser nulo.")
-            .NotEmpty().WithMessage("El nombre de usuario o correo electrónico no puede ser vacío.");
+            .NotEmpty().WithMessage("El nombre de usuario o correo electrónico no puede ser vacío.")
+            .NotNull().WithMessage("El nombre de usuario o correo electrónico no puede ser nulo.");
 
         RuleFor(x => x.Password)
-            .NotNull().WithMessage("La contraseña no debe ser vacía")
-            .NotEmpty().WithMessage("La contraseña no debe ser nula.");
+            .NotEmpty().WithMessage("La contraseña no debe ser vacía.")
+            .NotNull().WithMessage("La contraseña no debe ser nula.");
     }
 }

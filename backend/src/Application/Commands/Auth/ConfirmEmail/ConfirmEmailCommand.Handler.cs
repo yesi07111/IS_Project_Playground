@@ -11,29 +11,26 @@ namespace Playground.Application.Commands.Auth.ConfirmEmail
     {
         public override async Task<UserActionResponse> ExecuteAsync(ConfirmEmailCommand command, CancellationToken ct = default)
         {
-            Console.WriteLine("Paso por aqui con " + command.Code);
             var user = await userManager.FindByNameAsync(command.UserName);
             if (user == null)
             {
-                ThrowError("User not found");
+                ThrowError($"Usuario con nombre de usuario: {command.UserName} no encontrado.");
                 return null;
             }
 
             string expectedCode = codeGenerator.GenerateReducedCode(user.FullCode);
-            Console.WriteLine("Aqui esta el code: {0} y el expectedCode {1}", user.FullCode, command.Code);
 
             if (command.Code != expectedCode)
             {
-                ThrowError("Invalid verification code");
+                ThrowError("Código de verificación inválido.");
                 return null;
             }
 
             var result = await userManager.ConfirmEmailAsync(user, user.FullCode);
 
-            Console.WriteLine("El result de ConfirmEmailAsync es {0}", result.Succeeded);
             if (!result.Succeeded)
             {
-                ThrowError("Could not confirm user's email");
+                ThrowError("No se pudo confirmar el correo electrónico del usuario.");
                 return null;
             }
 

@@ -15,7 +15,7 @@ public class ResendEmailCommandHandler(UserManager<User> userManager, IEmailSend
         var user = await userManager.FindByNameAsync(command.Username);
         if (user == null)
         {
-            ThrowError("User not found");
+            ThrowError($"Usuario con nombre de usuario: {command.Username} no encontrado.");
             return null;
         }
 

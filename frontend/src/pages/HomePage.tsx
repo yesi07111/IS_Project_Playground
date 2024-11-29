@@ -112,7 +112,7 @@ const HomePage: React.FC = () => {
                             px: 2
                         }}
                     >
-                        El mejor lugar para la diversión y el aprendizaje de tus hijos
+                        El mejor lugar para la diversión y el aprendizaje de tus hijos 🎊
                     </Typography>
                     <Button
                         variant="contained"
@@ -147,6 +147,7 @@ const HomePage: React.FC = () => {
                 <Box
                     component="img"
                     src={pattern1}
+                    alt="Hand print pattern"
                     sx={{
                         position: 'absolute',
                         left: -50,
@@ -158,6 +159,7 @@ const HomePage: React.FC = () => {
                 <Box
                     component="img"
                     src={pattern2}
+                    alt="Kindergarten pattern"
                     sx={{
                         position: 'absolute',
                         right: -50,
@@ -174,7 +176,7 @@ const HomePage: React.FC = () => {
             {/* Activities Section */}
             <Box sx={{
                 py: 8,
-                px: 0,  // Quitado el padding horizontal
+                px: 0,
                 width: '100%',
                 backgroundColor: '#f8f9fa'
             }}>

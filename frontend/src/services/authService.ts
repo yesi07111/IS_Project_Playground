@@ -70,12 +70,25 @@ export const authService = {
     login: async (Identifier: string, Password: string) => {
         try {
             const response = await axios.post(`${API_URL}/auth/login`, { Identifier, Password });
-            return response.data;;
+            return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
                 throw error.response.data;
             } else {
                 throw new Error('Ha ocurrido un error inesperado al iniciar sesión.');
+            }
+        }
+    },
+
+    checkVerifiedEmail: async (Token: string, Id: string, UserName: string) => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/check-email`, { Token, Id, UserName });
+            return response.data;;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al verificar el estado del correo del usuario actual.');
             }
         }
     }

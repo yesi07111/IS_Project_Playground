@@ -10,18 +10,18 @@ public class ConfirmEmailCommandValidator : Validator<ConfirmEmailCommand>
     public ConfirmEmailCommandValidator()
     {
         RuleFor(x => x.UserName)
-            .NotEmpty().WithMessage("Username must not be empty")
-            .NotNull().WithMessage("Username must not be null")
+            .NotEmpty().WithMessage("El nombre de usuario no puede estar vacío.")
+            .NotNull().WithMessage("El nombre de usuario no puede ser nulo.")
             .MustAsync(async (usn, ct) =>
             {
                 var scope = CreateScope();
                 var userManager = scope.Resolve<UserManager<User>>();
 
                 return await userManager.FindByNameAsync(usn) != null;
-            }).WithMessage("Username does not exists");
+            }).WithMessage("Usuario no encontrado.");
 
         RuleFor(x => x.Code)
-            .NotEmpty().WithMessage("Code must not be empty")
-            .NotNull().WithMessage("Code must not be null");
+            .NotEmpty().WithMessage("El código no puede estar vacío.")
+            .NotNull().WithMessage("El código no puede ser nulo.");
     }
 }

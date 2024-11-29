@@ -9,12 +9,23 @@ public class RegisterCommandValidator : Validator<RegisterCommand>
 {
     public RegisterCommandValidator()
     {
+        RuleFor(x => x.FirstName)
+            .NotEmpty().WithMessage("El nombre no puede estar vacío.")
+            .NotNull().WithMessage("El nombre no puede ser nulo.")
+            .Length(3, 15).WithMessage("El nombre debe tener entre 3 y 15 caracteres.");
+
+        RuleFor(x => x.LastName)
+            .NotEmpty().WithMessage("Los apellidos no pueden estar vacíos.")
+            .NotNull().WithMessage("Los apellidos no pueden ser nulos.")
+            .Length(3, 30).WithMessage("Los apellidos deben tener entre 3 y 30 caracteres.");
+
         RuleFor(x => x.Username)
-            .NotNull().NotEmpty().WithMessage("Username cannot be null or empty")
-            .Length(3, 15).WithMessage("User name must be between 3 and 15 characters long")
-            .Must(x => x.Trim().Length > 0).WithMessage("Username cannot be whitespace characters")
+            .NotEmpty().WithMessage("El nombre de usuario no puede estar vacío.")
+            .NotNull().WithMessage("El nombre de usuario no puede ser nulo.")
+            .Length(3, 15).WithMessage("El nombre de usuario debe tener entre 3 y 15 caracteres.")
+            .Must(x => x.Trim().Length > 0).WithMessage("El nombre de usuario no puede ser solo espacios en blanco.")
             .Matches("^(?=[a-zA-Z0-9._]{3,15}$)(?!.*[_.]{2})[^_.].*[^_.]$")
-                .WithMessage("Username not valid")
+                .WithMessage("Nombre de usuario no válido.")
             .MustAsync(async (usn, ct) =>
             {
                 var scope = CreateScope();
@@ -22,16 +33,18 @@ public class RegisterCommandValidator : Validator<RegisterCommand>
                 var usr = await userManager.FindByNameAsync(usn);
                 Console.WriteLine(usr?.UserName);
                 return usr == null;
-            }).WithMessage("Username is already used");
+            }).WithMessage("El nombre de usuario ya está en uso.");
 
         RuleFor(x => x.Email)
-            .NotEmpty().NotNull().WithMessage("Email cannot be empty or null")
-            .EmailAddress().WithMessage("Not valid Email provided");
+            .NotNull().WithMessage("El correo electrónico no puede estar vacío.")
+            .NotEmpty().WithMessage("El correo electrónico no puede ser nulo.")
+            .EmailAddress().WithMessage("Correo electrónico no válido.");
 
         RuleFor(x => x.Password)
-            .NotEmpty().NotNull().WithMessage("Password must not be null or empty")
-            .MinimumLength(6).WithMessage("Password must have at least 6 characters")
-            .Must(IsStrongPassword).WithMessage("Password not strong, change it please");
+            .NotNull().WithMessage("La contraseña no debe estar vacía.")
+            .NotEmpty().WithMessage("La contraseña no debe ser nula.")
+            .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.")
+            .Must(IsStrongPassword).WithMessage("La contraseña no es fuerte, cámbiala por favor.");
     }
 
     private bool IsStrongPassword(string password)

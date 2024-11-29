@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { authService } from '../../services/authService';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -8,6 +9,8 @@ interface AuthContextType {
     setCanAccessUserType: (status: boolean) => void;
     canAccessVerifyEmail: boolean;
     setCanAccessVerifyEmail: (status: boolean) => void;
+    isEmailVerified: boolean;
+    checkEmailVerification: () => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -20,9 +23,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [canAccessUserType, setCanAccessUserType] = useState(false);
     const [canAccessVerifyEmail, setCanAccessVerifyEmail] = useState(false);
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
 
     const login = () => setIsAuthenticated(true);
-    const logout = () => setIsAuthenticated(false);
+    const logout = () => {
+        setIsAuthenticated(false);
+    };
+
+    const checkEmailVerification = async () => {
+        try {
+            const token = localStorage.getItem('authToken');
+            const id = localStorage.getItem('authId');
+            const username = localStorage.getItem('authUserName');
+
+            if (token && id && username) {
+                const response = await authService.checkVerifiedEmail(token, id, username);
+                setIsEmailVerified(response.IsVerified);
+                setCanAccessVerifyEmail(!response.IsVerified);
+            }
+        } catch (error) {
+            console.error('Error checking email verification:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            checkEmailVerification();
+        }
+    }, [isAuthenticated]);
 
     return (
         <AuthContext.Provider value={{
@@ -32,7 +60,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             canAccessUserType,
             setCanAccessUserType,
             canAccessVerifyEmail,
-            setCanAccessVerifyEmail
+            setCanAccessVerifyEmail,
+            isEmailVerified,
+            checkEmailVerification
         }}>
             {children}
         </AuthContext.Provider>
