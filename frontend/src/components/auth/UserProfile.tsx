@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from './authContext';
 
 const UserProfile: React.FC = () => {
-    const { logout, canAccessVerifyEmail } = useAuth();
+    const { logout, isEmailVerified } = useAuth(); // Cambia a isEmailVerified
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -54,14 +54,11 @@ const UserProfile: React.FC = () => {
                 onClose={handleClose}
             >
                 <MenuItem onClick={handleClose} component={Link} to="/profile">Ver Perfil</MenuItem>
-                {!canAccessVerifyEmail ? (
+                {!isEmailVerified && (
                     <MenuItem onClick={handleClose} component={Link} to="/verify-email">Verificar Email</MenuItem>
-                ) : (
-                    <>
-                        <MenuItem onClick={handleClose} component={Link} to="/reservas">Ver Mis Reservas</MenuItem>
-                        <MenuItem onClick={handleClose} component={Link} to="/reviews">Ver Mis Reseñas</MenuItem>
-                    </>
                 )}
+                <MenuItem onClick={handleClose} component={Link} to="/reservas">Ver Mis Reservas</MenuItem>
+                <MenuItem onClick={handleClose} component={Link} to="/reviews">Ver Mis Reseñas</MenuItem>
                 <MenuItem onClick={() => { handleClose(); logout(); }}>Cerrar Sesión</MenuItem>
             </Menu>
         </>
