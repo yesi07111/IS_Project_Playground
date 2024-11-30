@@ -4,22 +4,13 @@ import Grid from '@mui/material/Grid2';
 import { Link } from 'react-router-dom';
 import ActivityCard from '../components/features/ActivityCard';
 import StatsSummary from '../components/features/StatsSummary';
-
 import heroBg from '../assets/images/home-bg.jpg';
 import artWorkshop from '../assets/images/activities/art-workshop-1.jpg';
 import decoration1 from '../assets/images/activities/kids-sport.jpg';
 import decoration2 from '../assets/images/activities/kids-science.jpg';
 import pattern1 from '../assets/images/decorative/hand-print.png';
 import pattern2 from '../assets/images/decorative/kindergarten.png';
-
-interface Activity {
-    id: number;
-    name: string;
-    description: string;
-    image: string;
-    rating: number;
-    color: string;
-}
+import { Activity } from '../interfaces/Activity';
 
 const mockActivities: Activity[] = [
     {
@@ -48,6 +39,23 @@ const mockActivities: Activity[] = [
     }
 ];
 
+/**
+ * Componente funcional que representa la página de inicio.
+ * 
+ * Este componente utiliza varios elementos de Material-UI para estructurar
+ * la página, incluyendo `Box`, `Typography`, `Button`, y `Grid`. También
+ * incorpora componentes personalizados como `ActivityCard` y `StatsSummary`.
+ * 
+ * La página se divide en varias secciones:
+ * - **Hero Section**: Presenta un fondo de imagen con un mensaje de bienvenida
+ *   y un botón para realizar reservas.
+ * - **Stats Section**: Muestra un resumen estadístico utilizando el componente
+ *   `StatsSummary`.
+ * - **Activities Section**: Lista de actividades destacadas, cada una representada
+ *   por un `ActivityCard`.
+ * 
+ * @returns {JSX.Element} El componente de la página de inicio.
+ */
 const HomePage: React.FC = () => {
     return (
         <Box sx={{

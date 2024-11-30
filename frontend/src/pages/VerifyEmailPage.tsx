@@ -5,7 +5,28 @@ import kidsPlay from '../assets/images/decorative/xylophone.png';
 import stars from '../assets/images/decorative/toy-train.png';
 import { authService } from '../services/authService';
 import { useAuth } from '../components/auth/authContext';
+import { FieldErrors } from '../types/FieldErrors';
 
+/**
+ * Componente funcional que representa la página de verificación de correo electrónico.
+ * 
+ * Este componente permite a los usuarios verificar su correo electrónico ingresando un código
+ * de verificación enviado a su dirección de correo. Utiliza elementos de Material-UI como `Box`,
+ * `Container`, `Paper`, `TextField`, `Button`, `Typography` y `Alert`.
+ * 
+ * Funcionalidades principales:
+ * - **Manejo de estado**: Utiliza `useState` para manejar el estado del código de verificación,
+ *   mensajes de error, mensajes de éxito, correo electrónico del usuario, y el temporizador para
+ *   reenviar el código.
+ * - **Efectos secundarios**: Usa `useEffect` para cargar el correo electrónico del usuario desde
+ *   `localStorage` y manejar cambios de ruta.
+ * - **Verificación de correo**: Permite al usuario ingresar un código de verificación y manejar
+ *   el proceso de verificación a través de `authService`.
+ * - **Reenvío de código**: Permite al usuario solicitar un nuevo código de verificación si es necesario,
+ *   con un temporizador para evitar múltiples solicitudes en poco tiempo.
+ * 
+ * @returns {JSX.Element} El componente de la página de verificación de correo electrónico.
+ */
 const VerifyEmailPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -21,14 +42,6 @@ const VerifyEmailPage: React.FC = () => {
     const [email, setEmail] = useState<string | null>(null);
     const [isResendDisabled, setIsResendDisabled] = useState(false);
     const [timeLeft, setTimeLeft] = useState<number>(0);
-
-    type FieldErrors = {
-        statusCode: number;
-        message: string;
-        errors: {
-            [key: string]: string[];
-        };
-    };
 
     useEffect(() => {
         const storedEmail = localStorage.getItem('formData');
@@ -55,11 +68,22 @@ const VerifyEmailPage: React.FC = () => {
         handleRouteChange();
     }, [location]);
 
+    /**
+     * Limpia los datos almacenados en `localStorage` relacionados con el registro y verificación.
+     */
     const clearLocalStorage = async () => {
         await localStorage.removeItem('formData');
         await localStorage.removeItem('pendingVerificationEmail');
     };
 
+    /**
+     * Maneja el envío del formulario de verificación de correo.
+     * 
+     * Verifica el código ingresado por el usuario utilizando el servicio de autenticación.
+     * En caso de éxito, inicia sesión y redirige al usuario a la página principal.
+     * 
+     * @param {React.FormEvent} e - Evento de envío del formulario.
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const userName = localStorage.getItem('pendingVerificationEmail');
@@ -93,6 +117,12 @@ const VerifyEmailPage: React.FC = () => {
         }
     };
 
+    /**
+     * Maneja el reenvío del código de verificación.
+     * 
+     * Envía una solicitud para reenviar el código de verificación al correo del usuario.
+     * Desactiva el botón de reenvío durante un tiempo determinado para evitar múltiples solicitudes.
+     */
     const handleResendCode = async () => {
         const userName = localStorage.getItem('pendingVerificationEmail');
 
@@ -121,9 +151,16 @@ const VerifyEmailPage: React.FC = () => {
         }
     };
 
+    /**
+     * Maneja el cambio en el campo del código de verificación.
+     * 
+     * Limita la longitud del código a 6 caracteres.
+     * 
+     * @param {React.ChangeEvent<HTMLInputElement>} e - Evento de cambio del input.
+     */
     const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
-        if (inputValue.length <= 6) { // Limit the length to 6
+        if (inputValue.length <= 6) { // Limita la longitud a 6
             setVerificationCode(inputValue);
         }
     };

@@ -17,7 +17,27 @@ import decoration1 from '../assets/images/decorative/toy-train.png';
 import decoration2 from '../assets/images/decorative/swing.png';
 import { authService } from '../services/authService';
 import { useAuth } from '../components/auth/authContext';
+import { FieldErrors } from '../types/FieldErrors';
 
+/**
+ * Componente funcional que representa la página de registro de usuario.
+ * 
+ * Este componente utiliza varios elementos de Material-UI para estructurar
+ * la página, incluyendo `Box`, `Container`, `Paper`, `TextField`, `Button`,
+ * `Typography`, `Link`, `InputAdornment`, `IconButton`, y `Alert`.
+ * 
+ * Funcionalidades principales:
+ * - **Manejo de estado**: Utiliza `useState` para manejar el estado del formulario,
+ *   errores de campo, visibilidad de la contraseña y mensajes de error.
+ * - **Efectos secundarios**: Usa `useEffect` para manejar la persistencia de datos
+ *   en `localStorage` y limpiar datos al cambiar de página.
+ * - **Formulario de registro**: Permite al usuario ingresar sus datos personales
+ *   y de cuenta, con validación de errores y manejo de visibilidad de la contraseña.
+ * - **Navegación**: Utiliza `useNavigate` para redirigir al usuario tras un registro
+ *   exitoso.
+ * 
+ * @returns {JSX.Element} El componente de la página de registro.
+ */
 const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -83,6 +103,11 @@ const RegisterPage: React.FC = () => {
         }
     }, [location.pathname]);
 
+    /**
+     * Maneja los cambios en los campos del formulario de registro.
+     * 
+     * @param {React.ChangeEvent<HTMLInputElement>} e - Evento de cambio del input.
+     */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newFormData = {
             ...formData,
@@ -92,20 +117,21 @@ const RegisterPage: React.FC = () => {
         localStorage.setItem('formData', JSON.stringify(newFormData));
     };
 
-    type FieldErrors = {
-        statusCode: number;
-        message: string;
-        errors: {
-            [key: string]: string[];
-        };
-    };
-
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
         statusCode: 0,
         message: '',
         errors: {}
     });
 
+    /**
+     * Maneja el envío del formulario de registro.
+     * 
+     * Realiza el registro del usuario utilizando el servicio de autenticación.
+     * En caso de éxito, almacena el token de eliminación y redirige al usuario.
+     * En caso de error, muestra mensajes de error apropiados.
+     * 
+     * @param {React.FormEvent} e - Evento de envío del formulario.
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setCanAccessVerifyEmail(true);
@@ -170,6 +196,16 @@ const RegisterPage: React.FC = () => {
         }
     };
 
+    /**
+     * Evalúa la fortaleza de la contraseña proporcionada.
+     * 
+     * La fortaleza se determina en función de la presencia de mayúsculas,
+     * minúsculas, números, caracteres especiales y longitud mínima.
+     * 
+     * @param {string} password - La contraseña a evaluar.
+     * @returns {{ label: string, color: string }} Un objeto que indica la etiqueta
+     * y el color asociado a la fortaleza de la contraseña.
+     */
     const evaluatePasswordStrength = (password: string) => {
         let strength = 0;
         if (/[A-Z]/.test(password)) strength++;
