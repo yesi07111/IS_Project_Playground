@@ -2,17 +2,30 @@ using System.Linq.Expressions;
 
 namespace Playground.Domain.Specifications.BaseSpecifications
 {
+    /// <summary>
+    /// Implementación de una especificación que combina dos especificaciones utilizando una operación lógica OR.
+    /// </summary>
+    /// <typeparam name="T">El tipo de entidad al que se aplica la especificación.</typeparam>
     public class OrSpecification<T> : ISpecification<T>
     {
         private readonly ISpecification<T> _left;
         private readonly ISpecification<T> _right;
 
+        /// <summary>
+        /// Inicializa una nueva instancia de la clase <see cref="OrSpecification{T}"/>.
+        /// </summary>
+        /// <param name="left">La primera especificación a combinar.</param>
+        /// <param name="right">La segunda especificación a combinar.</param>
         public OrSpecification(ISpecification<T> left, ISpecification<T> right)
         {
             _left = left;
             _right = right;
         }
 
+        /// <summary>
+        /// Convierte la especificación en una expresión lambda que representa la combinación OR.
+        /// </summary>
+        /// <returns>Una expresión lambda que representa la especificación combinada.</returns>
         public Expression<Func<T, bool>> ToExpression()
         {
             var leftExpression = _left.ToExpression();
