@@ -1,3 +1,19 @@
+/**
+ * Service Worker para el manejo de caché de imágenes dinámicas.
+ *
+ * Este script de Service Worker gestiona el caché de imágenes para mejorar el rendimiento
+ * de la aplicación al almacenar y servir imágenes desde el caché en lugar de realizar
+ * solicitudes de red repetidas. Utiliza un caché denominado 'dynamic-image-cache-v1'.
+ *
+ * - **install event**: Durante la instalación del Service Worker, se precargan y almacenan
+ *   en caché un conjunto de imágenes especificadas en `urlsToCache`. Esto asegura que las
+ *   imágenes estén disponibles sin conexión y se carguen rápidamente.
+ *
+ * - **fetch event**: Intercepta las solicitudes de red para imágenes. Si una imagen solicitada
+ *   ya está en el caché, se devuelve directamente desde allí. Si no está en el caché, se realiza
+ *   una solicitud de red para obtener la imagen, que luego se almacena en el caché para futuras
+ *   solicitudes. Esto permite que las imágenes se sirvan rápidamente y reduce la carga en la red.
+ */
 const CACHE_NAME = 'dynamic-image-cache-v1';
 
 self.addEventListener('install', (event) => {
