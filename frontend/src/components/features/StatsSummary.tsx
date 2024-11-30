@@ -3,6 +3,16 @@ import { Paper, Typography, Grid2 as Grid } from '@mui/material';
 import { People, Event, Star } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
+/**
+ * Componente estilizado de Paper que representa un resumen de estadísticas.
+ * 
+ * Este componente utiliza Material-UI para crear un contenedor de estadísticas
+ * con un efecto de escala y sombra al pasar el ratón sobre él. Está diseñado
+ * para mostrar información de manera destacada y atractiva.
+ * 
+ * @param {Theme} theme - Tema de Material-UI para aplicar estilos.
+ * @returns {object} Estilos aplicados al componente Paper.
+ */
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(2),
     textAlign: 'center',
@@ -16,6 +26,15 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     }
 }));
 
+/**
+ * Componente estilizado para envolver íconos.
+ * 
+ * Este componente utiliza Material-UI para aplicar estilos a los íconos,
+ * asegurando que tengan un tamaño y color consistentes con el tema de la aplicación.
+ * 
+ * @param {Theme} theme - Tema de Material-UI para aplicar estilos.
+ * @returns {object} Estilos aplicados al contenedor de íconos.
+ */
 const IconWrapper = styled('div')(({ theme }) => ({
     '& > svg': {
         fontSize: 40,
@@ -23,6 +42,15 @@ const IconWrapper = styled('div')(({ theme }) => ({
     }
 }));
 
+/**
+ * Componente de resumen de estadísticas que muestra información clave en un formato de cuadrícula.
+ * 
+ * Este componente utiliza Material-UI para organizar y mostrar estadísticas en un formato de cuadrícula.
+ * Cada elemento de la cuadrícula muestra un ícono, un título y un valor numérico, proporcionando una
+ * visión general rápida de las métricas importantes.
+ * 
+ * @returns {JSX.Element} El componente de resumen de estadísticas.
+ */
 const StatsSummary: React.FC = () => {
     return (
         <Grid container spacing={3} sx={{ my: 3 }}>

@@ -1,12 +1,40 @@
+/**
+ * Configuración de TypeScript para la aplicación principal.
+ * 
+ * Este archivo JSON configura el compilador de TypeScript para la aplicación principal,
+ * especificando opciones para la construcción, resolución de módulos, y reglas de linting.
+ * 
+ * - **tsBuildInfoFile**: Especifica la ubicación del archivo de información de construcción.
+ * - **target**: Define el objetivo de ECMAScript como ES2020.
+ * - **useDefineForClassFields**: Habilita el uso de define para campos de clase.
+ * - **lib**: Incluye bibliotecas como ES2020, DOM, y DOM.Iterable.
+ * - **module**: Define el sistema de módulos como ESNext.
+ * - **skipLibCheck**: Omite la comprobación de tipos en archivos de declaración.
+ * - **moduleResolution**: Utiliza la resolución de módulos de Bundler.
+ * - **allowImportingTsExtensions**: Permite importar extensiones de TypeScript.
+ * - **isolatedModules**: Habilita el modo de módulos aislados.
+ * - **moduleDetection**: Fuerza la detección de módulos.
+ * - **noEmit**: Desactiva la emisión de archivos de salida.
+ * - **jsx**: Configura el soporte para JSX en React.
+ * - **strict**: Activa el modo estricto de comprobación de tipos.
+ * - **noUnusedLocals**: Prohíbe variables locales no utilizadas.
+ * - **noUnusedParameters**: Prohíbe parámetros no utilizados.
+ * - **noFallthroughCasesInSwitch**: Prohíbe casos de switch sin break.
+ * - **noUncheckedSideEffectImports**: Prohíbe importaciones con efectos secundarios no comprobados.
+ * - **include**: Incluye el directorio 'src' para la compilación.
+ */
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
-
     /* Bundler mode */
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
@@ -14,7 +42,6 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -22,5 +49,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

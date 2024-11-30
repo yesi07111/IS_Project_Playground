@@ -1,3 +1,21 @@
+/**
+ * Configuración de TypeScript para un proyecto React.
+ * 
+ * Este archivo JSON configura el compilador de TypeScript para un proyecto que utiliza React,
+ * especificando opciones como el objetivo de ECMAScript, bibliotecas, y configuraciones de módulo.
+ * 
+ * - **target**: Especifica la versión de ECMAScript de salida como ESNext.
+ * - **lib**: Incluye bibliotecas como DOM, DOM.Iterable, y ESNext.
+ * - **module**: Define el sistema de módulos como ESNext.
+ * - **skipLibCheck**: Omite la comprobación de tipos en archivos de declaración.
+ * - **moduleResolution**: Utiliza la resolución de módulos de Node.
+ * - **allowSyntheticDefaultImports**: Permite importaciones por defecto sintéticas.
+ * - **esModuleInterop**: Habilita la interoperabilidad de módulos ES.
+ * - **strict**: Activa el modo estricto de comprobación de tipos.
+ * - **forceConsistentCasingInFileNames**: Fuerza el uso consistente de mayúsculas y minúsculas en nombres de archivo.
+ * - **jsx**: Configura el soporte para JSX en React.
+ * - **include**: Incluye el directorio 'src' para la compilación.
+ */
 {
   "compilerOptions": {
     "target": "ESNext",

@@ -17,7 +17,27 @@ import kidsBalloons from '../assets/images/decorative/learning.png';
 import kidsStudying from '../assets/images/decorative/tree-house.png';
 import { useAuth } from '../components/auth/authContext';
 import { authService } from '../services/authService';
+import { FieldGeneralErrors } from '../types/FieldGeneralErrors'
 
+/**
+ * Componente funcional que representa la página de inicio de sesión.
+ * 
+ * Este componente utiliza varios elementos de Material-UI para estructurar
+ * la página, incluyendo `Box`, `Container`, `Paper`, `TextField`, `Button`,
+ * `Typography`, `Link`, `InputAdornment`, `IconButton`, y `Alert`.
+ * 
+ * Funcionalidades principales:
+ * - **Manejo de estado**: Utiliza `useState` para manejar el estado del formulario,
+ *   errores de campo, visibilidad de la contraseña y mensajes de error.
+ * - **Autenticación**: Usa el contexto de autenticación `useAuth` para manejar
+ *   el inicio de sesión y la navegación posterior.
+ * - **Formulario de inicio de sesión**: Permite al usuario ingresar su identificador
+ *   y contraseña, con validación de errores y manejo de visibilidad de la contraseña.
+ * - **Navegación**: Utiliza `useNavigate` para redirigir al usuario tras un inicio
+ *   de sesión exitoso.
+ * 
+ * @returns {JSX.Element} El componente de la página de inicio de sesión.
+ */
 const LoginPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const { login, setCanAccessUserType } = useAuth();
@@ -28,16 +48,7 @@ const LoginPage: React.FC = () => {
         password: ''
     });
 
-    type FieldErrors = {
-        statusCode: number;
-        message: string;
-        errors: {
-            [key: string]: string[];
-            generalErrors: string[];
-        };
-    };
-
-    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+    const [fieldGeneralErrors, setFieldGeneralErrors] = useState<FieldGeneralErrors>({
         statusCode: 0,
         message: '',
         errors: {
@@ -45,10 +56,19 @@ const LoginPage: React.FC = () => {
         }
     });
 
+    /**
+    * Maneja el acceso al tipo de usuario, permitiendo la navegación
+    * a la página de registro de usuario.
+    */
     const handleUserTypeAccess = () => {
         setCanAccessUserType(true);
     };
 
+    /**
+     * Maneja los cambios en los campos del formulario de inicio de sesión.
+     * 
+     * @param {React.ChangeEvent<HTMLInputElement>} e - Evento de cambio del input.
+     */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
@@ -56,10 +76,19 @@ const LoginPage: React.FC = () => {
         });
     };
 
+    /**
+     * Maneja el envío del formulario de inicio de sesión.
+     * 
+     * Realiza la autenticación del usuario utilizando el servicio de autenticación.
+     * En caso de éxito, almacena el token de autenticación y redirige al usuario.
+     * En caso de error, muestra mensajes de error apropiados.
+     * 
+     * @param {React.FormEvent} e - Evento de envío del formulario.
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        setFieldErrors({
+        setFieldGeneralErrors({
             statusCode: 0,
             message: '',
             errors: {
@@ -81,9 +110,9 @@ const LoginPage: React.FC = () => {
             }
 
         } catch (error) {
-            const apiError = error as FieldErrors;
+            const apiError = error as FieldGeneralErrors;
             if (apiError && apiError.errors) {
-                setFieldErrors({
+                setFieldGeneralErrors({
                     statusCode: apiError.statusCode || 400,
                     message: apiError.message || 'Ocurrieron errores de validación.',
                     errors: apiError.errors
@@ -191,9 +220,9 @@ const LoginPage: React.FC = () => {
                         </Alert>
                     )}
 
-                    {fieldErrors.errors.generalErrors && fieldErrors.errors.generalErrors.length > 0 && (
+                    {fieldGeneralErrors.errors.generalErrors && fieldGeneralErrors.errors.generalErrors.length > 0 && (
                         <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
-                            {fieldErrors.errors.generalErrors.join(' ')}
+                            {fieldGeneralErrors.errors.generalErrors.join(' ')}
                         </Alert>
                     )}
 
@@ -215,8 +244,8 @@ const LoginPage: React.FC = () => {
                                 id={field}
                                 value={formData[field]}
                                 onChange={handleChange}
-                                error={!!fieldErrors.errors[field]}
-                                helperText={fieldErrors.errors[field]?.join(' ')}
+                                error={!!fieldGeneralErrors.errors[field]}
+                                helperText={fieldGeneralErrors.errors[field]?.join(' ')}
                                 slotProps={{
                                     input: field === 'password' ? {
                                         endAdornment: (
