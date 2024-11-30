@@ -7,11 +7,22 @@ import { useAuth } from '../auth/authContext';
 import styled, { keyframes } from 'styled-components';
 import UserProfile from '../auth/UserProfile';
 
+/**
+ * Animación de gradiente para el texto.
+ * 
+ * Define una animación de gradiente que se mueve de izquierda a derecha.
+ */
 const gradientAnimation = keyframes`
     0% { background-position: 0% 50%; }
     100% { background-position: 100% 50%; }
-    `;
+`;
 
+/**
+ * Componente estilizado de texto con gradiente animado.
+ * 
+ * Este componente utiliza `styled-components` para aplicar un gradiente animado
+ * al texto, creando un efecto visual atractivo.
+ */
 const GradientText = styled.span`
     background: linear-gradient(90deg, #ff0000, #006400, #0000ff, #ff0000);
     background-size: 300% 300%;
@@ -20,16 +31,29 @@ const GradientText = styled.span`
     color: transparent;
     animation: ${gradientAnimation} 5s linear infinite;
     font-size: 1.5rem;
-    `;
+`;
 
+/**
+ * Componente de barra de navegación que proporciona enlaces de navegación y funcionalidad de usuario.
+ * 
+ * Este componente utiliza Material-UI para crear una barra de navegación que incluye enlaces a diferentes
+ * secciones de la aplicación, un botón de retroceso condicional, y un efecto de confeti en la página de inicio.
+ * También gestiona el estado de autenticación del usuario para mostrar opciones de perfil o inicio de sesión.
+ * 
+ * @returns {JSX.Element} El componente de barra de navegación.
+ */
 const Navbar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [showConfetti, setShowConfetti] = useState(false);
     const { isAuthenticated } = useAuth();
 
+    // Determina si se debe mostrar el botón de retroceso
     const showBackButton = location.pathname !== '/';
 
+    /**
+     * Maneja la acción de retroceso, navegando a diferentes rutas según la ubicación actual.
+     */
     const handleBack = async () => {
         if (location.pathname === '/verify-email') {
             const storedFormData = localStorage.getItem('formData');
@@ -47,6 +71,9 @@ const Navbar: React.FC = () => {
         }
     };
 
+    /**
+     * Efecto que muestra confeti cuando la ruta es la página de inicio.
+     */
     useEffect(() => {
         if (location.pathname === '/') {
             setShowConfetti(true);
@@ -55,6 +82,9 @@ const Navbar: React.FC = () => {
         }
     }, [location.pathname]);
 
+    /**
+     * Maneja el evento de pasar el ratón sobre el texto, activando el confeti.
+     */
     const handleMouseEnter = () => {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 7000);

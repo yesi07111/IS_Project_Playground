@@ -1,6 +1,13 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
+/**
+ * Componente estilizado de contenedor que centra su contenido en la pantalla.
+ * 
+ * Este componente utiliza `styled-components` para crear un contenedor que
+ * posiciona su contenido en el centro de la pantalla, tanto vertical como
+ * horizontalmente. El texto dentro del contenedor está alineado al centro.
+ */
 const Container = styled.div`
   position: absolute;
   top: 50%;
@@ -10,6 +17,14 @@ const Container = styled.div`
   text-align: center;
 `;
 
+/**
+ * Componente estilizado de texto que aplica un efecto de gradiente animado.
+ * 
+ * Este componente utiliza `styled-components` para crear un texto con un
+ * gradiente de color animado. El gradiente se mueve de izquierda a derecha
+ * y viceversa, creando un efecto visual atractivo. El texto es transparente
+ * y el gradiente se aplica como fondo.
+ */
 const Text = styled.div`
   display: block;
   font-family: 'Ubuntu', sans-serif;
@@ -30,78 +45,28 @@ const Text = styled.div`
   `} 5s infinite;
 `;
 
+/**
+ * Componente de texto con gradiente animado.
+ * 
+ * Este componente muestra un texto con un efecto de gradiente animado y un enlace
+ * de crédito en la esquina inferior derecha. Utiliza `styled-components` para
+ * aplicar estilos y animaciones al texto.
+ * 
+ * @param {Object} props - Propiedades del componente.
+ * @param {string} props.text - El texto que se mostrará con el efecto de gradiente.
+ * @returns {JSX.Element} El componente de texto con gradiente.
+ */
 const GradientText: React.FC<{ text: string }> = ({ text }) => {
-    return (
-        <Container>
-            <Text className="txt">
-                {text}
-            </Text>
-            <a target="_blank" href="https://www.hendrysadrak.com" style={{ position: 'absolute', bottom: '10px', right: '10px', color: '#eee', fontSize: '15px', lineHeight: '15px', textDecoration: 'none' }}>
-                @hendrysadrak
-            </a>
-        </Container>
-    );
+  return (
+    <Container>
+      <Text className="txt">
+        {text}
+      </Text>
+      <a target="_blank" href="https://www.hendrysadrak.com" style={{ position: 'absolute', bottom: '10px', right: '10px', color: '#eee', fontSize: '15px', lineHeight: '15px', textDecoration: 'none' }}>
+        @hendrysadrak
+      </a>
+    </Container>
+  );
 };
 
 export default GradientText;
-
-// import React, { useEffect } from 'react';
-// import styled, { keyframes } from 'styled-components';
-
-// const Container = styled.div`
-//   position: absolute;
-//   top: 50%;
-//   left: 50%;
-//   width: 100%;
-//   transform: translate(-50%, -50%);
-//   text-align: center;
-// `;
-
-// const Text = styled.div`
-//   display: block;
-//   font-family: 'Ubuntu', sans-serif;
-//   text-transform: uppercase;
-//   letter-spacing: 0.2em;
-//   font-size: 1.3em;
-//   line-height: 2;
-//   font-weight: 300;
-//   color: #fefefe;
-// `;
-
-// const animTextFlowKeys = keyframes`
-//   0% { color: hsla(0, 60%, 60%, 1); }
-//   20% { color: hsla(72, 60%, 60%, 1); }
-//   40% { color: hsla(144, 60%, 60%, 1); }
-//   60% { color: hsla(216, 60%, 60%, 1); }
-//   80% { color: hsla(288, 60%, 60%, 1); }
-//   100% { color: hsla(360, 60%, 60%, 1); }
-// `;
-
-// const AnimatedSpan = styled.span`
-//   animation: ${animTextFlowKeys} 5s infinite alternate forwards;
-// `;
-
-// const GradientText: React.FC<{ text: string }> = ({ text }) => {
-//     useEffect(() => {
-//         const textElement = document.querySelector('.txt');
-//         if (textElement) {
-//             const chars = text.split('');
-//             textElement.innerHTML = chars.map(char => `<span>${char}</span>`).join('');
-//         }
-//     }, [text]);
-
-//     return (
-//         <Container>
-//             <Text className="txt">
-//                 {text.split('').map((char, index) => (
-//                     <AnimatedSpan key={index}>{char}</AnimatedSpan>
-//                 ))}
-//             </Text>
-//             <a target="_blank" href="https://www.hendrysadrak.com" style={{ position: 'absolute', bottom: '10px', right: '10px', color: '#eee', fontSize: '15px', lineHeight: '15px', textDecoration: 'none' }}>
-//                 @hendrysadrak
-//             </a>
-//         </Container>
-//     );
-// };
-
-// export default GradientText;
