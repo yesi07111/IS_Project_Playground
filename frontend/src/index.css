@@ -1,3 +1,17 @@
+/**
+ * Estilos CSS globales para la aplicación.
+ * 
+ * Este bloque de estilos define las propiedades de fuente, color y diseño para elementos HTML
+ * comunes, asegurando una apariencia consistente en toda la aplicación. Incluye ajustes para
+ * compatibilidad y accesibilidad, así como estilos específicos para enlaces, botones y encabezados.
+ * 
+ * - **:root**: Define variables de fuente y color, ajustando el esquema de color y la suavidad de la fuente.
+ * - **a**: Estilos para enlaces, incluyendo color y decoración.
+ * - **body**: Configura el diseño del cuerpo, centrando el contenido y ajustando el tamaño mínimo.
+ * - **h1**: Establece el tamaño y la altura de línea para encabezados de nivel 1.
+ * - **button**: Define estilos para botones, incluyendo color de fondo, borde y transición.
+ * - **@media**: Ajusta los colores para el esquema de color claro.
+ */
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

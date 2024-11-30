@@ -10,8 +10,18 @@ import VerifyEmailPage from './pages/VerifyEmailPage';
 import UserTypePage from './pages/UserTypePage';
 import { AuthProvider } from './components/auth/authContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import AdminPage from './pages/AdminPage';
+// import AdminPage from './pages/AdminPage';
 
+/**
+ * Configuración del tema de Material-UI para la aplicación.
+ * 
+ * Este objeto define el tema personalizado de Material-UI, incluyendo la paleta de colores,
+ * la tipografía y las modificaciones de estilo para componentes específicos como MuiCard y MuiCardMedia.
+ * 
+ * - **palette**: Define los colores primarios y secundarios, con variantes claras y oscuras.
+ * - **typography**: Configura el peso de la fuente para los encabezados h5 y el tamaño de fuente para body2.
+ * - **components**: Sobrescribe estilos para componentes de Material-UI, ajustando el radio de borde de las tarjetas.
+ */
 const theme = createTheme({
   palette: {
     primary: {
@@ -52,6 +62,15 @@ const theme = createTheme({
   },
 });
 
+/**
+ * Componente principal de la aplicación.
+ * 
+ * Este componente configura el tema de Material-UI, proporciona el contexto de autenticación
+ * y define las rutas de la aplicación utilizando React Router. Incluye la barra de navegación
+ * y las páginas principales de la aplicación.
+ * 
+ * @returns {JSX.Element} El componente principal de la aplicación.
+ */
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
@@ -60,7 +79,7 @@ const App: React.FC = () => {
         <Router>
           <Navbar />
           {/* En esta sección se agregan las rutas de las páginas a usar */}
-        <Routes>
+          <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -79,8 +98,8 @@ const App: React.FC = () => {
                   <UserTypePage />
                 </ProtectedRoute>
               }
-            />          
-            <Route path="/admin" element={<AdminPage />} />
+            />
+            {/* <Route path="/admin" element={<AdminPage />} /> */}
           </Routes>
         </Router>
       </AuthProvider>
