@@ -1,18 +1,41 @@
+/**
+ * Configuración de TypeScript para la construcción de un proyecto con Vite.
+ * 
+ * Este archivo JSON configura el compilador de TypeScript para un proyecto que utiliza Vite,
+ * especificando opciones para la construcción, resolución de módulos, y reglas de linting.
+ * 
+ * - **tsBuildInfoFile**: Especifica la ubicación del archivo de información de construcción.
+ * - **target**: Define el objetivo de ECMAScript como ES2022.
+ * - **lib**: Incluye la biblioteca ES2023.
+ * - **module**: Define el sistema de módulos como ESNext.
+ * - **skipLibCheck**: Omite la comprobación de tipos en archivos de declaración.
+ * - **moduleResolution**: Utiliza la resolución de módulos de Bundler.
+ * - **allowImportingTsExtensions**: Permite importar extensiones de TypeScript.
+ * - **isolatedModules**: Habilita el modo de módulos aislados.
+ * - **moduleDetection**: Fuerza la detección de módulos.
+ * - **noEmit**: Desactiva la emisión de archivos de salida.
+ * - **strict**: Activa el modo estricto de comprobación de tipos.
+ * - **noUnusedLocals**: Prohíbe variables locales no utilizadas.
+ * - **noUnusedParameters**: Prohíbe parámetros no utilizados.
+ * - **noFallthroughCasesInSwitch**: Prohíbe casos de switch sin break.
+ * - **noUncheckedSideEffectImports**: Prohíbe importaciones con efectos secundarios no comprobados.
+ * - **include**: Incluye el archivo 'vite.config.ts' para la compilación.
+ */
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2022",
-    "lib": ["ES2023"],
+    "lib": [
+      "ES2023"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
-
     /* Bundler mode */
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -20,5 +43,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts"
+  ]
 }
