@@ -3,6 +3,13 @@ using FastEndpoints.Swagger;
 using Playground.Infraestructure;
 using Playground.WebApi;
 
+/// <summary>
+/// Clase principal para configurar y ejecutar la aplicación web. 
+/// Configura servicios esenciales como infraestructura, esquema de seguridad, CORS, y documentación Swagger. 
+/// También inicializa y ejecuta la aplicación, aplicando autenticación, autorización y configuraciones de endpoints.
+/// </summary>
+/// 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configurar servicios

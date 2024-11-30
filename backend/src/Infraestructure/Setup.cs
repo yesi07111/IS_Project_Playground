@@ -14,8 +14,19 @@ using Playground.Infraestructure.Repositories;
 
 namespace Playground.Infraestructure;
 
+/// <summary>
+/// Clase estática para configurar la infraestructura de la aplicación.
+/// Proporciona métodos para registrar servicios esenciales como el contexto de base de datos, identidad, y configuraciones específicas.
+/// </summary>
 public static class Setup
 {
+    /// <summary>
+    /// Configura los servicios de infraestructura necesarios para la aplicación.
+    /// Incluye la configuración del contexto de base de datos, identidad de usuario, y servicios personalizados.
+    /// </summary>
+    /// <param name="builder">La colección de servicios de la aplicación.</param>
+    /// <param name="configuration">El administrador de configuración que contiene los parámetros de configuración.</param>
+    /// <returns>La colección de servicios con la infraestructura configurada.</returns>
     public static IServiceCollection AddInfraestructure(this IServiceCollection builder, ConfigurationManager configuration)
     {
         builder.AddDbContext<DefaultDbContext>(options =>
@@ -47,7 +58,6 @@ public static class Setup
                .AddScoped<IUnitOfWork, UnitOfWork>()
                .AddScoped<ICodeGenerator, CodeGenerator>()
                .AddScoped<UserManager<User>>();
-
 
         return builder;
     }
