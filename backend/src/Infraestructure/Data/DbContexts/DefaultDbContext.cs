@@ -21,12 +21,12 @@ public class DefaultDbContext : IdentityDbContext<User>
     /// <summary>
     /// Conjunto de datos para las actividades.
     /// </summary>
-    public DbSet<Domain.Entities.Activity> Activities { get; set; }
+    public DbSet<Domain.Entities.Activity> Activity { get; set; }
 
     /// <summary>
     /// Conjunto de datos para las instalaciones.
     /// </summary>
-    public DbSet<Facility> Facilities { get; set; }
+    public DbSet<Facility> Facility { get; set; }
 
     /// <summary>
     /// Conjunto de datos para los recursos.
