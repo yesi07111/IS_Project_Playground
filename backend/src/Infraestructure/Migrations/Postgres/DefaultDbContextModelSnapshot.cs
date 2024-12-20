@@ -207,7 +207,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasIndex("FacilityId");
 
-                    b.ToTable("Activitie");
+                    b.ToTable("Activity");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Auth.User", b =>
@@ -339,7 +339,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasKey("Id");
 
-                    b.ToTable("Facilitie");
+                    b.ToTable("Facility");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Reservation", b =>

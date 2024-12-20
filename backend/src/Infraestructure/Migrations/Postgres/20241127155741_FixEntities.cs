@@ -101,56 +101,56 @@ namespace Infraestructure.Migrations.Postgres
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
-                table: "Facilitie",
+                table: "Facility",
                 type: "timestamp with time zone",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "DeletedAt",
-                table: "Facilitie",
+                table: "Facility",
                 type: "timestamp with time zone",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<bool>(
                 name: "IsDeleted",
-                table: "Facilitie",
+                table: "Facility",
                 type: "boolean",
                 nullable: false,
                 defaultValue: false);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "UpdateAt",
-                table: "Facilitie",
+                table: "Facility",
                 type: "timestamp with time zone",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
-                table: "Activitie",
+                table: "Activity",
                 type: "timestamp with time zone",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "DeletedAt",
-                table: "Activitie",
+                table: "Activity",
                 type: "timestamp with time zone",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<bool>(
                 name: "IsDeleted",
-                table: "Activitie",
+                table: "Activity",
                 type: "boolean",
                 nullable: false,
                 defaultValue: false);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "UpdateAt",
-                table: "Activitie",
+                table: "Activity",
                 type: "timestamp with time zone",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
@@ -209,35 +209,35 @@ namespace Infraestructure.Migrations.Postgres
 
             migrationBuilder.DropColumn(
                 name: "CreatedAt",
-                table: "Facilitie");
+                table: "Facility");
 
             migrationBuilder.DropColumn(
                 name: "DeletedAt",
-                table: "Facilitie");
+                table: "Facility");
 
             migrationBuilder.DropColumn(
                 name: "IsDeleted",
-                table: "Facilitie");
+                table: "Facility");
 
             migrationBuilder.DropColumn(
                 name: "UpdateAt",
-                table: "Facilitie");
+                table: "Facility");
 
             migrationBuilder.DropColumn(
                 name: "CreatedAt",
-                table: "Activitie");
+                table: "Activity");
 
             migrationBuilder.DropColumn(
                 name: "DeletedAt",
-                table: "Activitie");
+                table: "Activity");
 
             migrationBuilder.DropColumn(
                 name: "IsDeleted",
-                table: "Activitie");
+                table: "Activity");
 
             migrationBuilder.DropColumn(
                 name: "UpdateAt",
-                table: "Activitie");
+                table: "Activity");
 
             migrationBuilder.AddColumn<string>(
                 name: "Location",
