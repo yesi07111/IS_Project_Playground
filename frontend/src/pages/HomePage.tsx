@@ -181,6 +181,34 @@ const HomePage: React.FC = () => {
                 </Container>
             </Box>
 
+            {/* Hours Section */}
+            <Box
+                sx={{
+                    py: 4,
+                    backgroundColor: '#f8f9fa',
+                    textAlign: 'center'
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    sx={{
+                        color: '#2C3E50',
+                        fontWeight: 700,
+                        mb: 2
+                    }}
+                >
+                    Horario del Parque Infantil
+                </Typography>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        color: '#2C3E50'
+                    }}
+                >
+                    Abierto desde las <strong>9:00 am</strong> hasta las <strong>5:00 pm</strong>
+                </Typography>
+            </Box>
+
             {/* Activities Section */}
             <Box sx={{
                 py: 8,
