@@ -129,7 +129,6 @@ namespace Playground.Infraestructure.Repositories
         {
             string dateSuffix = "_deleted_" + DateTime.UtcNow.ToString("dd_MM_yyyy_HH_mm_ss_fff");
 
-            entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
 
             entity.UserName += dateSuffix;
