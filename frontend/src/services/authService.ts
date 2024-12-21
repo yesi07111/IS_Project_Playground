@@ -89,7 +89,7 @@ export const authService = {
      * 
      * Este método envía una solicitud POST al endpoint de eliminación de usuario no verificado
      * con los datos del usuario. Si la solicitud es exitosa, no devuelve nada. En caso de error,
-     * imprime un mensaje de error en la consola.
+     * imprime un mensaje de error en la consola.lo devuelve.
      * 
      * @param {string} firstName - Nombre del usuario.
      * @param {string} lastName - Apellido del usuario.
@@ -98,21 +98,14 @@ export const authService = {
      * @param {string} userType - Tipo de usuario.
      * @param {string} deleteToken - Token de eliminación.
      */
-    deleteUserFromDB: async (firstName: string, lastName: string, userName: string, email: string, userType: string, deleteToken: string) => {
+    deleteUserFromDB: async (deleteToken: string, firstName: string, lastName: string, userName: string, email: string, userType: string) => {
         try {
-            await axios.post(`${API_URL}/auth/delete-unverified-user`, {
-                firstName,
-                lastName,
-                userName,
-                email,
-                userType,
-                deleteToken
-            });
+            console.log("Entro al axios.delete");
+            await axios.delete(`${API_URL}/auth/delete-fail-user/${deleteToken}/${firstName}/${lastName}/${userName}/${email}/${userType}`);
         } catch (error) {
             console.error('Error al borrar al usuario:', error);
         }
     },
-
     /**
      * Inicia sesión en el sistema.
      * 
