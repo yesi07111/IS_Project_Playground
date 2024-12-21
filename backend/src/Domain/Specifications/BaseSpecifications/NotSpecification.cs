@@ -11,7 +11,7 @@ namespace Playground.Domain.Specifications.BaseSpecifications
         private readonly ISpecification<T> _specification;
 
         /// <summary>
-        /// Inicializa una nueva instancia de la clase <see cref="NotSpecification{T}"/>.
+        /// Inicializar una nueva instancia de la clase <see cref="NotSpecification{T}"/>.
         /// </summary>
         /// <param name="specification">La especificación a invertir.</param>
         public NotSpecification(ISpecification<T> specification)

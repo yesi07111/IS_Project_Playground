@@ -12,7 +12,7 @@ namespace Playground.Domain.Specifications.BaseSpecifications
         private readonly ISpecification<T> _right;
 
         /// <summary>
-        /// Inicializa una nueva instancia de la clase <see cref="OrSpecification{T}"/>.
+        /// Inicializar una nueva instancia de la clase <see cref="OrSpecification{T}"/>.
         /// </summary>
         /// <param name="left">La primera especificación a combinar.</param>
         /// <param name="right">La segunda especificación a combinar.</param>

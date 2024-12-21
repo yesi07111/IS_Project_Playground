@@ -140,16 +140,6 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
-        /// Crea una especificación para filtrar usuarios por su estado de eliminación.
-        /// </summary>
-        /// <param name="isDeleted">Indica si el usuario está eliminado.</param>
-        /// <returns>Una especificación que filtra por estado de eliminación.</returns>
-        public static UserSpecification ByIsDeleted(bool isDeleted)
-        {
-            return new UserSpecification(user => user.IsDeleted == isDeleted);
-        }
-
-        /// <summary>
         /// Crea una especificación para filtrar usuarios por su fecha de creación.
         /// </summary>
         /// <param name="createdAt">La fecha de creación del usuario.</param>
@@ -157,7 +147,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por fecha de creación.</returns>
         public static UserSpecification ByCreatedAt(DateTime createdAt, string comparison = "equal")
         {
-            return new UserSpecification(CreateDateComparisonExpression(user => user.CreatedAt, createdAt, comparison));
+            return new UserSpecification(DateTimeSpecification<User>.CreateDateComparisonExpression(user => user.CreatedAt, createdAt, comparison));
         }
 
         /// <summary>
@@ -168,7 +158,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por fecha de actualización.</returns>
         public static UserSpecification ByUpdateAt(DateTime updateAt, string comparison = "equal")
         {
-            return new UserSpecification(CreateDateComparisonExpression(user => user.UpdateAt, updateAt, comparison));
+            return new UserSpecification(DateTimeSpecification<User>.CreateDateComparisonExpression(user => user.UpdateAt, updateAt, comparison));
         }
 
         /// <summary>
@@ -177,44 +167,9 @@ namespace Playground.Domain.Specifications
         /// <param name="deleteAt">La fecha de eliminación del usuario.</param>
         /// <param name="comparison">El tipo de comparación a realizar (por defecto es "equal").</param>
         /// <returns>Una especificación que filtra por fecha de eliminación.</returns>
-        public static UserSpecification ByDeleteAt(DateTime deleteAt, string comparison = "equal")
+        public static UserSpecification ByDeletedAt(DateTime? deleteAt, string comparison = "equal")
         {
-            return new UserSpecification(CreateDateComparisonExpression(user => user.DeletedAt, deleteAt, comparison));
-        }
-
-        /// <summary>
-        /// Crea una expresión de comparación de fechas basada en el tipo de comparación especificado.
-        /// </summary>
-        /// <param name="dateSelector">Selector de la propiedad de fecha del usuario.</param>
-        /// <param name="date">La fecha a comparar.</param>
-        /// <param name="comparison">El tipo de comparación a realizar ("greater", "greater-or-equal", "less", "less-or-equal", "equal").</param>
-        /// <returns>Una expresión lambda que representa la comparación de fechas.</returns>
-        private static Expression<Func<User, bool>> CreateDateComparisonExpression(
-                Expression<Func<User, DateTime>> dateSelector, DateTime date, string comparison)
-        {
-            switch (comparison)
-            {
-                case "greater":
-                    return Expression.Lambda<Func<User, bool>>(
-                        Expression.GreaterThan(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-                case "greater-or-equal":
-                    return Expression.Lambda<Func<User, bool>>(
-                        Expression.GreaterThanOrEqual(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-                case "less":
-                    return Expression.Lambda<Func<User, bool>>(
-                        Expression.LessThan(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-                case "less-or-equal":
-                    return Expression.Lambda<Func<User, bool>>(
-                        Expression.LessThanOrEqual(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-                default:
-                    return Expression.Lambda<Func<User, bool>>(
-                        Expression.Equal(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-            }
+            return new UserSpecification(DateTimeSpecification<User>.CreateNullableDateComparisonExpression(user => user.DeletedAt, deleteAt, comparison));
         }
     }
 }
