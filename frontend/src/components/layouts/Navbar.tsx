@@ -9,37 +9,37 @@ import UserProfile from '../auth/UserProfile';
 
 /**
  * Animación de gradiente para el texto.
- * 
+ *
  * Define una animación de gradiente que se mueve de izquierda a derecha.
  */
 const gradientAnimation = keyframes`
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+0% { background-position: 0% 50%; }
+100% { background-position: 100% 50%; }
 `;
 
 /**
  * Componente estilizado de texto con gradiente animado.
- * 
+ *
  * Este componente utiliza `styled-components` para aplicar un gradiente animado
  * al texto, creando un efecto visual atractivo.
  */
 const GradientText = styled.span`
-    background: linear-gradient(90deg, #ff0000, #006400, #0000ff, #ff0000);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: ${gradientAnimation} 5s linear infinite;
-    font-size: 1.5rem;
+background: linear-gradient(90deg, #ff0000, #006400, #0000ff, #ff0000);
+background-size: 300% 300%;
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+animation: ${gradientAnimation} 5s linear infinite;
+font-size: 1.5rem;
 `;
 
 /**
  * Componente de barra de navegación que proporciona enlaces de navegación y funcionalidad de usuario.
- * 
+ *
  * Este componente utiliza Material-UI para crear una barra de navegación que incluye enlaces a diferentes
  * secciones de la aplicación, un botón de retroceso condicional, y un efecto de confeti en la página de inicio.
  * También gestiona el estado de autenticación del usuario para mostrar opciones de perfil o inicio de sesión.
- * 
+ *
  * @returns {JSX.Element} El componente de barra de navegación.
  */
 const Navbar: React.FC = () => {
@@ -47,6 +47,7 @@ const Navbar: React.FC = () => {
     const navigate = useNavigate();
     const [showConfetti, setShowConfetti] = useState(false);
     const { isAuthenticated } = useAuth();
+    const [titleText, setTitleText] = useState('Parque Infantil');
 
     // Determina si se debe mostrar el botón de retroceso
     const showBackButton = location.pathname !== '/';
@@ -65,7 +66,9 @@ const Navbar: React.FC = () => {
             }
         } else if (location.pathname === '/register') {
             localStorage.removeItem('formData');
-            navigate('/user-type');
+            navigate('/');
+        } else if (location.pathname === '/login') {
+            navigate('/');
         } else {
             navigate(-1);
         }
@@ -75,11 +78,31 @@ const Navbar: React.FC = () => {
      * Efecto que muestra confeti cuando la ruta es la página de inicio.
      */
     useEffect(() => {
-        if (location.pathname === '/') {
+        if (location.pathname === '/' || location.pathname === '/activities' || location.pathname === '/reservations') {
             setShowConfetti(true);
             const timer = setTimeout(() => setShowConfetti(false), 7000);
             return () => clearTimeout(timer);
         }
+    }, [location.pathname]);
+
+    /**
+     * Efecto que actualiza el texto del título basado en la ruta actual.
+     */
+    useEffect(() => {
+        const updateTitleText = () => {
+            switch (location.pathname) {
+                case '/activities':
+                    setTitleText('Actividades');
+                    break;
+                case '/reservations':
+                    setTitleText('Mis Reservas');
+                    break;
+                default:
+                    setTitleText('Parque Infantil');
+            }
+        };
+
+        updateTitleText();
     }, [location.pathname]);
 
     /**
@@ -117,7 +140,7 @@ const Navbar: React.FC = () => {
                     }}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        {showBackButton ? (
+                        {showBackButton && (
                             <IconButton
                                 color="inherit"
                                 onClick={handleBack}
@@ -131,23 +154,22 @@ const Navbar: React.FC = () => {
                             >
                                 <ArrowBackIcon />
                             </IconButton>
-                        ) : (
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    color: 'inherit',
-                                    flexGrow: 0,
-                                    fontSize: '1.1rem',
-                                    cursor: 'default',
-                                    position: 'relative',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                }}
-                                onMouseEnter={handleMouseEnter}
-                            >
-                                <GradientText>Parque Infantil </GradientText>
-                            </Typography>
                         )}
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                color: 'inherit',
+                                flexGrow: 0,
+                                fontSize: '1.1rem',
+                                cursor: 'default',
+                                position: 'relative',
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                            onMouseEnter={handleMouseEnter}
+                        >
+                            <GradientText>{titleText}</GradientText>
+                        </Typography>
                     </Box>
                     <Box sx={{
                         display: 'flex',
@@ -167,7 +189,7 @@ const Navbar: React.FC = () => {
                         <Button
                             color="inherit"
                             component={Link}
-                            to="/actividades"
+                            to="/activities"
                             sx={{
                                 fontWeight: 500,
                                 py: 0.5,
@@ -175,17 +197,19 @@ const Navbar: React.FC = () => {
                         >
                             Actividades
                         </Button>
-                        <Button
-                            color="inherit"
-                            component={Link}
-                            to="/reservas"
-                            sx={{
-                                fontWeight: 500,
-                                py: 0.5,
-                            }}
-                        >
-                            Reservas
-                        </Button>
+                        {isAuthenticated && (
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/reservations"
+                                sx={{
+                                    fontWeight: 500,
+                                    py: 0.5,
+                                }}
+                            >
+                                Mis Reservas
+                            </Button>
+                        )}
                         {isAuthenticated ? (
                             <>
                                 <UserProfile />
