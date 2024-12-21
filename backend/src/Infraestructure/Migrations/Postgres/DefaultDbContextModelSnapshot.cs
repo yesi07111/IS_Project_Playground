@@ -156,8 +156,9 @@ namespace Infraestructure.Migrations.Postgres
 
             modelBuilder.Entity("Playground.Domain.Entities.Activity", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -168,7 +169,7 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
@@ -178,11 +179,8 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<string>("EducatorIdId")
                         .HasColumnType("text");
 
-                    b.Property<string>("FacilityId")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("FacilityId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("ItsPrivate")
                         .HasColumnType("boolean");
@@ -228,7 +226,7 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<Guid>("DeleteToken")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
@@ -245,9 +243,6 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<string>("FullCode")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -303,17 +298,15 @@ namespace Infraestructure.Migrations.Postgres
 
             modelBuilder.Entity("Playground.Domain.Entities.Facility", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -344,8 +337,9 @@ namespace Infraestructure.Migrations.Postgres
 
             modelBuilder.Entity("Playground.Domain.Entities.Reservation", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("AdditionalComments")
                         .IsRequired()
@@ -360,15 +354,11 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("FacilityId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("FacilityId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ParentIdId")
                         .HasColumnType("text");
@@ -391,21 +381,18 @@ namespace Infraestructure.Migrations.Postgres
 
             modelBuilder.Entity("Playground.Domain.Entities.Resource", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("FacilityId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("FacilityId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -434,8 +421,9 @@ namespace Infraestructure.Migrations.Postgres
 
             modelBuilder.Entity("Playground.Domain.Entities.Review", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Comments")
                         .IsRequired()
@@ -447,15 +435,11 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("FacilityId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("FacilityId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ParentIdId")
                         .HasColumnType("text");
@@ -534,7 +518,9 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasOne("Playground.Domain.Entities.Facility", "Facility")
                         .WithMany()
-                        .HasForeignKey("FacilityId");
+                        .HasForeignKey("FacilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("EducatorId");
 
