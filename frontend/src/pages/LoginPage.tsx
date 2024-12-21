@@ -40,7 +40,7 @@ import { FieldGeneralErrors } from '../types/FieldGeneralErrors'
  */
 const LoginPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const { login, setCanAccessUserType } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
@@ -57,14 +57,6 @@ const LoginPage: React.FC = () => {
     });
 
     /**
-    * Maneja el acceso al tipo de usuario, permitiendo la navegación
-    * a la página de registro de usuario.
-    */
-    const handleUserTypeAccess = () => {
-        setCanAccessUserType(true);
-    };
-
-    /**
      * Maneja los cambios en los campos del formulario de inicio de sesión.
      * 
      * @param {React.ChangeEvent<HTMLInputElement>} e - Evento de cambio del input.
@@ -75,6 +67,13 @@ const LoginPage: React.FC = () => {
             [e.target.name]: e.target.value
         });
     };
+
+    /**
+ * Maneja el cambio a la página de registro.
+ */
+    const handleRegister = () => {
+        navigate('/register')
+    }
 
     /**
      * Maneja el envío del formulario de inicio de sesión.
@@ -296,7 +295,7 @@ const LoginPage: React.FC = () => {
                         <Box sx={{ textAlign: 'center' }}>
                             <MuiLink
                                 component={Link}
-                                to="/user-type"
+                                to="/register"
                                 variant="body2"
                                 sx={{
                                     color: 'primary.main',
@@ -305,7 +304,7 @@ const LoginPage: React.FC = () => {
                                         textDecoration: 'underline'
                                     }
                                 }}
-                                onClick={handleUserTypeAccess}
+                                onClick={handleRegister}
                             >
                                 ¿No tienes una cuenta? ¡Regístrate para la diversión!
                             </MuiLink>

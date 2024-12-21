@@ -59,6 +59,8 @@ const VerifyEmailPage: React.FC = () => {
 
             if (storedData && deleteToken) {
                 localStorage.setItem("ToDelete", "true");
+                console.log("ToDelete set true en VerifyEmailPage.")
+
             }
             if (currentPage !== '/register' && currentPage !== '/verify-email') {
                 clearLocalStorage();
@@ -72,8 +74,8 @@ const VerifyEmailPage: React.FC = () => {
      * Limpia los datos almacenados en `localStorage` relacionados con el registro y verificación.
      */
     const clearLocalStorage = async () => {
-        await localStorage.removeItem('formData');
-        await localStorage.removeItem('pendingVerificationEmail');
+        localStorage.removeItem('formData');
+        localStorage.removeItem('pendingVerificationEmail');
     };
 
     /**
