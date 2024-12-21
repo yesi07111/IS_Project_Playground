@@ -1,6 +1,3 @@
-//newLaura 
-
-using System.Diagnostics;
 using Playground.Domain.Entities.Auth;
 using Playground.Domain.Entities.Common;
 
@@ -34,12 +31,16 @@ namespace Playground.Domain.Entities
         /// <summary>
         /// Obtiene o establece el número actual de participantes en la actividad.
         /// </summary>
+
+        /// <summary>
+        /// Obtiene o establece el número actual de participantes en la actividad.
+        /// </summary>
         public int CurrentParticipants { get; set; } = 0;
 
         /// <summary>
         /// Obtiene o establece el educador que gestiona la actividad.
         /// </summary>
-        public User EducatorId { get; set; }
+        public User Educator { get; set; }
 
         /// <summary>
         /// Obtiene o establece el tipo de actividad.
@@ -49,7 +50,15 @@ namespace Playground.Domain.Entities
         /// <summary>
         /// Obtiene o establece la edad recomendada para la actividad.
         /// </summary>
+
+        /// <summary>
+        /// Obtiene o establece la edad recomendada para la actividad.
+        /// </summary>
         public int RecommendedAge { get; set; }
+
+        /// <summary>
+        /// Indica si la actividad es privada.
+        /// </summary>
 
         /// <summary>
         /// Indica si la actividad es privada.
@@ -75,6 +84,7 @@ namespace Playground.Domain.Entities
         /// Obtiene o establece la fecha y hora en que se eliminó la actividad.
         /// </summary>
         public DateTime? DeletedAt { get; set; } = null;
+
 
         /// <summary>
         /// Agrega un participante a la actividad si no se ha alcanzado la capacidad máxima.

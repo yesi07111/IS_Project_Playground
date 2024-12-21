@@ -52,7 +52,6 @@ namespace Playground.Domain.Specifications
             return new OrSpecification<Activity>(this, other);
         }
 
-        /// <summary>
         /// Convierte la especificación en una expresión lambda.
         /// </summary>
         /// <returns>Una expresión lambda que representa la especificación.</returns>
@@ -91,6 +90,7 @@ namespace Playground.Domain.Specifications
             return new ActivitySpecification(activity => activity.Date.Date == date.Date);
         }
 
+
         /// <summary>
         /// Crea una especificación para filtrar actividades por hora.
         /// </summary>
@@ -114,11 +114,11 @@ namespace Playground.Domain.Specifications
         /// <summary>
         /// Crea una especificación para filtrar actividades por educador.
         /// </summary>
-        /// <param name="educatorId">El educador asociado a la actividad.</param>
+        /// <param name="educator">El educador asociado a la actividad.</param>
         /// <returns>Una especificación que filtra por educador.</returns>
-        public static ActivitySpecification ByEducador(User educatorId)
+        public static ActivitySpecification ByEducador(User educator)
         {
-            return new ActivitySpecification(activity => activity.EducatorId == educatorId);
+            return new ActivitySpecification(activity => activity.Educator == educator);
         }
 
         /// <summary>
