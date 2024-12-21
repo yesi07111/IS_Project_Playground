@@ -22,7 +22,7 @@ namespace Playground.Application.Commands.CleanUp
         {
             var unverifiedUsersSpecification = UserSpecification.ByEmailConfirmed(false)
                 .And(UserSpecification.ByCreatedAt(DateTime.UtcNow.AddDays(-7), "less"))
-                .And(UserSpecification.ByIsDeleted(false));
+                .And(UserSpecification.ByDeletedAt(null));
 
             var users = (await _userRepository.GetBySpecificationAsync(unverifiedUsersSpecification)).ToList();
 
