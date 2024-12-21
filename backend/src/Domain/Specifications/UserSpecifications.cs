@@ -130,16 +130,6 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
-        /// Crea una especificación para filtrar usuarios por su token de eliminación.
-        /// </summary>
-        /// <param name="deleteToken">El token de eliminación del usuario.</param>
-        /// <returns>Una especificación que filtra por token de eliminación.</returns>
-        public static UserSpecification ByDeleteToken(Guid deleteToken)
-        {
-            return new UserSpecification(user => user.DeleteToken == deleteToken);
-        }
-
-        /// <summary>
         /// Crea una especificación para filtrar usuarios por su fecha de creación.
         /// </summary>
         /// <param name="createdAt">La fecha de creación del usuario.</param>
