@@ -6,7 +6,7 @@ namespace Playground.Domain.Entities
     /// Representa una notificación en el sistema.
     /// Implementa la interfaz <see cref="IBaseEntity{Notification}"/> para proporcionar un identificador único.
     /// </summary>
-    public class Notification : IBaseEntity<Notification>
+    public class Notification : IBaseEntity
     {
         /// <summary>
         /// Obtiene o establece el identificador único de la notificación.
@@ -27,6 +27,21 @@ namespace Playground.Domain.Entities
         /// Obtiene o establece el mensaje de la notificación.
         /// </summary>
         public string Message { get; set; }
+
+        /// <summary>
+        /// Obtiene o establece la fecha y hora en que se creó la notificación.
+        /// </summary>
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Obtiene o establece la fecha y hora en que se actualizó por última vez la notificación.
+        /// </summary>
+        public DateTime UpdateAt { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Obtiene o establece la fecha y hora en que se eliminó la notificación.
+        /// </summary>
+        public DateTime? DeletedAt { get; set; } = null;
 
         /// <summary>
         /// Inicializa una nueva instancia de la clase <see cref="Notification"/>.
