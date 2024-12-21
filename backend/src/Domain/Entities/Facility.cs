@@ -1,18 +1,57 @@
 //newLaura
 
+using Playground.Domain.Entities.Common;
+
 namespace Playground.Domain.Entities
 {
-    public class Facility
+    /// <summary>
+    /// Representa una instalación en el sistema.
+    /// </summary>
+    public class Facility : IBaseEntity
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        /// <summary>
+        /// Obtiene o establece el identificador único de la instalación.
+        /// </summary>
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Obtiene o establece el nombre de la instalación.
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Obtiene o establece la ubicación de la instalación.
+        /// </summary>
         public string Location { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Obtiene o establece el tipo de instalación.
+        /// </summary>
         public string Type { get; set; } = string.Empty;
-        public int MaximumCapacity { get; set; } 
+
+        /// <summary>
+        /// Obtiene o establece la capacidad máxima de la instalación.
+        /// </summary>
+        public int MaximumCapacity { get; set; }
+
+        /// <summary>
+        /// Obtiene o establece la política de uso de la instalación.
+        /// </summary>
         public string UsagePolicy { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdateAt { get; set; }
-        public DateTime DeletedAt { get; set; }
-        public bool IsDeleted { get; set; }
+
+        /// <summary>
+        /// Obtiene o establece la fecha y hora en que se creó la instalación.
+        /// </summary>
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Obtiene o establece la fecha y hora en que se actualizó por última vez la instalación.
+        /// </summary>
+        public DateTime UpdateAt { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Obtiene o establece la fecha y hora en que se eliminó la instalación.
+        /// </summary>
+        public DateTime? DeletedAt { get; set; } = null;
     }
 }

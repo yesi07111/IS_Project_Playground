@@ -10,6 +10,9 @@ import decoration1 from '../assets/images/activities/kids-sport.jpg';
 import decoration2 from '../assets/images/activities/kids-science.jpg';
 import pattern1 from '../assets/images/decorative/hand-print.png';
 import pattern2 from '../assets/images/decorative/kindergarten.png';
+import pattern3 from '../assets/images/decorative/bumper-car.png';
+import pattern4 from '../assets/images/decorative/soccer.png';
+
 import { Activity } from '../interfaces/Activity';
 
 const mockActivities: Activity[] = [
@@ -39,30 +42,13 @@ const mockActivities: Activity[] = [
     }
 ];
 
-/**
- * Componente funcional que representa la página de inicio.
- * 
- * Este componente utiliza varios elementos de Material-UI para estructurar
- * la página, incluyendo `Box`, `Typography`, `Button`, y `Grid`. También
- * incorpora componentes personalizados como `ActivityCard` y `StatsSummary`.
- * 
- * La página se divide en varias secciones:
- * - **Hero Section**: Presenta un fondo de imagen con un mensaje de bienvenida
- *   y un botón para realizar reservas.
- * - **Stats Section**: Muestra un resumen estadístico utilizando el componente
- *   `StatsSummary`.
- * - **Activities Section**: Lista de actividades destacadas, cada una representada
- *   por un `ActivityCard`.
- * 
- * @returns {JSX.Element} El componente de la página de inicio.
- */
 const HomePage: React.FC = () => {
     return (
         <Box sx={{
-            width: '100vw',  // Cambiado a viewport width
+            width: '100vw',
             minHeight: '100vh',
             overflow: 'hidden',
-            backgroundColor: '#f8f9fa',
+            backgroundColor: 'white',
             margin: 0,
             padding: 0
         }}>
@@ -149,7 +135,7 @@ const HomePage: React.FC = () => {
                     backgroundColor: 'white',
                     py: 6,
                     position: 'relative',
-                    overflow: 'hidden'
+                    overflow: 'visible'
                 }}
             >
                 <Box
@@ -158,8 +144,8 @@ const HomePage: React.FC = () => {
                     alt="Hand print pattern"
                     sx={{
                         position: 'absolute',
-                        left: -50,
-                        top: -50,
+                        left: -40,
+                        top: 10,
                         opacity: 0.1,
                         width: '200px'
                     }}
@@ -170,8 +156,8 @@ const HomePage: React.FC = () => {
                     alt="Kindergarten pattern"
                     sx={{
                         position: 'absolute',
-                        right: -50,
-                        bottom: -50,
+                        right: -10,
+                        bottom: 10,
                         opacity: 0.1,
                         width: '200px'
                     }}
@@ -184,25 +170,59 @@ const HomePage: React.FC = () => {
             {/* Hours Section */}
             <Box
                 sx={{
-                    py: 4,
-                    backgroundColor: '#f8f9fa',
-                    textAlign: 'center'
+                    py: 6,
+                    textAlign: 'center',
+                    maxWidth: '800px',
+                    margin: '0 auto',
+                    backgroundColor: 'transparent',
+                    border: '1px solid rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.3s ease-in-out',
+                    '&:hover': {
+                        transform: 'scale(1.05)',
+                    },
+                    position: 'relative',
+                    overflow: 'hidden'
                 }}
             >
+                <Box
+                    component="img"
+                    src={pattern4}
+                    alt="Bumper car pattern"
+                    sx={{
+                        position: 'absolute',
+                        left: -12,
+                        top: -20,
+                        opacity: 0.1,
+                        width: '200px'
+                    }}
+                />
+                <Box
+                    component="img"
+                    src={pattern3}
+                    alt="Soccer pattern"
+                    sx={{
+                        position: 'absolute',
+                        right: -50,
+                        bottom: -50,
+                        opacity: 0.1,
+                        width: '200px'
+                    }}
+                />
                 <Typography
                     variant="h5"
                     sx={{
                         color: '#2C3E50',
                         fontWeight: 700,
-                        mb: 2
+                        mb: 2,
                     }}
                 >
-                    Horario del Parque Infantil
+                    Horario
                 </Typography>
                 <Typography
                     variant="h6"
                     sx={{
-                        color: '#2C3E50'
+                        color: '#2C3E50',
                     }}
                 >
                     Abierto desde las <strong>9:00 am</strong> hasta las <strong>5:00 pm</strong>
@@ -214,7 +234,7 @@ const HomePage: React.FC = () => {
                 py: 8,
                 px: 0,
                 width: '100%',
-                backgroundColor: '#f8f9fa'
+                backgroundColor: 'white'
             }}>
                 <Typography
                     variant="h3"
