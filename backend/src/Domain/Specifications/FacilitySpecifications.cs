@@ -100,6 +100,16 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
+        /// Crea una especificación para filtrar instalaciones por política de uso.
+        /// </summary>
+        /// <param name="usagePolicy">La política de uso de la instalación.</param>
+        /// <returns>Una especificación que filtra por política de uso.</returns>
+        public static FacilitySpecification ByUsagePolicy(string usagePolicy)
+        {
+            return new FacilitySpecification(facility => facility.UsagePolicy == usagePolicy);
+        }
+
+        /// <summary>
         /// Crea una especificación para filtrar instalaciones por su fecha de creación.
         /// </summary>
         /// <param name="createdAt">La fecha de creación de la instalación.</param>
