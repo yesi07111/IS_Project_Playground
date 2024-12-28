@@ -16,19 +16,19 @@ namespace Playground.Domain.Entities
         public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
-        /// Obtiene o establece la fecha de la reserva.
-        /// </summary>
-        public DateTime Date { get; set; }
-
-        /// <summary>
         /// Obtiene o establece el usuario padre asociado a la reserva.
         /// </summary>
-        public User ParentId { get; set; }
+        public User Parent { get; set; }
 
         /// <summary>
         /// Obtiene o establece la instalación reservada.
         /// </summary>
         public Facility Facility { get; set; }
+
+        /// <summary>
+        /// Obtiene o establece la actividad y fecha reservada.
+        /// </summary>
+        public ActivityDate ActivityDate { get; set; }
 
         /// <summary>
         /// Obtiene o establece comentarios adicionales para la reserva.
