@@ -154,7 +154,7 @@ const RegisterPage: React.FC = () => {
                 Username: formData.username,
                 Password: formData.password,
                 Email: formData.email,
-                Roles: [formData.userType]
+                Rol: formData.userType
             });
 
             if (result.id) {
