@@ -28,17 +28,17 @@ namespace Playground.Infraestructure.Repositories
         /// <summary>
         /// Obtiene una entidad por su identificador.
         /// </summary>
-        /// <param name="id">El identificador de la entidad.</param>
+        /// <param name="id">El identificador de la entidad, string.</param>
         /// <returns>La entidad encontrada o null si no existe.</returns>
         public async Task<T?> GetByIdAsync(string id)
         {
-            return await _context.Set<T>().FindAsync(id) ?? null;
+            return await _context.Set<T>().FindAsync(Guid.Parse(id)) ?? null;
         }
 
         /// <summary>
         /// Obtiene una entidad por su identificador, incluyendo múltiples propiedades de navegación.
         /// </summary>
-        /// <param name="id">El identificador de la entidad.</param>
+        /// <param name="id">El identificador de la entidad, string.</param>
         /// <param name="includes">Funciones para incluir propiedades de navegación y subpropiedades.</param>
         /// <returns>La entidad encontrada o null si no existe.</returns>
         public async Task<T?> GetByIdAsync(string id, params Expression<Func<T, object>>[] includes)
@@ -50,7 +50,36 @@ namespace Playground.Infraestructure.Repositories
                 query = query.Include(include);
             }
 
-            return await query.FirstOrDefaultAsync(e => EF.Property<string>(e, "Id") == id);
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == Guid.Parse(id));
+        }
+
+        /// <summary>
+        /// Obtiene una entidad por su identificador.
+        /// </summary>
+        /// <param name="id">El identificador de la entidad, Guid.</param>
+        /// <returns>La entidad encontrada o null si no existe.</returns>
+        public async Task<T?> GetByIdAsync(Guid id)
+        {
+
+            return await _context.Set<T>().FindAsync(id) ?? null;
+        }
+
+        /// <summary>
+        /// Obtiene una entidad por su identificador, incluyendo múltiples propiedades de navegación.
+        /// </summary>
+        /// <param name="id">El identificador de la entidad, Guid.</param>
+        /// <param name="includes">Funciones para incluir propiedades de navegación y subpropiedades.</param>
+        /// <returns>La entidad encontrada o null si no existe.</returns>
+        public async Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
         }
 
         /// <summary>
@@ -92,21 +121,30 @@ namespace Playground.Infraestructure.Repositories
         /// <param name="includeExpressions">Funciones para incluir propiedades de navegación y subpropiedades.</param>
         /// <returns>Una tarea que representa la operación asincrónica, con una colección de entidades que cumplen con la especificación.</returns>
         public async Task<IEnumerable<T>> GetBySpecificationAsync<TProperty>(
-            ISpecification<T> specification,
-            ISpecification<TProperty> navigationSpecification,
-            Expression<Func<T, TProperty>> navigationProperty,
-            params Expression<Func<T, object>>[] includeExpressions)
+        ISpecification<T> specification,
+        ISpecification<TProperty> navigationSpecification,
+        Expression<Func<T, TProperty>> navigationProperty,
+        params Expression<Func<T, object>>[] includeExpressions)
         {
+            // Comienza con la especificación principal
             IQueryable<T> query = _context.Set<T>().Where(specification.ToExpression());
 
+            // Incluye las propiedades de navegación
             foreach (var includeExpression in includeExpressions)
             {
                 query = query.Include(includeExpression);
             }
 
-            // Aplicar la especificación al objeto dentro del objeto principal
-            var navigationExpression = navigationSpecification.ToExpression().Compile();
-            query = query.Where(entity => navigationExpression(navigationProperty.Compile()(entity)));
+            // Construir la expresión combinada
+            var navigationExpression = navigationSpecification.ToExpression();
+            var parameter = Expression.Parameter(typeof(T), "entity");
+            var navigationPropertyExpression = Expression.Invoke(navigationProperty, parameter);
+            var combinedExpression = Expression.Invoke(navigationExpression, navigationPropertyExpression);
+
+            var lambda = Expression.Lambda<Func<T, bool>>(combinedExpression, parameter);
+
+            // Aplicar la expresión combinada
+            query = query.Where(lambda);
 
             return await query.ToListAsync();
         }
