@@ -1,6 +1,6 @@
-// Define una interfaz para los filtros
 export interface ActivitiesFilters {
     type: string;
+    useCase?: string;
     value?: string;
     startDate?: string;
     endDate?: string;
