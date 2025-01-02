@@ -1,6 +1,6 @@
 using Playground.Application.Commands.Auth.Register;
-using Playground.Application.Commands.Dtos;
 using FastEndpoints;
+using Playground.Application.Commands.Responses;
 
 namespace Playground.WebApi.Endpoints.Auth;
 
