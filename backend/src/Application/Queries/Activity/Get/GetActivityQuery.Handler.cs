@@ -47,7 +47,7 @@ public class GetActivityQueryHandler : CommandHandler<GetActivityQuery, GetActiv
         var isUseCase = SmartEnum<UseCaseSmartEnum>.TryFromName(query.UseCase, out UseCaseSmartEnum useCase);
         var activityDetailDto = new ActivityDetailDto();
 
-        var activityDate = await activityDateRepository.GetByIdAsync(query.Id, ad => ad.Activity, ad => ad.Activity.Facility, ad => ad.Activity.Educator) ?? throw new KeyNotFoundException("La actividad no fue encontrada.");
+        var activityDate = await activityDateRepository.GetByIdAsync(Guid.Parse(query.Id), ad => ad.Activity, ad => ad.Activity.Facility, ad => ad.Activity.Educator) ?? throw new KeyNotFoundException("La actividad no fue encontrada.");
         var resourceSpecification = ResourceSpecification.ByFacility(activityDate.Activity.Facility.Id);
         var resources = await resourceRepository.GetBySpecificationAsync(resourceSpecification, r => r.Facility);
 
