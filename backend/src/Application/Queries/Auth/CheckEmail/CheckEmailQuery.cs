@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Playground.Application.Queries.Dtos;
+using Playground.Application.Queries.Responses;
 
 namespace Playground.Application.Queries.CheckEmail;
 
