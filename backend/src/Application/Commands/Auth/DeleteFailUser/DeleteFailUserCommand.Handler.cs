@@ -2,8 +2,8 @@ using FastEndpoints;
 using Playground.Application.Repositories;
 using Playground.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Identity;
-using Playground.Application.Commands.Users.DeleteFailUser;
 using Playground.Application.Factories;
+using Playground.Application.Commands.Responses;
 
 namespace Playground.Application.Commands.DeleteFailUser;
 
