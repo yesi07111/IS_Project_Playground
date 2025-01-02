@@ -1,7 +1,5 @@
-using Playground.Domain.Entities.Auth;
 using FastEndpoints;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 
 namespace Playground.Application.Commands.Auth.Login;
 
