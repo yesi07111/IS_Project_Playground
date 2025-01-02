@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import kidsBalloons from '../assets/images/decorative/learning.png';
-import kidsStudying from '../assets/images/decorative/tree-house.png';
+import kidsBalloons from '/images/decorative/learning.png';
+import kidsStudying from '/images/decorative/tree-house.png';
 import { useAuth } from '../components/auth/authContext';
 import { authService } from '../services/authService';
 import { FieldGeneralErrors } from '../types/FieldGeneralErrors'
