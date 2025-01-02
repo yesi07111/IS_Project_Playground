@@ -47,6 +47,6 @@ app.UseFastEndpoints(opt =>
 if (app.Environment.IsDevelopment())
     app.UseSwaggerGen();
 
-await app.Services.SeedRoles();
+await app.Services.AddSeeds();
 
 app.Run();
