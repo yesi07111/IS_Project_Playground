@@ -1,7 +1,6 @@
 
 using Ardalis.SmartEnum;
 using FastEndpoints;
-using Microsoft.AspNetCore.Mvc;
 using Playground.Application.Factories;
 using Playground.Application.Queries.Dtos;
 using Playground.Application.Queries.Responses;
@@ -10,7 +9,6 @@ using Playground.Application.Services;
 using Playground.Domain.Entities;
 using Playground.Domain.SmartEnum;
 using Playground.Domain.Specifications;
-using Playground.Domain.Specifications.BaseSpecifications;
 
 namespace Playground.Application.Queries.Activity.Get;
 
@@ -42,8 +40,6 @@ public class GetActivityQueryHandler : CommandHandler<GetActivityQuery, GetActiv
     /// <returns>Una respuesta con la Geta de actividades y tipos de actividades.</returns>
     public override async Task<GetActivityResponse> ExecuteAsync(GetActivityQuery query, CancellationToken ct = default)
     {
-        System.Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         // Crear repositorios usando el factory
         var activityDateRepository = _repositoryFactory.CreateRepository<ActivityDate>();
         var resourceRepository = _repositoryFactory.CreateRepository<Resource>();
@@ -51,13 +47,9 @@ public class GetActivityQueryHandler : CommandHandler<GetActivityQuery, GetActiv
         var isUseCase = SmartEnum<UseCaseSmartEnum>.TryFromName(query.UseCase, out UseCaseSmartEnum useCase);
         var activityDetailDto = new ActivityDetailDto();
 
-        System.Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.Console.WriteLine("ID: {0}", query.Id);
         var activityDate = await activityDateRepository.GetByIdAsync(query.Id, ad => ad.Activity, ad => ad.Activity.Facility, ad => ad.Activity.Educator) ?? throw new KeyNotFoundException("La actividad no fue encontrada.");
         var resourceSpecification = ResourceSpecification.ByFacility(activityDate.Activity.Facility.Id);
         var resources = await resourceRepository.GetBySpecificationAsync(resourceSpecification, r => r.Facility);
-        System.Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.Console.WriteLine("query.UseCase: {0}", query.UseCase);
 
         if (isUseCase)
         {
@@ -114,8 +106,6 @@ public class GetActivityQueryHandler : CommandHandler<GetActivityQuery, GetActiv
                 };
             }
 
-            System.Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.Console.WriteLine("activityDetailDto.CurrentCapacity: {0}", activityDetailDto.CurrentCapacity);
             return new GetActivityResponse(activityDetailDto);
         }
 
