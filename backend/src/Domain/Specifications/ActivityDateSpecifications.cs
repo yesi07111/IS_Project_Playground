@@ -91,31 +91,32 @@ namespace Playground.Domain.Specifications
         /// <summary>
         /// Crea una especificación para filtrar actividades que ocurren a una hora exacta.
         /// </summary>
-        /// <param name="hour">La hora de la actividad.</param>
+        /// <param name="time">La hora de la actividad.</param>
         /// <returns>Una especificación que filtra por hora exacta.</returns>
-        public static ActivityDateSpecification ByTimeEqual(int hour)
+        public static ActivityDateSpecification ByTimeEqual(TimeSpan time)
         {
-            return new ActivityDateSpecification(activityDate => activityDate.DateTime.Hour == hour);
+            return new ActivityDateSpecification(activityDate => activityDate.DateTime.TimeOfDay == time);
         }
 
         /// <summary>
         /// Crea una especificación para filtrar actividades que ocurren a una hora igual o posterior.
         /// </summary>
-        /// <param name="hour">La hora de la actividad.</param>
+        /// <param name="time">La hora de la actividad.</param>
         /// <returns>Una especificación que filtra por hora mayor o igual.</returns>
-        public static ActivityDateSpecification ByTimeMoreOrEqual(int hour)
+        public static ActivityDateSpecification ByTimeMoreOrEqual(TimeSpan time)
         {
-            return new ActivityDateSpecification(activityDate => activityDate.DateTime.Hour >= hour);
+            System.Console.WriteLine("DateTime.UtcNow.TimeOfDay >= time: {0} y DateTime.UtcNow.TimeOfDay: {1}", DateTime.UtcNow.TimeOfDay >= time, DateTime.UtcNow.TimeOfDay);
+            return new ActivityDateSpecification(activityDate => activityDate.DateTime.TimeOfDay >= time);
         }
 
         /// <summary>
         /// Crea una especificación para filtrar actividades que ocurren a una hora igual o anterior.
         /// </summary>
-        /// <param name="hour">La hora de la actividad.</param>
+        /// <param name="time">La hora de la actividad.</param>
         /// <returns>Una especificación que filtra por hora menor o igual.</returns>
-        public static ActivityDateSpecification ByTimeLessOrEqual(int hour)
+        public static ActivityDateSpecification ByTimeLessOrEqual(TimeSpan time)
         {
-            return new ActivityDateSpecification(activityDate => activityDate.DateTime.Hour <= hour);
+            return new ActivityDateSpecification(activityDate => activityDate.DateTime.TimeOfDay <= time);
         }
 
         /// <summary>

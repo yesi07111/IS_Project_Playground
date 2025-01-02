@@ -111,16 +111,6 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
-        /// Crea una especificación para filtrar reservas por instalación.
-        /// </summary>
-        /// <param name="facility">La instalación asociada a la reserva.</param>
-        /// <returns>Una especificación que filtra por instalación.</returns>
-        public static ReservationSpecification ByFacility(Guid facility)
-        {
-            return new ReservationSpecification(reservation => reservation.Facility.Id == facility);
-        }
-
-        /// <summary>
         /// Crea una especificación para filtrar reservas por cantidad de niños.
         /// </summary>
         /// <param name="ammountOfChildren">La cantidad de niños en la reserva.</param>
