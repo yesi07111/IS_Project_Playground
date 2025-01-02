@@ -1,4 +1,4 @@
-namespace Playground.Application.Commands.Dtos;
+namespace Playground.Application.Commands.Responses;
 
 public class ErrorResponse
 {
