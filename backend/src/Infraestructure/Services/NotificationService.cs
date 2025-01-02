@@ -4,6 +4,7 @@ using Playground.Application.Services;
 using Playground.Domain.Entities;
 using Playground.Domain.Entities.Auth;
 using Playground.Domain.Events;
+using Playground.Domain.Specifications;
 
 namespace Playground.Infrastructure.Services;
 
@@ -39,14 +40,17 @@ public class NotificationService : INotificationService
     public async Task NotifyAdminsAsync(RoleRequestedEvent roleRequestedEvent, CancellationToken cancellationToken = default)
     {
         var userRepository = _repositoryFactory.CreateRepository<User>();
-        var admins = await userRepository.GetAllAdminsAsync();
+
+        // Usar la especificación para obtener solo los administradores
+        var adminSpecification = UserSpecification.ByRol("Admin");
+        var admins = await userRepository.GetBySpecificationAsync(adminSpecification);
 
         foreach (var admin in admins)
         {
             var notification = new Notification("System", $"User {roleRequestedEvent.UserId} requested role {roleRequestedEvent.Role}");
             if (!_userNotifications.ContainsKey(admin.Id))
             {
-                _userNotifications[admin.Id] = new List<Notification>();
+                _userNotifications[admin.Id] = [];
             }
             _userNotifications[admin.Id].Add(notification);
         }
@@ -62,6 +66,6 @@ public class NotificationService : INotificationService
     public List<Notification> GetUserNotifications(string userId)
     {
         _userNotifications.TryGetValue(userId, out var notifications);
-        return notifications ?? new List<Notification>();
+        return notifications ?? [];
     }
 }

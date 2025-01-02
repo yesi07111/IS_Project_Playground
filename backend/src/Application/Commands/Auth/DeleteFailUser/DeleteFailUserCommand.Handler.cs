@@ -2,9 +2,8 @@ using FastEndpoints;
 using Playground.Application.Repositories;
 using Playground.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Identity;
-using Playground.Application.Commands.Users.DeleteFailUser;
 using Playground.Application.Factories;
-using Playground.Domain.Specifications;
+using Playground.Application.Commands.Responses;
 
 namespace Playground.Application.Commands.DeleteFailUser;
 
@@ -23,23 +22,29 @@ public class DeleteFailUserCommandHandler : CommandHandler<DeleteFailUserCommand
 
     public override async Task<DeleteFailUserResponse> ExecuteAsync(DeleteFailUserCommand command, CancellationToken ct = default)
     {
-        var userSpecification = UserSpecification.ByDeleteToken(Guid.Parse(command.DeleteToken));
-        var user = (await _userRepository.GetBySpecificationAsync(userSpecification)).FirstOrDefault();
+        Console.WriteLine(command);
+        var user = await _userRepository.GetByIdAsync(command.Id);
 
         if (user == null)
         {
-            return new DeleteFailUserResponse(false, "User not found");
+            return new DeleteFailUserResponse(false, "Usuario no encontrado.");
         }
 
         var roles = await _userManager.GetRolesAsync(user);
+
+        Console.WriteLine("El rol del usuario no coincide con el que se el pasa.", !roles.Contains(command.UserType));
+
         if (!roles.Contains(command.UserType))
         {
-            return new DeleteFailUserResponse(false, "User type does not match");
+            return new DeleteFailUserResponse(false, "El tipo de usuario no es el mismo.");
         }
 
-        _userRepository.MarkDeleted(user);
+        _userRepository.Delete(user);
         await _unitOfWork.CommitAsync();
 
-        return new DeleteFailUserResponse(true, "User marked as deleted successfully");
+        Console.WriteLine("El usuario se borro");
+
+
+        return new DeleteFailUserResponse(true, "El usuario se ha eliminado satisfactoriamente.");
     }
 }

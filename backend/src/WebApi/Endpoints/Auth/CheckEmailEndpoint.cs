@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Playground.Application.Queries.CheckEmail;
-using Playground.Application.Queries.Dtos;
+using Playground.Application.Queries.Responses;
 
 namespace Playground.WebApi.Endpoints;
 

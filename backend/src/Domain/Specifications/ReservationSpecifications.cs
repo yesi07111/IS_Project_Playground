@@ -67,7 +67,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por fecha y hora.</returns>
         public static ReservationSpecification ByDateTime(DateTime datetime)
         {
-            return new ReservationSpecification(reservation => reservation.Date == datetime);
+            return new ReservationSpecification(reservation => reservation.ActivityDate.DateTime == datetime);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por fecha.</returns>
         public static ReservationSpecification ByDate(DateTime date)
         {
-            return new ReservationSpecification(reservation => reservation.Date.Date == date.Date);
+            return new ReservationSpecification(reservation => reservation.ActivityDate.DateTime.Date == date.Date);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por hora.</returns>
         public static ReservationSpecification ByTime(int time)
         {
-            return new ReservationSpecification(reservation => reservation.Date.Hour == time);
+            return new ReservationSpecification(reservation => reservation.ActivityDate.DateTime.Hour == time);
         }
 
         /// <summary>
@@ -97,27 +97,17 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por día de la semana.</returns>
         public static ReservationSpecification ByDayOfWeek(DayOfWeek day)
         {
-            return new ReservationSpecification(reservation => reservation.Date.DayOfWeek == day);
+            return new ReservationSpecification(reservation => reservation.ActivityDate.DateTime.DayOfWeek == day);
         }
 
         /// <summary>
         /// Crea una especificación para filtrar reservas por el usuario padre.
         /// </summary>
-        /// <param name="parentId">El usuario padre asociado a la reserva.</param>
+        /// <param name="parent">El usuario padre asociado a la reserva.</param>
         /// <returns>Una especificación que filtra por usuario padre.</returns>
-        public static ReservationSpecification ByParentId(User parentId)
+        public static ReservationSpecification ByParent(string parent)
         {
-            return new ReservationSpecification(reservation => reservation.ParentId == parentId);
-        }
-
-        /// <summary>
-        /// Crea una especificación para filtrar reservas por instalación.
-        /// </summary>
-        /// <param name="facility">La instalación asociada a la reserva.</param>
-        /// <returns>Una especificación que filtra por instalación.</returns>
-        public static ReservationSpecification ByFacility(Facility facility)
-        {
-            return new ReservationSpecification(reservation => reservation.Facility == facility);
+            return new ReservationSpecification(reservation => reservation.Parent.Id == parent);
         }
 
         /// <summary>

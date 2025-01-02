@@ -67,7 +67,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por fecha y hora.</returns>
         public static ReviewSpecification ByDateTime(DateTime datetime)
         {
-            return new ReviewSpecification(review => review.Date == datetime);
+            return new ReviewSpecification(review => review.CreatedAt == datetime);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por fecha.</returns>
         public static ReviewSpecification ByDate(DateTime date)
         {
-            return new ReviewSpecification(review => review.Date.Date == date.Date);
+            return new ReviewSpecification(review => review.CreatedAt.Date == date.Date);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por hora.</returns>
         public static ReviewSpecification ByTime(int time)
         {
-            return new ReviewSpecification(review => review.Date.Hour == time);
+            return new ReviewSpecification(review => review.CreatedAt.Hour == time);
         }
 
         /// <summary>
@@ -97,27 +97,27 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por día de la semana.</returns>
         public static ReviewSpecification ByDayOfWeek(DayOfWeek day)
         {
-            return new ReviewSpecification(review => review.Date.DayOfWeek == day);
+            return new ReviewSpecification(review => review.CreatedAt.DayOfWeek == day);
         }
 
         /// <summary>
         /// Crea una especificación para filtrar reseñas por el usuario padre.
         /// </summary>
-        /// <param name="parentId">El usuario padre asociado a la reseña.</param>
+        /// <param name="parent">El usuario padre asociado a la reseña.</param>
         /// <returns>Una especificación que filtra por usuario padre.</returns>
-        public static ReviewSpecification ByParentId(User parentId)
+        public static ReviewSpecification ByParent(string parent)
         {
-            return new ReviewSpecification(review => review.ParentId == parentId);
+            return new ReviewSpecification(review => review.Parent.Id == parent);
         }
 
         /// <summary>
-        /// Crea una especificación para filtrar reseñas por instalación.
+        /// Crea una especificación para filtrar reseñas por actividad.
         /// </summary>
-        /// <param name="facility">La instalación asociada a la reseña.</param>
-        /// <returns>Una especificación que filtra por instalación.</returns>
-        public static ReviewSpecification ByFacility(Facility facility)
+        /// <param name="activity">La actividad asociada a la reseña.</param>
+        /// <returns>Una especificación que filtra por actividad.</returns>
+        public static ReviewSpecification ByActivity(Guid activity)
         {
-            return new ReviewSpecification(review => review.Facility == facility);
+            return new ReviewSpecification(review => review.ActivityDate.Activity.Id == activity);
         }
 
         /// <summary>

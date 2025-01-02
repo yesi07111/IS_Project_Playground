@@ -114,9 +114,9 @@ namespace Playground.Domain.Specifications
         /// </summary>
         /// <param name="facility">La instalación asociada al recurso.</param>
         /// <returns>Una especificación que filtra por instalación.</returns>
-        public static ResourceSpecification ByFacility(Facility facility)
+        public static ResourceSpecification ByFacility(Guid facility)
         {
-            return new ResourceSpecification(resource => resource.Facility == facility);
+            return new ResourceSpecification(resource => resource.Facility.Id == facility);
         }
 
         /// <summary>

@@ -3,10 +3,10 @@ using Playground.Domain.Entities.Auth;
 using Playground.Infraestructure.Configurations;
 using Microsoft.Extensions.Options;
 using OneOf;
-using Playground.Application.Commands.Dtos;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using Playground.Application.Commands.Responses;
 
 namespace Playground.Infraestructure.Services;
 

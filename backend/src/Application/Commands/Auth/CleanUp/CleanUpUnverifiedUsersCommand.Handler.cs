@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Playground.Application.Commands.Dtos;
+using Playground.Application.Commands.Responses;
 using Playground.Application.Factories;
 using Playground.Application.Repositories;
 using Playground.Domain.Entities.Auth;

@@ -42,4 +42,21 @@ public class DefaultDbContext : IdentityDbContext<User>
     /// Conjunto de datos para las reservas.
     /// </summary>
     public DbSet<Reservation> Reservation { get; set; }
+
+    /// <summary>
+    /// Conjunto de datos para los roles.
+    /// </summary>
+    public DbSet<Rol> Rol { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<User>()
+            .HasOne(u => u.Rol)
+            .WithMany(r => r.Users)
+            .HasForeignKey(u => u.RolId) // Usa RolId como clave foránea
+            .IsRequired();
+    }
+
 }

@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Identity;
-using Playground.Domain.Entities.Auth;
-using Playground.Infraestructure.Data.DbContexts;
 
 namespace Playground.WebApi;
 
@@ -59,25 +56,4 @@ public static class Setup
         return services;
     }
 
-    /// <summary>
-    /// Inicializa los roles necesarios en la aplicación si no existen.
-    /// </summary>
-    /// <param name="serviceProvider">El proveedor de servicios de la aplicación.</param>
-    /// <returns>Una tarea que representa la operación asincrónica.</returns>
-    public static async Task SeedRoles(this IServiceProvider serviceProvider)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-        string[] roleNames = { "Admin", "Educator", "Parent" };
-
-        foreach (var roleName in roleNames)
-        {
-            var roleExists = await roleManager.RoleExistsAsync(roleName);
-            if (!roleExists)
-            {
-                await roleManager.CreateAsync(new IdentityRole(roleName));
-            }
-        }
-    }
 }

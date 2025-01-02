@@ -1,6 +1,6 @@
 using FastEndpoints;
-using Playground.Application.Commands.Users.DeleteFailUser;
+using Playground.Application.Commands.Responses;
 
 namespace Playground.Application.Commands.DeleteFailUser;
 
-public record DeleteFailUserCommand(string FirstName, string LastName, string UserName, string Email, string UserType, string DeleteToken) : ICommand<DeleteFailUserResponse>;
+public record DeleteFailUserCommand(string Id, string FirstName, string LastName, string UserName, string Email, string UserType) : ICommand<DeleteFailUserResponse>;

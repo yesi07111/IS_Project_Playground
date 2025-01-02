@@ -1,18 +1,17 @@
 using FastEndpoints;
 using Playground.Application.Factories;
-using Playground.Application.Queries.Dtos;
+using Playground.Application.Queries.Responses;
 using Playground.Application.Repositories;
-using Playground.Domain.Entities.Auth;
 
 namespace Playground.Application.Queries.CheckEmail;
 
 public class CheckEmailQueryHandler : CommandHandler<CheckEmailQuery, CheckEmailResponse>
 {
-    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<Domain.Entities.Auth.User> _userRepository;
 
     public CheckEmailQueryHandler(IRepositoryFactory repositoryFactory)
     {
-        _userRepository = repositoryFactory.CreateRepository<User>();
+        _userRepository = repositoryFactory.CreateRepository<Domain.Entities.Auth.User>();
     }
 
     public override async Task<CheckEmailResponse> ExecuteAsync(CheckEmailQuery query, CancellationToken ct = default)

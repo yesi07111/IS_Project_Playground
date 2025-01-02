@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Playground.Application.Commands.Dtos;
+using Playground.Application.Commands.Responses;
 
 namespace Playground.Application.Commands.Auth.Login;
 

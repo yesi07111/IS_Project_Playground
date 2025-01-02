@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Paper, TextField, Button, Typography, Alert } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import kidsPlay from '../assets/images/decorative/xylophone.png';
-import stars from '../assets/images/decorative/toy-train.png';
+import kidsPlay from '/images/decorative/xylophone.png';
+import stars from '/images/decorative/toy-train.png';
 import { authService } from '../services/authService';
 import { useAuth } from '../components/auth/authContext';
 import { FieldErrors } from '../types/FieldErrors';
@@ -59,6 +59,8 @@ const VerifyEmailPage: React.FC = () => {
 
             if (storedData && deleteToken) {
                 localStorage.setItem("ToDelete", "true");
+                console.log("ToDelete set true en VerifyEmailPage.")
+
             }
             if (currentPage !== '/register' && currentPage !== '/verify-email') {
                 clearLocalStorage();
@@ -72,8 +74,8 @@ const VerifyEmailPage: React.FC = () => {
      * Limpia los datos almacenados en `localStorage` relacionados con el registro y verificación.
      */
     const clearLocalStorage = async () => {
-        await localStorage.removeItem('formData');
-        await localStorage.removeItem('pendingVerificationEmail');
+        localStorage.removeItem('formData');
+        localStorage.removeItem('pendingVerificationEmail');
     };
 
     /**

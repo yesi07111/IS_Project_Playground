@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Playground.Application.Commands.CleanUp;
-using Playground.Application.Commands.Dtos;
+using Playground.Application.Commands.Responses;
 
 namespace Playground.WebApi.Endpoints;
 

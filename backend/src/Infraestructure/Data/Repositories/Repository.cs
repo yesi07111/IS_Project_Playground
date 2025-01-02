@@ -28,11 +28,58 @@ namespace Playground.Infraestructure.Repositories
         /// <summary>
         /// Obtiene una entidad por su identificador.
         /// </summary>
-        /// <param name="id">El identificador de la entidad.</param>
+        /// <param name="id">El identificador de la entidad, string.</param>
         /// <returns>La entidad encontrada o null si no existe.</returns>
         public async Task<T?> GetByIdAsync(string id)
         {
+            return await _context.Set<T>().FindAsync(Guid.Parse(id)) ?? null;
+        }
+
+        /// <summary>
+        /// Obtiene una entidad por su identificador, incluyendo múltiples propiedades de navegación.
+        /// </summary>
+        /// <param name="id">El identificador de la entidad, string.</param>
+        /// <param name="includes">Funciones para incluir propiedades de navegación y subpropiedades.</param>
+        /// <returns>La entidad encontrada o null si no existe.</returns>
+        public async Task<T?> GetByIdAsync(string id, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == Guid.Parse(id));
+        }
+
+        /// <summary>
+        /// Obtiene una entidad por su identificador.
+        /// </summary>
+        /// <param name="id">El identificador de la entidad, Guid.</param>
+        /// <returns>La entidad encontrada o null si no existe.</returns>
+        public async Task<T?> GetByIdAsync(Guid id)
+        {
+
             return await _context.Set<T>().FindAsync(id) ?? null;
+        }
+
+        /// <summary>
+        /// Obtiene una entidad por su identificador, incluyendo múltiples propiedades de navegación.
+        /// </summary>
+        /// <param name="id">El identificador de la entidad, Guid.</param>
+        /// <param name="includes">Funciones para incluir propiedades de navegación y subpropiedades.</param>
+        /// <returns>La entidad encontrada o null si no existe.</returns>
+        public async Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
         }
 
         /// <summary>
@@ -47,6 +94,62 @@ namespace Playground.Infraestructure.Repositories
         }
 
         /// <summary>
+        /// Obtiene entidades que cumplen con una especificación dada, incluyendo múltiples propiedades de navegación.
+        /// </summary>
+        /// <param name="specification">La especificación que deben cumplir las entidades.</param>
+        /// <param name="includeExpressions">Funciones para incluir propiedades de navegación y subpropiedades.</param>
+        /// <returns>Una colección de entidades que cumplen con la especificación.</returns>
+        public async Task<IEnumerable<T>> GetBySpecificationAsync(ISpecification<T> specification, params Expression<Func<T, object>>[] includeExpressions)
+        {
+            IQueryable<T> query = _context.Set<T>().Where(specification.ToExpression());
+
+            foreach (var includeExpression in includeExpressions)
+            {
+                query = query.Include(includeExpression);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        /// <summary>
+        /// Obtiene entidades que cumplen con una especificación dada, y una especificación adicional para una propiedad de navegación.
+        /// </summary>
+        /// <typeparam name="TProperty">El tipo de la propiedad de navegación.</typeparam>
+        /// <param name="specification">La especificación que deben cumplir las entidades.</param>
+        /// <param name="navigationSpecification">La especificación que deben cumplir las entidades de la propiedad de navegación.</param>
+        /// <param name="navigationProperty">Función para acceder a la propiedad de navegación.</param>
+        /// <param name="includeExpressions">Funciones para incluir propiedades de navegación y subpropiedades.</param>
+        /// <returns>Una tarea que representa la operación asincrónica, con una colección de entidades que cumplen con la especificación.</returns>
+        public async Task<IEnumerable<T>> GetBySpecificationAsync<TProperty>(
+        ISpecification<T> specification,
+        ISpecification<TProperty> navigationSpecification,
+        Expression<Func<T, TProperty>> navigationProperty,
+        params Expression<Func<T, object>>[] includeExpressions)
+        {
+            // Comienza con la especificación principal
+            IQueryable<T> query = _context.Set<T>().Where(specification.ToExpression());
+
+            // Incluye las propiedades de navegación
+            foreach (var includeExpression in includeExpressions)
+            {
+                query = query.Include(includeExpression);
+            }
+
+            // Construir la expresión combinada
+            var navigationExpression = navigationSpecification.ToExpression();
+            var parameter = Expression.Parameter(typeof(T), "entity");
+            var navigationPropertyExpression = Expression.Invoke(navigationProperty, parameter);
+            var combinedExpression = Expression.Invoke(navigationExpression, navigationPropertyExpression);
+
+            var lambda = Expression.Lambda<Func<T, bool>>(combinedExpression, parameter);
+
+            // Aplicar la expresión combinada
+            query = query.Where(lambda);
+
+            return await query.ToListAsync();
+        }
+
+        /// <summary>
         /// Obtiene todas las entidades del tipo especificado.
         /// </summary>
         /// <returns>Una colección de todas las entidades.</returns>
@@ -56,42 +159,20 @@ namespace Playground.Infraestructure.Repositories
         }
 
         /// <summary>
-        /// Obtiene todos los usuarios con el rol de administrador.
+        /// Obtiene todas las entidades del tipo especificado, incluyendo múltiples propiedades de navegación.
         /// </summary>
-        /// <returns>Una colección de usuarios administradores.</returns>
-        public async Task<IEnumerable<User>> GetAllAdminsAsync()
+        /// <param name="includes">Funciones para incluir propiedades de navegación y subpropiedades.</param>
+        /// <returns>Una colección de todas las entidades.</returns>
+        public async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includes)
         {
-            return await _context.Users
-                .Where(u => _context.UserRoles
-                    .Any(ur => ur.UserId == u.Id && _context.Roles
-                        .Any(r => r.Id == ur.RoleId && r.Name == "Admin")))
-                .ToListAsync();
-        }
+            IQueryable<T> query = _context.Set<T>();
 
-        /// <summary>
-        /// Obtiene todos los usuarios con el rol de educador.
-        /// </summary>
-        /// <returns>Una colección de usuarios educadores.</returns>
-        public async Task<IEnumerable<User>> GetAllEducatorsAsync()
-        {
-            return await _context.Users
-                .Where(u => _context.UserRoles
-                    .Any(ur => ur.UserId == u.Id && _context.Roles
-                        .Any(r => r.Id == ur.RoleId && r.Name == "Educator")))
-                .ToListAsync();
-        }
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
 
-        /// <summary>
-        /// Obtiene todos los usuarios con el rol de padre.
-        /// </summary>
-        /// <returns>Una colección de usuarios padres.</returns>
-        public async Task<IEnumerable<User>> GetAllParentsAsync()
-        {
-            return await _context.Users
-                .Where(u => _context.UserRoles
-                    .Any(ur => ur.UserId == u.Id && _context.Roles
-                        .Any(r => r.Id == ur.RoleId && r.Name == "Parent")))
-                .ToListAsync();
+            return await query.ToListAsync();
         }
 
         /// <summary>
@@ -129,7 +210,6 @@ namespace Playground.Infraestructure.Repositories
         {
             string dateSuffix = "_deleted_" + DateTime.UtcNow.ToString("dd_MM_yyyy_HH_mm_ss_fff");
 
-            entity.IsDeleted = true;
             entity.DeletedAt = DateTime.UtcNow;
 
             entity.UserName += dateSuffix;

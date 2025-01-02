@@ -7,11 +7,14 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
-import UserTypePage from './pages/UserTypePage';
 import { AuthProvider } from './components/auth/authContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import ActivitiesPage from './pages/ActivitiesPage';
+import ActivityInfoPage from './pages/ActivityInfoPage';
+import ReviewsPage from './pages/ReviewsPage';
 // import AdminPage from './pages/AdminPage';
 
+// const [reload, setReload] = useState(false);
 /**
  * Configuración del tema de Material-UI para la aplicación.
  * 
@@ -83,19 +86,14 @@ const App: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/activities" element={<ActivitiesPage />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
+            <Route path="/activities/:id/:imagePath/:useCase" element={<ActivityInfoPage />} />
             <Route
               path="/verify-email"
               element={
                 <ProtectedRoute redirectTo="/login">
                   <VerifyEmailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/user-type"
-              element={
-                <ProtectedRoute redirectTo="/login">
-                  <UserTypePage />
                 </ProtectedRoute>
               }
             />

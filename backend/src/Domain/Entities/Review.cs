@@ -16,19 +16,14 @@ namespace Playground.Domain.Entities
         public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
-        /// Obtiene o establece la fecha de la reseña.
-        /// </summary>
-        public DateTime Date { get; set; }
-
-        /// <summary>
         /// Obtiene o establece el usuario padre que realizó la reseña.
         /// </summary>
-        public User ParentId { get; set; }
+        public User Parent { get; set; }
 
         /// <summary>
-        /// Obtiene o establece la instalación reseñada.
+        /// Obtiene o establece la actividad reseñada.
         /// </summary>
-        public Facility Facility { get; set; }
+        public ActivityDate ActivityDate { get; set; }
 
         /// <summary>
         /// Obtiene o establece los comentarios de la reseña.

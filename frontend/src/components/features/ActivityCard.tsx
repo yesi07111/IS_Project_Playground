@@ -7,62 +7,73 @@ import {
   Typography,
   Rating,
   Box,
-  Theme
+  Theme,
+  Link
 } from '@mui/material';
 import { ActivityCardProps } from '../../interfaces/ActivityCardProps';
+import { useLocation } from 'react-router-dom';
+import { parseDate } from '../../services/dateService';
 
-/**
- * Componente estilizado de tarjeta que representa una actividad.
- * 
- * Este componente utiliza Material-UI para crear una tarjeta que muestra
- * información sobre una actividad, incluyendo una imagen, nombre, descripción
- * y calificación. La tarjeta tiene un efecto de escala al pasar el ratón sobre ella.
- * 
- * @param {Theme} theme - Tema de Material-UI para aplicar estilos.
- * @returns {object} Estilos aplicados al componente Card.
- */
 const StyledCard = styled(Card)(({ theme }: { theme: Theme }) => ({
-  width: '100%',
+  width: '90%',
+  maxWidth: 400,
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
   transition: 'transform 0.2s',
+  position: 'relative',
   '&:hover': {
     transform: 'scale(1.03)',
     boxShadow: theme.shadows[3]
   }
 }));
 
-/**
- * Componente estilizado de caja que contiene la calificación de la actividad.
- * 
- * Este componente utiliza Material-UI para crear una caja que muestra la calificación
- * de la actividad y un borde superior. Se utiliza dentro del contenido de la tarjeta.
- * 
- * @param {Theme} theme - Tema de Material-UI para aplicar estilos.
- * @returns {object} Estilos aplicados al componente Box.
- */
 const StyledBox = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'space-between',
   marginTop: theme.spacing(1),
   borderTop: `1px solid ${theme.palette.divider}`,
   paddingTop: theme.spacing(2)
 }));
 
-/**
- * Componente de tarjeta de actividad que muestra detalles de una actividad.
- * 
- * Este componente recibe las propiedades de una actividad a través de `ActivityCardProps`
- * y muestra una tarjeta con la imagen de la actividad, su nombre, descripción y calificación.
- * Utiliza componentes de Material-UI para la estructura y el estilo.
- * 
- * @param {ActivityCardProps} props - Propiedades del componente, incluyendo los detalles de la actividad.
- * @returns {JSX.Element} El componente de tarjeta de actividad.
- */
+const BadgeContainer = styled(Box)(({ theme }: { theme: Theme }) => ({
+  position: 'absolute',
+  top: theme.spacing(1),
+  right: theme.spacing(1),
+  display: 'flex',
+  gap: theme.spacing(1) // Espaciado entre los badges
+}));
+
+const Badge = styled(Box)<{ bgcolor: string }>(({ theme, bgcolor }) => ({
+  backgroundColor: bgcolor,
+  color: theme.palette.common.white,
+  borderRadius: '12px',
+  padding: theme.spacing(0.5, 1),
+  fontSize: '0.75rem',
+  fontWeight: 'bold',
+  boxShadow: theme.shadows[2],
+}));
+
+
 const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
+  const location = useLocation();
+  const { formattedDate, formattedTime } = parseDate(activity.date);
+  const encodedImagePath = encodeURIComponent(activity.image);
+  const viewSuffix = location.pathname === '/activities' ? 'ActivityView' : 'ReviewView';
+
   return (
     <StyledCard>
+      <BadgeContainer>
+        {activity.isNew && (
+          <Badge bgcolor="orange"> {/* Cambiado a un color naranja para el badge "Nueva" */}
+            Nueva!
+          </Badge>
+        )}
+        <Badge bgcolor={activity.isPublic === 'true' ? '#1976d2' : '#d32f2f'}> {/* Azul para Pública, Rojo para Privada */}
+          {activity.isPublic === 'true' ? 'Pública' : 'Privada'}
+        </Badge>
+      </BadgeContainer>
       <CardMedia
         component="div"
         sx={{
@@ -84,26 +95,56 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
         >
           {activity.name}
         </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ mb: 2 }}
-        >
-          {activity.description}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box sx={{ flex: 1, mr: 2 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+            >
+              Fecha: {formattedDate}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+            >
+              Hora: {formattedTime}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+            >
+              Participantes: {activity.currentCapacity}/{activity.maximumCapacity}
+            </Typography>
+          </Box>
+        </Box>
         <StyledBox>
-          <Rating
-            value={activity.rating}
-            readOnly
-            precision={0.5}
-          />
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ ml: 1 }}
-          >
-            ({activity.rating}/5)
-          </Typography>
+          {location.pathname !== '/activities' ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Rating
+                  value={activity.rating}
+                  readOnly
+                  precision={0.5}
+                />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ ml: 1 }}
+                >
+                  ({activity.rating}/5)
+                </Typography>
+              </Box>
+              <Link href={`/activities/${activity.id}/${encodedImagePath}/${viewSuffix}`} color="primary" sx={{ fontSize: '1.2rem' }}>
+                Ver detalles
+              </Link>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+              <Link href={`/activities/${activity.id}/${encodedImagePath}/${viewSuffix}`} color="primary" sx={{ fontSize: '1.5rem' }}>
+                Ver detalles
+              </Link>
+            </Box>
+          )}
         </StyledBox>
       </CardContent>
     </StyledCard>

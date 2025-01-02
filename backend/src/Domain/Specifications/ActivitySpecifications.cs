@@ -71,54 +71,23 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
-        /// Crea una especificación para filtrar actividades por fecha y hora exactas.
+        /// Crea una especificación para filtrar actividades por tipo de instalación.
         /// </summary>
-        /// <param name="datetime">La fecha y hora de la actividad.</param>
-        /// <returns>Una especificación que filtra por fecha y hora.</returns>
-        public static ActivitySpecification ByDateTime(DateTime datetime)
+        /// <param name="facilityType">El tipo de instalación de la actividad.</param>
+        /// <returns>Una especificación que filtra por tipo de instalación.</returns>
+        public static ActivitySpecification ByFacilityType(string facilityType)
         {
-            return new ActivitySpecification(activity => activity.Date == datetime);
-        }
-
-        /// <summary>
-        /// Crea una especificación para filtrar actividades por fecha.
-        /// </summary>
-        /// <param name="date">La fecha de la actividad.</param>
-        /// <returns>Una especificación que filtra por fecha.</returns>
-        public static ActivitySpecification ByDate(DateTime date)
-        {
-            return new ActivitySpecification(activity => activity.Date.Date == date.Date);
-        }
-
-
-        /// <summary>
-        /// Crea una especificación para filtrar actividades por hora.
-        /// </summary>
-        /// <param name="time">La hora de la actividad.</param>
-        /// <returns>Una especificación que filtra por hora.</returns>
-        public static ActivitySpecification ByTime(int time)
-        {
-            return new ActivitySpecification(activity => activity.Date.Hour == time);
-        }
-
-        /// <summary>
-        /// Crea una especificación para filtrar actividades por día de la semana.
-        /// </summary>
-        /// <param name="day">El día de la semana de la actividad.</param>
-        /// <returns>Una especificación que filtra por día de la semana.</returns>
-        public static ActivitySpecification ByDayOfWeek(DayOfWeek day)
-        {
-            return new ActivitySpecification(activity => activity.Date.DayOfWeek == day);
+            return new ActivitySpecification(activity => activity.Facility.Type == facilityType);
         }
 
         /// <summary>
         /// Crea una especificación para filtrar actividades por educador.
         /// </summary>
-        /// <param name="educator">El educador asociado a la actividad.</param>
+        /// <param name="educatorId">El id del educador asociado a la actividad.</param>
         /// <returns>Una especificación que filtra por educador.</returns>
-        public static ActivitySpecification ByEducador(User educator)
+        public static ActivitySpecification ByEducator(string educatorId)
         {
-            return new ActivitySpecification(activity => activity.Educator == educator);
+            return new ActivitySpecification(activity => activity.Educator.Id == educatorId);
         }
 
         /// <summary>
@@ -132,13 +101,33 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
-        /// Crea una especificación para filtrar actividades por edad recomendada.
+        /// Crea una especificación para filtrar actividades por edad recomendada igual a un valor dado.
         /// </summary>
         /// <param name="recommendedAge">La edad recomendada para la actividad.</param>
-        /// <returns>Una especificación que filtra por edad recomendada.</returns>
-        public static ActivitySpecification ByRecommendedAge(int recommendedAge)
+        /// <returns>Una especificación que filtra por edad recomendada igual.</returns>
+        public static ActivitySpecification ByRecommendedAgeEqual(int recommendedAge)
         {
             return new ActivitySpecification(activity => activity.RecommendedAge == recommendedAge);
+        }
+
+        /// <summary>
+        /// Crea una especificación para filtrar actividades por edad recomendada menor o igual a un valor dado.
+        /// </summary>
+        /// <param name="recommendedAge">La edad recomendada para la actividad.</param>
+        /// <returns>Una especificación que filtra por edad recomendada menor o igual.</returns>
+        public static ActivitySpecification ByRecommendedAgeLessOrEqual(int recommendedAge)
+        {
+            return new ActivitySpecification(activity => activity.RecommendedAge <= recommendedAge);
+        }
+
+        /// <summary>
+        /// Crea una especificación para filtrar actividades por edad recomendada mayor o igual a un valor dado.
+        /// </summary>
+        /// <param name="recommendedAge">La edad recomendada para la actividad.</param>
+        /// <returns>Una especificación que filtra por edad recomendada mayor o igual.</returns>
+        public static ActivitySpecification ByRecommendedAgeMoreOrEqual(int recommendedAge)
+        {
+            return new ActivitySpecification(activity => activity.RecommendedAge >= recommendedAge);
         }
 
         /// <summary>
@@ -156,9 +145,9 @@ namespace Playground.Domain.Specifications
         /// </summary>
         /// <param name="facility">La instalación asociada a la actividad.</param>
         /// <returns>Una especificación que filtra por instalación.</returns>
-        public static ActivitySpecification ByFacility(Facility facility)
+        public static ActivitySpecification ByFacility(Guid facility)
         {
-            return new ActivitySpecification(activity => activity.Facility == facility);
+            return new ActivitySpecification(activity => activity.Facility.Id == facility);
         }
 
         /// <summary>

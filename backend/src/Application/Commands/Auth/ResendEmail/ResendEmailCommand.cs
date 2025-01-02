@@ -1,5 +1,5 @@
-using Playground.Application.Commands.Dtos;
 using FastEndpoints;
+using Playground.Application.Commands.Responses;
 
 namespace Playground.Application.Commands.Auth.ResendEmail;
 

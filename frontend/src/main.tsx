@@ -22,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
  * Registro de Service Worker para el manejo de caché.
  * 
  * Este bloque de código verifica si el navegador soporta Service Workers y, de ser así,
- * registra un Service Worker desde 'src/services/cacheService.js' cuando la página se carga.
+ * registra un Service Worker desde '../public/cacheService.js' cuando la página se carga.
  * El Service Worker se utiliza para gestionar el caché de recursos, como imágenes, mejorando
  * el rendimiento y la capacidad de trabajo sin conexión de la aplicación.
  * 
@@ -32,7 +32,7 @@ createRoot(document.getElementById('root')!).render(
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('src/services/cacheService.js')
+      .register('/serviceWorker.js')
       .then((registration) => {
         console.log('Service Worker registered with scope:', registration.scope);
       })

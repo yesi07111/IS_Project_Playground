@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import decoration1 from '../assets/images/decorative/toy-train.png';
-import decoration2 from '../assets/images/decorative/swing.png';
+import decoration1 from '/images/decorative/toy-train.png';
+import decoration2 from '/images/decorative/swing.png';
 import { authService } from '../services/authService';
 import { useAuth } from '../components/auth/authContext';
 import { FieldErrors } from '../types/FieldErrors';
@@ -50,20 +50,13 @@ const RegisterPage: React.FC = () => {
         email: '',
         username: '',
         password: '',
-        userType: ''
+        userType: 'Parent'
     });
 
     useEffect(() => {
         const storedFormData = localStorage.getItem('formData');
-        const storedUserType = localStorage.getItem('userType');
         if (storedFormData) {
             setFormData(JSON.parse(storedFormData));
-        }
-        if (storedUserType) {
-            setFormData((prevData) => ({
-                ...prevData,
-                userType: storedUserType
-            }));
         }
     }, []);
 
@@ -143,20 +136,14 @@ const RegisterPage: React.FC = () => {
         });
 
         const ToDelete = localStorage.getItem("ToDelete");
+        console.log("ToDelete when Registrar: ", ToDelete)
         if (ToDelete) {
-            const storedFormData = await localStorage.getItem('formData');
-            const storedUserType = await localStorage.getItem('userType');
-            const deleteToken = await localStorage.getItem('DeleteToken') ?? '';
+            const storedFormData = localStorage.getItem('formData');
+            const deleteToken = localStorage.getItem('DeleteToken') ?? '';
             if (storedFormData) {
                 setFormData(JSON.parse(storedFormData));
-
-                if (storedUserType) {
-                    setFormData((prevData) => ({
-                        ...prevData,
-                        userType: storedUserType
-                    }));
-                }
-                await authService.deleteUserFromDB(formData.firstName, formData.lastName, formData.username, formData.email, formData.userType, deleteToken);
+                console.log("Va a entrar al endpoint deleteUserFromDB con id: ", deleteToken)
+                await authService.deleteUserFromDB(deleteToken, formData.firstName, formData.lastName, formData.username, formData.email, formData.userType);
                 localStorage.removeItem('DeleteToken');
                 localStorage.removeItem('ToDelete');
             }
@@ -172,8 +159,9 @@ const RegisterPage: React.FC = () => {
                 Roles: [formData.userType]
             });
 
-            if (result.deleteToken) {
-                localStorage.setItem('DeleteToken', result.deleteToken);
+            if (result.id) {
+                localStorage.setItem('DeleteToken', result.id);
+                console.log("Puesto el DeleteToken correctamente")
             }
             localStorage.setItem('pendingVerificationEmail', formData.username);
             formData.password = '';

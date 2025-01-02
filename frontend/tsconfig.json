@@ -34,6 +34,10 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src",
+    "src/services",
+    "public/serviceWorker.js",
+    "public/serviceWorker.js",
+    "src/services/cacheService.ts"
   ]
 }

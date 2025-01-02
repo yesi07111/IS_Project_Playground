@@ -130,6 +130,16 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
+        /// Crea una especificación para filtrar usuarios por su rol.
+        /// </summary>
+        /// <param name="rolName">El nombre del rol del usuario.</param>
+        /// <returns>Una especificación que filtra por rol de usuario.</returns>
+        public static UserSpecification ByRol(string rolName)
+        {
+            return new UserSpecification(user => user.Rol.Name == rolName);
+        }
+
+        /// <summary>
         /// Crea una especificación para filtrar usuarios por su fecha de creación.
         /// </summary>
         /// <param name="createdAt">La fecha de creación del usuario.</param>
