@@ -57,6 +57,10 @@ public static class Setup
                .AddScoped<IRepositoryFactory, RepositoryFactory>()
                .AddScoped<IUnitOfWork, UnitOfWork>()
                .AddScoped<ICodeGenerator, CodeGenerator>()
+               .AddScoped<IConverterService, ConverterService>()
+               .AddScoped<IImageService, ImageService>()
+               .AddScoped<IRatingService, RatingService>()
+               .AddScoped<ICommentsService, CommentsService>()
                .AddScoped<UserManager<User>>();
 
         return builder;
