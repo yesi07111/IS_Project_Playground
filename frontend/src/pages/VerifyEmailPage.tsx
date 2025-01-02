@@ -57,12 +57,10 @@ const VerifyEmailPage: React.FC = () => {
             const storedData = localStorage.getItem('formData');
             const deleteToken = localStorage.getItem('DeleteToken');
 
+            console.log("Log desde VerifyEmailPage. wwindow.location.pathname: " + currentPage + ". StoredData: " + storedData + ". DeleteToken: " + deleteToken + ".")
             if (storedData && deleteToken) {
                 localStorage.setItem("ToDelete", "true");
 
-            }
-            if (currentPage !== '/register' && currentPage !== '/verify-email') {
-                clearLocalStorage();
             }
         };
 
@@ -95,9 +93,11 @@ const VerifyEmailPage: React.FC = () => {
         }
         try {
             const response = await authService.verifyEmail(userName, verificationCode);
-            if (response.token) {
-                localStorage.setItem('token', response.token);
+            if (response.token && response.id && response.username) {
                 await clearLocalStorage();
+                localStorage.setItem('authToken', response.token);
+                localStorage.setItem('authId', response.id);
+                localStorage.setItem('authUserName', response.username);
                 login();
                 navigate('/');
             }
