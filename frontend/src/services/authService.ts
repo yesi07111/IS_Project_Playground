@@ -20,7 +20,9 @@ export const authService = {
      */
     register: async (data: RegisterData) => {
         try {
+            console.log("Esta llamando al back, respuesta:")
             const response = await axios.post(`${API_URL}/auth/register`, data);
+            console.table(response.data)
             return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
@@ -87,20 +89,33 @@ export const authService = {
     /**
      * Elimina un usuario no verificado de la base de datos.
      * 
-     * Este método envía una solicitud POST al endpoint de eliminación de usuario no verificado
-     * con los datos del usuario. Si la solicitud es exitosa, no devuelve nada. En caso de error,
-     * imprime un mensaje de error en la consola.lo devuelve.
+     * Este método envía una solicitud DELETE al endpoint de eliminación de usuario no verificado
+     * con los datos del usuario como parámetros de consulta. Si la solicitud es exitosa, no devuelve nada.
+     * En caso de error, imprime un mensaje de error en la consola.
      * 
+     * @param {string} id - ID del usuario.
      * @param {string} firstName - Nombre del usuario.
      * @param {string} lastName - Apellido del usuario.
      * @param {string} userName - Nombre de usuario.
      * @param {string} email - Correo electrónico del usuario.
      * @param {string} userType - Tipo de usuario.
-     * @param {string} deleteToken - Token de eliminación.
      */
-    deleteUserFromDB: async (deleteToken: string, firstName: string, lastName: string, userName: string, email: string, userType: string) => {
+    deleteUserFromDB: async (id: string, firstName: string, lastName: string, userName: string, email: string, userType: string) => {
         try {
-            await axios.delete(`${API_URL}/auth/delete-fail-user/${deleteToken}/${firstName}/${lastName}/${userName}/${email}/${userType}`);
+            console.log("Va a llamar a delete-fail-user en back");
+
+            // Construir la URL con los parámetros de consulta
+            const queryParams = new URLSearchParams({
+                id,
+                firstName,
+                lastName,
+                userName,
+                email,
+                userType
+            }).toString();
+
+            // Hacer la solicitud DELETE con los parámetros de consulta
+            await axios.delete(`${API_URL}/auth/delete-fail-user?${queryParams}`);
         } catch (error) {
             console.error('Error al borrar al usuario:', error);
         }
@@ -132,22 +147,30 @@ export const authService = {
     },
 
     /**
-     * Verifica el estado del correo electrónico del usuario actual.
-     * 
-     * Este método envía una solicitud POST al endpoint de verificación de estado de correo
-     * con el token, el ID y el nombre de usuario. Si la solicitud es exitosa, devuelve los
-     * datos de la respuesta. En caso de error, lanza un mensaje de error específico si es un
-     * error de Axios, o un mensaje genérico si es otro tipo de error.
-     * 
-     * @param {string} Token - Token de autenticación del usuario.
-     * @param {string} Id - ID del usuario.
-     * @param {string} UserName - Nombre de usuario.
-     * @returns {Promise<any>} Los datos de la respuesta del servidor.
-     * @throws {Error} Si ocurre un error al verificar el estado del correo.
-     */
+    * Verifica el estado del correo electrónico del usuario actual.
+    * 
+    * Este método envía una solicitud GET al endpoint de verificación de estado de correo
+    * con el token, el ID y el nombre de usuario como parámetros de consulta. Si la solicitud
+    * es exitosa, devuelve los datos de la respuesta. En caso de error, lanza un mensaje de error
+    * específico si es un error de Axios, o un mensaje genérico si es otro tipo de error.
+    * 
+    * @param {string} Token - Token de autenticación del usuario.
+    * @param {string} Id - ID del usuario.
+    * @param {string} UserName - Nombre de usuario.
+    * @returns {Promise<any>} Los datos de la respuesta del servidor.
+    * @throws {Error} Si ocurre un error al verificar el estado del correo.
+    */
     checkVerifiedEmail: async (Token: string, Id: string, UserName: string) => {
         try {
-            const response = await axios.post(`${API_URL}/auth/check-email`, { Token, Id, UserName });
+            // Construir la URL con los parámetros de consulta
+            const queryParams = new URLSearchParams({
+                Token,
+                Id,
+                UserName
+            }).toString();
+
+            // Hacer la solicitud GET con los parámetros de consulta
+            const response = await axios.get(`${API_URL}/auth/check-email?${queryParams}`);
             return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
