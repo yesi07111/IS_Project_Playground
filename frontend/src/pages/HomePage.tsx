@@ -1,48 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Typography, Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Link } from 'react-router-dom';
 import ActivityCard from '../components/features/ActivityCard';
 import StatsSummary from '../components/features/StatsSummary';
-import heroBg from '../assets/images/home-bg.jpg';
-import artWorkshop from '../assets/images/activities/art-workshop-1.jpg';
-import decoration1 from '../assets/images/activities/kids-sport.jpg';
-import decoration2 from '../assets/images/activities/kids-science.jpg';
-import pattern1 from '../assets/images/decorative/hand-print.png';
-import pattern2 from '../assets/images/decorative/kindergarten.png';
-import pattern3 from '../assets/images/decorative/bumper-car.png';
-import pattern4 from '../assets/images/decorative/soccer.png';
+import heroBg from '/images/home-bg.jpg';
+import pattern1 from '/images/decorative/hand-print.png';
+import pattern2 from '/images/decorative/kindergarten.png';
+import pattern3 from '/images/decorative/bumper-car.png';
+import pattern4 from '/images/decorative/soccer.png';
 
 import { Activity } from '../interfaces/Activity';
+import { activityService } from '../services/activityService';
+import { ActivitiesFilters } from '../interfaces/ActivitiesFilters';
+import { cacheService } from '../services/cacheService';
 
-const mockActivities: Activity[] = [
-    {
-        id: 1,
-        name: "Taller de Arte",
-        description: "Actividades creativas para desarrollar habilidades artísticas",
-        image: artWorkshop,
-        rating: 4.5,
-        color: '#FF6B6B'
-    },
-    {
-        id: 2,
-        name: "Juegos Deportivos",
-        description: "Actividades físicas y deportivas para niños",
-        image: decoration1,
-        rating: 4.8,
-        color: '#4ECDC4'
-    },
-    {
-        id: 3,
-        name: "Club de Ciencias",
-        description: "Experimentos y descubrimientos científicos divertidos",
-        image: decoration2,
-        rating: 4.6,
-        color: '#FFD93D'
-    }
-];
+interface HomePageProps {
+    reload: boolean;
+}
 
-const HomePage: React.FC = () => {
+const HomePage: React.FC<HomePageProps> = ({ reload }) => {
+    const [activities, setActivities] = useState<Activity[]>([]);
+
+    const fetchActivities = useCallback(async () => {
+        try {
+            const filters: ActivitiesFilters[] = [{ type: 'Casos de Uso', useCase: 'HomePageView' }];
+            const response = await activityService.getAllActivities(filters);
+            const activitiesArray = response.result as Activity[];
+            setActivities(activitiesArray);
+            cacheService.saveTopActivities(activitiesArray);
+        } catch (error) {
+            console.error('Error fetching activities:', error);
+            const cachedActivities = cacheService.loadTopActivities();
+            setActivities(cachedActivities);
+        }
+    }, []);
+
+    useEffect(() => {
+        const cachedActivities = cacheService.loadTopActivities();
+        if (cachedActivities.length > 0) {
+            setActivities(cachedActivities);
+        } else {
+            fetchActivities();
+        }
+    }, [fetchActivities]);
+
+    useEffect(() => {
+        if (reload) {
+            cacheService.saveTopActivities([]);
+            fetchActivities();
+        }
+    }, [reload, fetchActivities]);
+
     return (
         <Box sx={{
             width: '100vw',
@@ -249,7 +258,7 @@ const HomePage: React.FC = () => {
                 </Typography>
                 <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 6 } }}>
                     <Grid container spacing={4}>
-                        {mockActivities.map((activity) => (
+                        {activities.map((activity) => (
                             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={activity.id}
                                 sx={{
                                     display: 'flex',
