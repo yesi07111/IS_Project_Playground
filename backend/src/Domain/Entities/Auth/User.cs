@@ -21,7 +21,7 @@ public class User : IdentityUser
     /// <summary>
     /// Obtiene o establece el código completo del usuario.
     /// </summary>
-    public string FullCode { get; set; } = string.Empty;
+    public string FullCode { get; set; } = Guid.NewGuid().ToString();
 
     /// <summary>
     /// Obtiene o establece la fecha de creación del usuario.

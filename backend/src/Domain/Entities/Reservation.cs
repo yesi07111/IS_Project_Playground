@@ -21,11 +21,6 @@ namespace Playground.Domain.Entities
         public User Parent { get; set; }
 
         /// <summary>
-        /// Obtiene o establece la instalación reservada.
-        /// </summary>
-        public Facility Facility { get; set; }
-
-        /// <summary>
         /// Obtiene o establece la actividad y fecha reservada.
         /// </summary>
         public ActivityDate ActivityDate { get; set; }
