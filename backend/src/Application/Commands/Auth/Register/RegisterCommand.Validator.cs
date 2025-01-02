@@ -31,14 +31,20 @@ public class RegisterCommandValidator : Validator<RegisterCommand>
                 var scope = CreateScope();
                 var userManager = scope.Resolve<UserManager<User>>();
                 var usr = await userManager.FindByNameAsync(usn);
-                Console.WriteLine(usr?.UserName);
                 return usr == null;
             }).WithMessage("El nombre de usuario ya está en uso.");
 
         RuleFor(x => x.Email)
             .NotNull().WithMessage("El correo electrónico no puede estar vacío.")
             .NotEmpty().WithMessage("El correo electrónico no puede ser nulo.")
-            .EmailAddress().WithMessage("Correo electrónico no válido.");
+            .EmailAddress().WithMessage("Correo electrónico no válido.")
+            .MustAsync(async (email, ct) =>
+            {
+                var scope = CreateScope();
+                var userManager = scope.Resolve<UserManager<User>>();
+                var usr = await userManager.FindByEmailAsync(email);
+                return usr == null;
+            }).WithMessage("El correo electrónico ya está en uso.");
 
         RuleFor(x => x.Password)
             .NotNull().WithMessage("La contraseña no debe estar vacía.")
