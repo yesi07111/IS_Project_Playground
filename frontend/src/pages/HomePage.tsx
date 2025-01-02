@@ -24,7 +24,7 @@ const HomePage: React.FC<HomePageProps> = ({ reload }) => {
 
     const fetchActivities = useCallback(async () => {
         try {
-            const filters: ActivitiesFilters[] = [{ type: 'Casos de Uso', useCase: 'HomePageView' }];
+            const filters: ActivitiesFilters[] = [{ type: 'Casos de Uso', useCase: 'HomeView' }];
             const response = await activityService.getAllActivities(filters);
             const activitiesArray = response.result as Activity[];
             setActivities(activitiesArray);

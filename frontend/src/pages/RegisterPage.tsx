@@ -136,13 +136,11 @@ const RegisterPage: React.FC = () => {
         });
 
         const ToDelete = localStorage.getItem("ToDelete");
-        console.log("ToDelete when Registrar: ", ToDelete)
         if (ToDelete) {
             const storedFormData = localStorage.getItem('formData');
             const deleteToken = localStorage.getItem('DeleteToken') ?? '';
             if (storedFormData) {
                 setFormData(JSON.parse(storedFormData));
-                console.log("Va a entrar al endpoint deleteUserFromDB con id: ", deleteToken)
                 await authService.deleteUserFromDB(deleteToken, formData.firstName, formData.lastName, formData.username, formData.email, formData.userType);
                 localStorage.removeItem('DeleteToken');
                 localStorage.removeItem('ToDelete');
@@ -161,7 +159,6 @@ const RegisterPage: React.FC = () => {
 
             if (result.id) {
                 localStorage.setItem('DeleteToken', result.id);
-                console.log("Puesto el DeleteToken correctamente")
             }
             localStorage.setItem('pendingVerificationEmail', formData.username);
             formData.password = '';

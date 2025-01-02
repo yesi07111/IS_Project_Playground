@@ -59,7 +59,6 @@ const VerifyEmailPage: React.FC = () => {
 
             if (storedData && deleteToken) {
                 localStorage.setItem("ToDelete", "true");
-                console.log("ToDelete set true en VerifyEmailPage.")
 
             }
             if (currentPage !== '/register' && currentPage !== '/verify-email') {

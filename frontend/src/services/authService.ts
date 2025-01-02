@@ -100,7 +100,6 @@ export const authService = {
      */
     deleteUserFromDB: async (deleteToken: string, firstName: string, lastName: string, userName: string, email: string, userType: string) => {
         try {
-            console.log("Entro al axios.delete");
             await axios.delete(`${API_URL}/auth/delete-fail-user/${deleteToken}/${firstName}/${lastName}/${userName}/${email}/${userType}`);
         } catch (error) {
             console.error('Error al borrar al usuario:', error);

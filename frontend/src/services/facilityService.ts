@@ -9,7 +9,6 @@ export const facilityService = {
         try {
             if (!filters) {
                 const response = await axios.get(`${API_URL}/facility/get-all`);
-                console.table(response)
                 return response.data;
             }
             const query = buildFilterQuery(filters);
