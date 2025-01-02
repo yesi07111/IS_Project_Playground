@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Playground.Infraestructure.Data.DbContexts;
@@ -11,9 +12,11 @@ using Playground.Infraestructure.Data.DbContexts;
 namespace Infraestructure.Migrations.Postgres
 {
     [DbContext(typeof(DefaultDbContext))]
-    partial class DefaultDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241222155003_ChangeReviewRelationWithFacilityToActivity")]
+    partial class ChangeReviewRelationWithFacilityToActivity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,6 +166,12 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CurrentParticipants")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -200,52 +209,6 @@ namespace Infraestructure.Migrations.Postgres
                     b.HasIndex("FacilityId");
 
                     b.ToTable("Activity");
-                });
-
-            modelBuilder.Entity("Playground.Domain.Entities.ActivityDate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ReservedPlaces")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.ToTable("ActivityDate");
-                });
-
-            modelBuilder.Entity("Playground.Domain.Entities.Auth.Rol", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Rol");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Auth.User", b =>
@@ -308,9 +271,6 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("RolId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -332,8 +292,6 @@ namespace Infraestructure.Migrations.Postgres
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
-
-                    b.HasIndex("RolId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -383,9 +341,6 @@ namespace Infraestructure.Migrations.Postgres
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ActivityDateId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("AdditionalComments")
                         .IsRequired()
                         .HasColumnType("text");
@@ -396,10 +351,16 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ParentId")
+                    b.Property<Guid>("FacilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ParentIdId")
                         .HasColumnType("text");
 
                     b.Property<string>("ReservationState")
@@ -411,9 +372,9 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityDateId");
+                    b.HasIndex("FacilityId");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("ParentIdId");
 
                     b.ToTable("Reservation");
                 });
@@ -464,7 +425,7 @@ namespace Infraestructure.Migrations.Postgres
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ActivityDateId")
+                    b.Property<Guid>("ActivityId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Comments")
@@ -474,10 +435,13 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ParentId")
+                    b.Property<string>("ParentIdId")
                         .HasColumnType("text");
 
                     b.Property<int>("Score")
@@ -488,9 +452,9 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityDateId");
+                    b.HasIndex("ActivityId");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("ParentIdId");
 
                     b.ToTable("Review");
                 });
@@ -563,43 +527,21 @@ namespace Infraestructure.Migrations.Postgres
                     b.Navigation("Facility");
                 });
 
-            modelBuilder.Entity("Playground.Domain.Entities.ActivityDate", b =>
-                {
-                    b.HasOne("Playground.Domain.Entities.Activity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activity");
-                });
-
-            modelBuilder.Entity("Playground.Domain.Entities.Auth.User", b =>
-                {
-                    b.HasOne("Playground.Domain.Entities.Auth.Rol", "Rol")
-                        .WithMany("Users")
-                        .HasForeignKey("RolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Rol");
-                });
-
             modelBuilder.Entity("Playground.Domain.Entities.Reservation", b =>
                 {
-                    b.HasOne("Playground.Domain.Entities.ActivityDate", "ActivityDate")
+                    b.HasOne("Playground.Domain.Entities.Facility", "Facility")
                         .WithMany()
-                        .HasForeignKey("ActivityDateId")
+                        .HasForeignKey("FacilityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Playground.Domain.Entities.Auth.User", "Parent")
+                    b.HasOne("Playground.Domain.Entities.Auth.User", "ParentId")
                         .WithMany()
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentIdId");
 
-                    b.Navigation("ActivityDate");
+                    b.Navigation("Facility");
 
-                    b.Navigation("Parent");
+                    b.Navigation("ParentId");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Resource", b =>
@@ -615,24 +557,19 @@ namespace Infraestructure.Migrations.Postgres
 
             modelBuilder.Entity("Playground.Domain.Entities.Review", b =>
                 {
-                    b.HasOne("Playground.Domain.Entities.ActivityDate", "ActivityDate")
+                    b.HasOne("Playground.Domain.Entities.Activity", "Activity")
                         .WithMany()
-                        .HasForeignKey("ActivityDateId")
+                        .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Playground.Domain.Entities.Auth.User", "Parent")
+                    b.HasOne("Playground.Domain.Entities.Auth.User", "ParentId")
                         .WithMany()
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentIdId");
 
-                    b.Navigation("ActivityDate");
+                    b.Navigation("Activity");
 
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("Playground.Domain.Entities.Auth.Rol", b =>
-                {
-                    b.Navigation("Users");
+                    b.Navigation("ParentId");
                 });
 #pragma warning restore 612, 618
         }

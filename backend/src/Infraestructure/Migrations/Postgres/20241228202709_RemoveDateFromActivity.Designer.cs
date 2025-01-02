@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Playground.Infraestructure.Data.DbContexts;
@@ -11,9 +12,11 @@ using Playground.Infraestructure.Data.DbContexts;
 namespace Infraestructure.Migrations.Postgres
 {
     [DbContext(typeof(DefaultDbContext))]
-    partial class DefaultDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241228202709_RemoveDateFromActivity")]
+    partial class RemoveDateFromActivity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -399,6 +402,9 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("FacilityId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("ParentId")
                         .HasColumnType("text");
 
@@ -412,6 +418,8 @@ namespace Infraestructure.Migrations.Postgres
                     b.HasKey("Id");
 
                     b.HasIndex("ActivityDateId");
+
+                    b.HasIndex("FacilityId");
 
                     b.HasIndex("ParentId");
 
@@ -593,11 +601,19 @@ namespace Infraestructure.Migrations.Postgres
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Playground.Domain.Entities.Facility", "Facility")
+                        .WithMany()
+                        .HasForeignKey("FacilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Playground.Domain.Entities.Auth.User", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
 
                     b.Navigation("ActivityDate");
+
+                    b.Navigation("Facility");
 
                     b.Navigation("Parent");
                 });

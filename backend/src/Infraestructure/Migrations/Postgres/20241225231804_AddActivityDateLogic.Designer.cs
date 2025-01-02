@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Playground.Infraestructure.Data.DbContexts;
@@ -11,9 +12,11 @@ using Playground.Infraestructure.Data.DbContexts;
 namespace Infraestructure.Migrations.Postgres
 {
     [DbContext(typeof(DefaultDbContext))]
-    partial class DefaultDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241225231804_AddActivityDateLogic")]
+    partial class AddActivityDateLogic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,6 +166,12 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CurrentParticipants")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -208,13 +217,10 @@ namespace Infraestructure.Migrations.Postgres
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ActivityId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DateTime")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -226,9 +232,12 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("UpdateAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("activityId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityId");
+                    b.HasIndex("activityId");
 
                     b.ToTable("ActivityDate");
                 });
@@ -396,8 +405,14 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FacilityId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ParentId")
                         .HasColumnType("text");
@@ -412,6 +427,8 @@ namespace Infraestructure.Migrations.Postgres
                     b.HasKey("Id");
 
                     b.HasIndex("ActivityDateId");
+
+                    b.HasIndex("FacilityId");
 
                     b.HasIndex("ParentId");
 
@@ -464,7 +481,7 @@ namespace Infraestructure.Migrations.Postgres
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ActivityDateId")
+                    b.Property<Guid>("ActivityId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Comments")
@@ -472,6 +489,9 @@ namespace Infraestructure.Migrations.Postgres
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -488,7 +508,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityDateId");
+                    b.HasIndex("ActivityId");
 
                     b.HasIndex("ParentId");
 
@@ -565,13 +585,13 @@ namespace Infraestructure.Migrations.Postgres
 
             modelBuilder.Entity("Playground.Domain.Entities.ActivityDate", b =>
                 {
-                    b.HasOne("Playground.Domain.Entities.Activity", "Activity")
+                    b.HasOne("Playground.Domain.Entities.Activity", "activity")
                         .WithMany()
-                        .HasForeignKey("ActivityId")
+                        .HasForeignKey("activityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Activity");
+                    b.Navigation("activity");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Auth.User", b =>
@@ -593,11 +613,19 @@ namespace Infraestructure.Migrations.Postgres
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Playground.Domain.Entities.Facility", "Facility")
+                        .WithMany()
+                        .HasForeignKey("FacilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Playground.Domain.Entities.Auth.User", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
 
                     b.Navigation("ActivityDate");
+
+                    b.Navigation("Facility");
 
                     b.Navigation("Parent");
                 });
@@ -615,9 +643,9 @@ namespace Infraestructure.Migrations.Postgres
 
             modelBuilder.Entity("Playground.Domain.Entities.Review", b =>
                 {
-                    b.HasOne("Playground.Domain.Entities.ActivityDate", "ActivityDate")
+                    b.HasOne("Playground.Domain.Entities.Activity", "Activity")
                         .WithMany()
-                        .HasForeignKey("ActivityDateId")
+                        .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -625,7 +653,7 @@ namespace Infraestructure.Migrations.Postgres
                         .WithMany()
                         .HasForeignKey("ParentId");
 
-                    b.Navigation("ActivityDate");
+                    b.Navigation("Activity");
 
                     b.Navigation("Parent");
                 });
