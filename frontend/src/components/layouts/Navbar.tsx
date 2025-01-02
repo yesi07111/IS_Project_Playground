@@ -48,6 +48,8 @@ const Navbar: React.FC = () => {
     const [showConfetti, setShowConfetti] = useState(false);
     const { isAuthenticated } = useAuth();
     const [titleText, setTitleText] = useState('Parque Infantil');
+    // Obtener la última parte del pathname
+    const lastPathSegment = location.pathname.split('/').pop();
 
     // Determina si se debe mostrar el botón de retroceso
     const showBackButton = location.pathname !== '/';
@@ -78,12 +80,19 @@ const Navbar: React.FC = () => {
      * Efecto que muestra confeti cuando la ruta es la página de inicio.
      */
     useEffect(() => {
-        if (location.pathname === '/' || location.pathname === '/activities' || location.pathname === '/reservations') {
+        if (
+            location.pathname === '/' ||
+            location.pathname === '/activities' ||
+            location.pathname === '/reservations' ||
+            location.pathname === '/reviews' ||
+            lastPathSegment === 'ActivityView' ||
+            lastPathSegment === 'ReviewView'
+        ) {
             setShowConfetti(true);
             const timer = setTimeout(() => setShowConfetti(false), 7000);
             return () => clearTimeout(timer);
         }
-    }, [location.pathname]);
+    }, [location.pathname, lastPathSegment]);
 
     /**
      * Efecto que actualiza el texto del título basado en la ruta actual.
@@ -96,6 +105,9 @@ const Navbar: React.FC = () => {
                     break;
                 case '/reservations':
                     setTitleText('Mis Reservas');
+                    break;
+                case '/reviews':
+                    setTitleText('Reseñas');
                     break;
                 default:
                     setTitleText('Parque Infantil');
@@ -196,6 +208,17 @@ const Navbar: React.FC = () => {
                             }}
                         >
                             Actividades
+                        </Button>
+                        <Button
+                            color="inherit"
+                            component={Link}
+                            to="/reviews"
+                            sx={{
+                                fontWeight: 500,
+                                py: 0.5,
+                            }}
+                        >
+                            Reseñas
                         </Button>
                         {isAuthenticated && (
                             <Button
