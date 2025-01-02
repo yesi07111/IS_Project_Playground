@@ -17,5 +17,5 @@ export interface RegisterData {
     Username: string;
     Password: string;
     Email: string;
-    Roles: string[];
+    Rol: string;
 }

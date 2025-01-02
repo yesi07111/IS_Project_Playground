@@ -9,7 +9,7 @@ public class DeleteFailUserEndpoint : Endpoint<DeleteFailUserCommand, DeleteFail
     public override void Configure()
     {
         AllowAnonymous();
-        Delete("/auth/delete-unverified-user");
+        Delete("/auth/delete-fail-user");
     }
 
     public override async Task<DeleteFailUserResponse> ExecuteAsync(DeleteFailUserCommand req, CancellationToken ct)

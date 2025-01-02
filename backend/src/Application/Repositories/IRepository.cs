@@ -13,17 +13,32 @@ namespace Playground.Application.Repositories
                 /// <summary>
                 /// Obtiene una entidad por su identificador de manera asincrónica.
                 /// </summary>
-                /// <param name="id">El identificador de la entidad.</param>
+                /// <param name="id">El identificador de la entidad, string.</param>
                 /// <returns>Una tarea que representa la operación asincrónica, con la entidad encontrada o null si no existe.</returns>
                 Task<T?> GetByIdAsync(string id);
 
                 /// <summary>
                 /// Obtiene una entidad por su identificador de manera asincrónica, incluyendo múltiples propiedades de navegación.
                 /// </summary>
-                /// <param name="id">El identificador de la entidad.</param>
+                /// <param name="id">El identificador de la entidad, string.</param>
                 /// <param name="includes">Funciones para incluir propiedades de navegación y subpropiedades.</param>
                 /// <returns>Una tarea que representa la operación asincrónica, con la entidad encontrada o null si no existe.</returns>
                 Task<T?> GetByIdAsync(string id, params Expression<Func<T, object>>[] includes);
+
+                /// <summary>
+                /// Obtiene una entidad por su identificador de manera asincrónica.
+                /// </summary>
+                /// <param name="id">El identificador de la entidad, Guid.</param>
+                /// <returns>Una tarea que representa la operación asincrónica, con la entidad encontrada o null si no existe.</returns>
+                Task<T?> GetByIdAsync(Guid id);
+
+                /// <summary>
+                /// Obtiene una entidad por su identificador de manera asincrónica, incluyendo múltiples propiedades de navegación.
+                /// </summary>
+                /// <param name="id">El identificador de la entidad, Guid.</param>
+                /// <param name="includes">Funciones para incluir propiedades de navegación y subpropiedades.</param>
+                /// <returns>Una tarea que representa la operación asincrónica, con la entidad encontrada o null si no existe.</returns>
+                Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes);
 
                 /// <summary>
                 /// Obtiene entidades que cumplen con una especificación dada de manera asincrónica.
@@ -46,6 +61,7 @@ namespace Playground.Application.Repositories
                 /// <typeparam name="TProperty">El tipo de la propiedad de navegación.</typeparam>
                 /// <param name="specification">La especificación que deben cumplir las entidades.</param>
                 /// <param name="navigationSpecification">La especificación que deben cumplir las entidades de la propiedad de navegación.</param>
+                /// <param name="navigationProperty">Función para acceder a la propiedad de navegación.</param>
                 /// <param name="includeExpressions">Funciones para incluir propiedades de navegación y subpropiedades.</param>
                 /// <returns>Una tarea que representa la operación asincrónica, con una colección de entidades que cumplen con la especificación.</returns>
                 Task<IEnumerable<T>> GetBySpecificationAsync<TProperty>(

@@ -61,7 +61,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
                 Result = await GetAllActivityTypesAsync(activityRepository);
             }
             // Ver si se piden las actividades para la vista de Inicio
-            else if (useCase == UseCaseSmartEnum.HomePageView)
+            else if (useCase == UseCaseSmartEnum.HomeView)
             {
                 // Obtener todas las actividades no activas
                 ISpecification<ActivityDate> activityDateSpecification =

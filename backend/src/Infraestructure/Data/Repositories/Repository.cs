@@ -32,7 +32,7 @@ namespace Playground.Infraestructure.Repositories
         /// <returns>La entidad encontrada o null si no existe.</returns>
         public async Task<T?> GetByIdAsync(string id)
         {
-            return await _context.Set<T>().FindAsync(Guid.Parse(id)) ?? null;
+            return await _context.Set<T>().FindAsync(id) ?? null;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Playground.Infraestructure.Repositories
                 query = query.Include(include);
             }
 
-            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == Guid.Parse(id));
+            return await query.FirstOrDefaultAsync(e => EF.Property<string>(e, "Id") == id);
         }
 
         /// <summary>

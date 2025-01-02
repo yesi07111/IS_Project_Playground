@@ -10,7 +10,6 @@ export const activityService = {
             if (filters.some(filter => filter.type === 'Casos de Uso' && filter.useCase === 'ActivityView')) {
                 const query = buildFilterQuery(filters);
                 const response = await axios.get(`${API_URL}/activity/get-all?${query}`);
-                console.table(response.data)
                 return response.data;
             }
             const query = buildFilterQuery(filters);
@@ -29,7 +28,6 @@ export const activityService = {
         try {
             const query = new URLSearchParams({ Id: id, UseCase: useCase }).toString();
             const response = await axios.get(`${API_URL}/activity/get?${query}`);
-            console.table(response.data)
 
             return response.data;
         } catch (error) {
