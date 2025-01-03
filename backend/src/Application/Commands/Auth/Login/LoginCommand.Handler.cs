@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
 using Playground.Application.Commands.Responses;
 using Microsoft.EntityFrameworkCore;
+using Playground.Domain.SmartEnum;
 
 namespace Playground.Application.Commands.Auth.Login;
 
-public class LoginCommandHandler(UserManager<User> userManager, IJwtGenerator jwtGenerator) : CommandHandler<LoginCommand, UserActionResponse>
+public class LoginCommandHandler(UserManager<User> userManager, IJwtGenerator jwtGenerator, ILoginProvider loginProviderId) : CommandHandler<LoginCommand, UserActionResponse>
 {
     public override async Task<UserActionResponse> ExecuteAsync(LoginCommand command, CancellationToken ct = default)
     {
@@ -31,9 +32,16 @@ public class LoginCommandHandler(UserManager<User> userManager, IJwtGenerator jw
         if (!await userManager.CheckPasswordAsync(user, command.Password))
             ThrowError("Contraseña equivocada.");
 
+        var token = await jwtGenerator.GetToken(user);
+        var loginProvider = LoginProviderSmartEnum.Default;
+        await userManager.SetAuthenticationTokenAsync(user, loginProvider.Name, TokenTypeSmartEnum.AccessToken.Name, token);
+
+        var userLoginInfo = new UserLoginInfo(loginProvider.Name, loginProviderId.GetProviderId(userManager, loginProvider), user.UserName);
+        await userManager.AddLoginAsync(user, userLoginInfo);
+
         return new UserActionResponse(Guid.Parse(user.Id),
                                       user.UserName!,
-                                      await jwtGenerator.GetToken(user),
+                                      token,
                                       user.Rol.Name);
     }
 }
