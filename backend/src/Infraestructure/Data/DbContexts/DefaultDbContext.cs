@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Playground.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Playground.Infraestructure.Data.DbContexts;
 
@@ -53,6 +54,14 @@ public class DefaultDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        // Establecer el esquema predeterminado
+        builder.HasDefaultSchema("public");
+
+        // Ignorar las tablas de roles y claims
+        builder.Ignore<IdentityRole>();
+        builder.Ignore<IdentityUserRole<string>>();
+        builder.Ignore<IdentityUserClaim<string>>();
+        builder.Ignore<IdentityRoleClaim<string>>();
 
         builder.Entity<User>()
             .HasOne(u => u.Rol)
