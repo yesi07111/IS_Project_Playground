@@ -12,7 +12,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import ActivitiesPage from './pages/ActivitiesPage';
 import ActivityInfoPage from './pages/ActivityInfoPage';
 import ReviewsPage from './pages/ReviewsPage';
-// import AdminPage from './pages/AdminPage';
+import AdminPage from './pages/AdminPage';
 
 // const [reload, setReload] = useState(false);
 /**
@@ -97,7 +97,8 @@ const App: React.FC = () => {
                 </ProtectedRoute>
               }
             />
-            {/* <Route path="/admin" element={<AdminPage />} /> */}
+            <Route path="/admin" element={<AdminPage />} />
+            
           </Routes>
         </Router>
       </AuthProvider>
