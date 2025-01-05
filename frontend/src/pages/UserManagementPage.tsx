@@ -1,32 +1,62 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+
+// Definir los tipos para los usuarios
+interface UserManagement {
+    padres: string[];
+    educators: string[];
+    admins: string[];
+}
 
 const UserManagementPage = () => {
-    const [users, setUsers] = useState({
+    // Definir el tipo para selectedUsers
+    const [selectedUsers, setSelectedUsers] = useState<{ user: string; category: keyof UserManagement }[]>([]); // Para marcar los usuarios seleccionados
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false); // Para mostrar el diálogo de confirmación
+    const [showInspectDialog, setShowInspectDialog] = useState(false); // Para mostrar la ventana de inspección
+    const [userToInspect, setUserToInspect] = useState<string | null>(null); // Usuario que se va a inspeccionar
+    
+    // Especificamos que el objeto users es de tipo UserManagement
+    const [users, setUsers] = useState<UserManagement>({
         padres: Array.from({ length: 10 }, (_, index) => `Padre ${index + 1}`),
         educators: Array.from({ length: 10 }, (_, index) => `Educador ${index + 1}`),
         admins: Array.from({ length: 10 }, (_, index) => `Administrador ${index + 1}`),
     });
 
-    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-
-    const handleSelectUser = (user: string) => {
-        if (selectedUsers.includes(user)) {
-            setSelectedUsers(selectedUsers.filter((u) => u !== user));
+    const handleSelectUser = (user: string, category: keyof UserManagement) => {
+        if (selectedUsers.some((u) => u.user === user && u.category === category)) {
+            // Si el usuario ya está seleccionado, lo deseleccionamos
+            setSelectedUsers(selectedUsers.filter((u) => !(u.user === user && u.category === category)));
         } else {
-            setSelectedUsers([...selectedUsers, user]);
+            // Si el usuario no está seleccionado, lo seleccionamos
+            setSelectedUsers([...selectedUsers, { user, category }]);
         }
     };
 
-    const handleDeleteSelectedUsers = () => {
+    const handleDeleteUsers = () => {
         const updatedUsers = { ...users };
-        selectedUsers.forEach((user) => {
-            ['padres', 'educators', 'admins'].forEach((category) => {
-                updatedUsers[category] = updatedUsers[category].filter((u) => u !== user);
-            });
+
+        // Eliminamos los usuarios seleccionados de su respectiva categoría
+        selectedUsers.forEach((selectedUser) => {
+            updatedUsers[selectedUser.category] = updatedUsers[selectedUser.category].filter(
+                (user) => user !== selectedUser.user
+            );
         });
+
         setUsers(updatedUsers);
-        setSelectedUsers([]); // Limpiar selección después de eliminar
+        setSelectedUsers([]); // Limpiamos la selección después de la eliminación
+        setShowDeleteDialog(false); // Cerramos el diálogo
+    };
+
+    const handleInspectUser = (user: string, event: React.MouseEvent) => {
+        event.stopPropagation(); // Previene que se active la selección del usuario
+        setUserToInspect(user); // Establecemos el usuario que se va a inspeccionar
+        setShowInspectDialog(true); // Mostramos la ventana de inspección
+    };
+
+    const handleCloseInspectDialog = () => {
+        setShowInspectDialog(false); // Cerramos la ventana de inspección
+        setUserToInspect(null); // Limpiamos el usuario seleccionado para inspección
     };
 
     return (
@@ -77,86 +107,111 @@ const UserManagementPage = () => {
 
                         {/* User List with Scroll */}
                         <Box sx={{ width: '100%', mb: 2 }}>
-                            {users[category].map((user) => (
-                                <Box key={user} sx={{ mb: 1 }}>
+                            {users[category as keyof UserManagement].map((user: string) => ( // Mostrar todos los usuarios sin limitar a 5
+                                <Box
+                                    key={user}
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        padding: '5px',
+                                        backgroundColor: selectedUsers.some(
+                                            (u) => u.user === user && u.category === category
+                                        )
+                                            ? '#A8D8E6'
+                                            : 'transparent',
+                                        borderRadius: 1,
+                                        mb: 1,
+                                    }}
+                                    onClick={() => handleSelectUser(user, category as keyof UserManagement)}
+                                >
                                     <Typography variant="body1">{user}</Typography>
+
                                     <Button
                                         variant="contained"
                                         color="success"
-                                        onClick={() => handleSelectUser(user)}
-                                        sx={{ mt: 1 }}
+                                        onClick={(event) => handleInspectUser(user, event)} // Pasamos el evento al hacer clic en Inspeccionar
+                                        sx={{ marginLeft: 1 }}
                                     >
-                                        {selectedUsers.includes(user) ? 'Deseleccionar' : 'Seleccionar'}
+                                        Inspeccionar
                                     </Button>
                                 </Box>
                             ))}
                         </Box>
-
-                        {/* Add User Button */}
-                        <Button variant="contained" sx={{ backgroundColor: '#A9C6FF' }}>
-                            Agregar Usuario
-                        </Button>
                     </Box>
                 ))}
             </Box>
 
-            {/* Delete Selected Users Button */}
-            {selectedUsers.length > 0 && (
-                <Box sx={{ marginTop: 2 }}>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={handleDeleteSelectedUsers}
-                    >
-                        Eliminar Seleccionados
-                    </Button>
-                </Box>
-            )}
-
-            {/* Footer Navigation Bar */}
-            <Box
-                sx={{
-                    width: '100%',
-                    backgroundColor: '#D0EFFF',
-                    padding: 2,
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                    alignItems: 'center',
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    boxShadow: '0 -2px 5px rgba(0,0,0,0.1)',
-                }}
-            >
+            {/* Add User Buttons outside the scroll */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-around', width: '100%' }}>
                 <Button
-                    variant="text"
-                    component={Link}
-                    to="/user-manager"
-                    sx={{
-                        color: '#2C3E50',
-                        '&:hover': { textDecoration: 'underline' },
-                    }}
+                    variant="contained"
+                    color="primary"
+                    sx={{ width: '30%' }}
                 >
-                    Usuarios
+                    Agregar Padre
                 </Button>
                 <Button
                     variant="contained"
                     color="primary"
-                    component={Link}
-                    to="/admin"
-                    sx={{
-                        padding: 1,
-                        fontSize: 14,
-                        fontWeight: 'bold',
-                        backgroundColor: '#3498DB',
-                    }}
+                    sx={{ width: '30%' }}
                 >
-                    Administrador
+                    Agregar Educador
                 </Button>
-                <Typography variant="body2" sx={{ color: '#2C3E50' }}>
-                    Fecha: {new Date().toLocaleDateString()}
-                </Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ width: '30%' }}
+                >
+                    Agregar Administrador
+                </Button>
             </Box>
+
+            {/* Delete Selected Users Button outside the sliders */}
+            {selectedUsers.length > 0 && (
+                <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => setShowDeleteDialog(true)}
+                    sx={{ width: '100%', mt: 4 }}
+                >
+                    Eliminar Seleccionados
+                </Button>
+            )}
+
+            {/* Confirmation Dialog for Deleting Users */}
+            <Dialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)}>
+                <DialogTitle>Confirmar Eliminación</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        ¿Está seguro de que desea eliminar los usuarios seleccionados?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowDeleteDialog(false)} color="primary">
+                        Cancelar
+                    </Button>
+                    <Button onClick={handleDeleteUsers} color="error">
+                        Eliminar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Inspection Dialog */}
+            <Dialog open={showInspectDialog} onClose={handleCloseInspectDialog}>
+                <DialogTitle sx={{ mt: 4 }}>Inspeccionar Usuario</DialogTitle> {/* El título ya está ajustado */}
+                <DialogContent>
+                    {/* Aquí puedes agregar los detalles de inspección que desees */}
+                    <Typography>Detalles de {userToInspect}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                        <IconButton onClick={handleCloseInspectDialog}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
