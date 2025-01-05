@@ -4,6 +4,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
 using Playground.Application.Commands.Responses;
+using Microsoft.EntityFrameworkCore;
 
 namespace Playground.Application.Commands.Auth.Login;
 
@@ -16,13 +17,13 @@ public class LoginCommandHandler(UserManager<User> userManager, IJwtGenerator jw
 
         if (emailRegex.IsMatch(command.Identifier))
         {
-            user = await userManager.FindByEmailAsync(command.Identifier);
+            user = await userManager.Users.Include(u => u.Rol).FirstOrDefaultAsync(u => u.Email == command.Identifier);
             if (user is null)
                 ThrowError($"'{command.Identifier}' no es un correo electrónico registrado.");
         }
         else
         {
-            user = await userManager.FindByNameAsync(command.Identifier);
+            user = await userManager.Users.Include(u => u.Rol).FirstOrDefaultAsync(u => u.UserName == command.Identifier);
             if (user is null)
                 ThrowError($"'{command.Identifier}' no es un nombre de usuario registrado.");
         }
@@ -32,6 +33,7 @@ public class LoginCommandHandler(UserManager<User> userManager, IJwtGenerator jw
 
         return new UserActionResponse(Guid.Parse(user.Id),
                                       user.UserName!,
-                                      await jwtGenerator.GetToken(user));
+                                      await jwtGenerator.GetToken(user),
+                                      user.Rol.Name);
     }
 }
