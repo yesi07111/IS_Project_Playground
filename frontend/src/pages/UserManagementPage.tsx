@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
 
 const UserManagementPage = () => {
+    const [users, setUsers] = useState({
+        padres: Array.from({ length: 10 }, (_, index) => `Padre ${index + 1}`),
+        educators: Array.from({ length: 10 }, (_, index) => `Educador ${index + 1}`),
+        admins: Array.from({ length: 10 }, (_, index) => `Administrador ${index + 1}`),
+    });
+
     return (
         <Box
             sx={{
@@ -23,6 +28,43 @@ const UserManagementPage = () => {
             >
                 Panel de Gestión de Usuario
             </Typography>
+
+            {/* User Management Sections */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-around', width: '100%', mb: 4 }}>
+                {['padres', 'educators', 'admins'].map((category) => (
+                    <Box
+                        key={category}
+                        sx={{
+                            width: '30%',
+                            backgroundColor: '#F0F4F8',
+                            padding: 2,
+                            borderRadius: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            maxHeight: '400px',
+                            overflowY: 'auto', // Permite el desplazamiento
+                        }}
+                    >
+                        <Typography variant="h5" sx={{ mb: 2 }}>
+                            {category === 'padres'
+                                ? 'Padres'
+                                : category === 'educators'
+                                ? 'Educadores'
+                                : 'Administradores'}
+                        </Typography>
+
+                        {/* User List with Scroll */}
+                        <Box sx={{ width: '100%', mb: 2 }}>
+                            {users[category].map((user) => (
+                                <Box key={user} sx={{ mb: 1 }}>
+                                    <Typography variant="body1">{user}</Typography>
+                                </Box>
+                            ))}
+                        </Box>
+                    </Box>
+                ))}
+            </Box>
 
             {/* Footer Navigation Bar */}
             <Box
