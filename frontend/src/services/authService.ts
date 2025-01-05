@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { RegisterData } from '../interfaces/RegisterData';
+import { UserResponse } from '../interfaces/UserActionResponse';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -130,10 +131,10 @@ export const authService = {
      * 
      * @param {string} Identifier - Identificador del usuario (puede ser nombre de usuario o correo electrónico).
      * @param {string} Password - Contraseña del usuario.
-     * @returns {Promise<any>} Los datos de la respuesta del servidor.
+     * @returns {Promise<UserResponse>} Los datos de la respuesta del servidor.
      * @throws {Error} Si ocurre un error durante el inicio de sesión.
      */
-    login: async (Identifier: string, Password: string) => {
+    login: async (Identifier: string, Password: string): Promise<UserResponse> => {
         try {
             const response = await axios.post(`${API_URL}/auth/login`, { Identifier, Password });
             return response.data;
