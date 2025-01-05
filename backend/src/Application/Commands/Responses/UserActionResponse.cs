@@ -1,3 +1,3 @@
 namespace Playground.Application.Commands.Responses;
 
-public record UserActionResponse(Guid Id, string Username, string Token);
+public record UserActionResponse(Guid Id, string Username, string Token, string RolName);
