@@ -8,6 +8,27 @@ const UserManagementPage = () => {
         admins: Array.from({ length: 10 }, (_, index) => `Administrador ${index + 1}`),
     });
 
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+
+    const handleSelectUser = (user: string) => {
+        if (selectedUsers.includes(user)) {
+            setSelectedUsers(selectedUsers.filter((u) => u !== user));
+        } else {
+            setSelectedUsers([...selectedUsers, user]);
+        }
+    };
+
+    const handleDeleteSelectedUsers = () => {
+        const updatedUsers = { ...users };
+        selectedUsers.forEach((user) => {
+            ['padres', 'educators', 'admins'].forEach((category) => {
+                updatedUsers[category] = updatedUsers[category].filter((u) => u !== user);
+            });
+        });
+        setUsers(updatedUsers);
+        setSelectedUsers([]); // Limpiar selección después de eliminar
+    };
+
     return (
         <Box
             sx={{
@@ -59,12 +80,38 @@ const UserManagementPage = () => {
                             {users[category].map((user) => (
                                 <Box key={user} sx={{ mb: 1 }}>
                                     <Typography variant="body1">{user}</Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        onClick={() => handleSelectUser(user)}
+                                        sx={{ mt: 1 }}
+                                    >
+                                        {selectedUsers.includes(user) ? 'Deseleccionar' : 'Seleccionar'}
+                                    </Button>
                                 </Box>
                             ))}
                         </Box>
+
+                        {/* Add User Button */}
+                        <Button variant="contained" sx={{ backgroundColor: '#A9C6FF' }}>
+                            Agregar Usuario
+                        </Button>
                     </Box>
                 ))}
             </Box>
+
+            {/* Delete Selected Users Button */}
+            {selectedUsers.length > 0 && (
+                <Box sx={{ marginTop: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleDeleteSelectedUsers}
+                    >
+                        Eliminar Seleccionados
+                    </Button>
+                </Box>
+            )}
 
             {/* Footer Navigation Bar */}
             <Box
