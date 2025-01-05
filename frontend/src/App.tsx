@@ -13,6 +13,7 @@ import ActivitiesPage from './pages/ActivitiesPage';
 import ActivityInfoPage from './pages/ActivityInfoPage';
 import ReviewsPage from './pages/ReviewsPage';
 import AdminPage from './pages/AdminPage';
+import UserManagementPage from './pages/UserManagementPage';
 
 // const [reload, setReload] = useState(false);
 /**
@@ -84,6 +85,7 @@ const App: React.FC = () => {
           {/* En esta sección se agregan las rutas de las páginas a usar */}
           <Routes>
             <Route path="/" element={<HomePage />} />
+            {/*<Route path="/" element={<UserManagementPage />} />*/}
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/activities" element={<ActivitiesPage />} />
@@ -98,7 +100,8 @@ const App: React.FC = () => {
               }
             />
             <Route path="/admin" element={<AdminPage />} />
-            
+            <Route path="/user-manager" element={<UserManagementPage />} />
+
           </Routes>
         </Router>
       </AuthProvider>
