@@ -34,7 +34,7 @@ namespace Playground.Application.Commands.Auth.ConfirmEmail
                 return null;
             }
 
-            return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, await jwtGenerator.GetToken(user));
+            return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, await jwtGenerator.GetToken(user), user.Rol.Name);
         }
     }
 }
