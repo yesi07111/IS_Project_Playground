@@ -94,9 +94,19 @@ namespace Playground.Domain.Specifications
         /// </summary>
         /// <param name="useFrecuency">La frecuencia de uso del recurso.</param>
         /// <returns>Una especificación que filtra por frecuencia de uso.</returns>
-        public static ResourceSpecification ByUseFrecuency(float useFrecuency)
+        public static ResourceSpecification ByUseFrecuencyEqual(int useFrecuency)
         {
-            return new ResourceSpecification(resource => resource.UseFrecuency == useFrecuency);
+            return new ResourceSpecification(resource => resource.UseFrequency == useFrecuency);
+        }
+
+        public static ResourceSpecification ByUseFrequencyLessOrEqual(int useFrecuency)
+        {
+            return new ResourceSpecification(resource => resource.UseFrequency <= useFrecuency);
+        }
+
+        public static ResourceSpecification ByUseFrequencyMoreOrEqual(int useFrecuency)
+        {
+            return new ResourceSpecification(resource => resource.UseFrequency >= useFrecuency);
         }
 
         /// <summary>
