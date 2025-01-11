@@ -33,6 +33,8 @@ public class DefaultDbContext : IdentityDbContext<User>
     /// </summary>
     public DbSet<Resource> Resource { get; set; }
 
+    public DbSet<ResourceDate> ResourceDate { get; set; }
+
     /// <summary>
     /// Conjunto de datos para las reseñas.
     /// </summary>
