@@ -27,7 +27,7 @@ namespace Playground.Domain.Entities
         /// <summary>
         /// Obtiene o establece la frecuencia de uso del recurso.
         /// </summary>
-        public float UseFrecuency { get; set; }
+        public int UseFrequency { get; set; } = 0;
 
         /// <summary>
         /// Obtiene o establece la condición del recurso.
