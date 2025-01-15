@@ -42,7 +42,7 @@ public class GetActivityQueryHandler : CommandHandler<GetActivityQuery, GetActiv
     {
         // Crear repositorios usando el factory
         var activityDateRepository = _repositoryFactory.CreateRepository<ActivityDate>();
-        var resourceRepository = _repositoryFactory.CreateRepository<Resource>();
+        var resourceRepository = _repositoryFactory.CreateRepository<Domain.Entities.Resource>();
 
         var isUseCase = SmartEnum<UseCaseSmartEnum>.TryFromName(query.UseCase, out UseCaseSmartEnum useCase);
         var activityDetailDto = new ActivityDetailDto();
