@@ -47,7 +47,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una nueva especificación que representa la combinación.</returns>
         public ISpecification<Resource> Or(ISpecification<Resource> other)
         {
-            return new AndSpecification<Resource>(this, other);
+            return new OrSpecification<Resource>(this, other);
         }
 
         /// <summary>
@@ -77,6 +77,11 @@ namespace Playground.Domain.Specifications
         public static ResourceSpecification ByType(string type)
         {
             return new ResourceSpecification(resource => resource.Type == type);
+        }
+
+        public static ResourceSpecification ByFacilityType(string facilityType)
+        {
+            return new ResourceSpecification(resource => resource.Facility.Type == facilityType);
         }
 
         /// <summary>
