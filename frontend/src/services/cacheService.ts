@@ -1,12 +1,15 @@
 import { Activity, ActivityDetail } from "../interfaces/Activity";
+import { Resource } from "../interfaces/Resource";
 
 const CACHE_KEY_ACTIVITIES = 'cachedActivities';
+const CACHE_KEY_RESOURCES = 'catchedResources';
 const CACHE_KEY_ACTIVITY_DETAILS = 'cachedActivityDetails';
 const CACHE_KEY_IMAGES = 'cachedActivityImages';
 const CACHE_KEY_FACILITY_TYPES = 'cachedFacilityTypes';
 const CACHE_KEY_ACTIVITY_TYPES = 'cachedActivityTypes';
 const CACHE_KEY_EDUCATORS = 'cachedEducators';
 const CACHE_KEY_TOP_ACTIVITIES = 'cachedTopActivities';
+const CACHE_KEY_RESOURCE_TYPES = 'cachedResourceTypes';
 
 export const cacheService = {
   saveActivities: (activities: Activity[]) => {
@@ -16,6 +19,15 @@ export const cacheService = {
   loadActivities: () => {
     const cachedActivities = localStorage.getItem(CACHE_KEY_ACTIVITIES);
     return cachedActivities ? JSON.parse(cachedActivities) : [];
+  },
+
+  saveResources: (resources: Resource[]) => {
+    localStorage.setItem(CACHE_KEY_RESOURCES, JSON.stringify(resources));
+  },
+
+  loadResources: () => {
+    const cachedResources = localStorage.getItem(CACHE_KEY_RESOURCES);
+    return cachedResources ? JSON.parse(cachedResources) : [];
   },
 
   saveActivityDetails: (activityDetails: ActivityDetail[]) => {
@@ -52,6 +64,15 @@ export const cacheService = {
   loadActivityTypes: () => {
     const cachedActivityTypes = localStorage.getItem(CACHE_KEY_ACTIVITY_TYPES);
     return cachedActivityTypes ? JSON.parse(cachedActivityTypes) : [];
+  },
+
+  saveResourceTypes: (resourceTypes: string[]) => {
+    localStorage.setItem(CACHE_KEY_RESOURCE_TYPES, JSON.stringify(resourceTypes));
+  },
+
+  loadResourceTypes: () => {
+    const cachedResourceTypes = localStorage.getItem(CACHE_KEY_RESOURCE_TYPES);
+    return cachedResourceTypes ? JSON.parse(cachedResourceTypes) : [];
   },
 
   saveEducators: (educators: { id: string, displayName: string }[]) => {
