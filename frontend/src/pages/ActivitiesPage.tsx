@@ -18,6 +18,8 @@ import { FilterSelect } from '../components/features/StyledFilters';
 import { SearchBar } from '../components/features/StyledSearchBar';
 import { parseDate } from '../services/dateService';
 import { cacheService } from '../services/cacheService';
+import CreateActivityButton from '../components/features/CreateActivityButton';
+import { useAuth } from '../components/auth/authContext';
 
 const ActivitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -47,6 +49,9 @@ const ActivitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [daysOfWeek, setDaysOfWeek] = useState<string[]>([]);
     const [capacity, setCapacity] = useState<number | null>(null);
     const [isNew, setIsNew] = React.useState(false);
+    const { isAuthenticated } = useAuth();
+
+    const rol = localStorage.getItem('authUserRole');
 
     const activitiesPerPage = 6;
 
@@ -714,6 +719,13 @@ const ActivitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                 </Box>
                             ))}
                         </Collapse>
+                    </Box>
+                )}
+
+                {/* Botón de "Crear Nueva Actividad" visible para Educadores */}
+                {rol === 'Educator' && isAuthenticated && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+                        <CreateActivityButton />
                     </Box>
                 )}
 

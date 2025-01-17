@@ -10,6 +10,7 @@ const CACHE_KEY_ACTIVITY_TYPES = 'cachedActivityTypes';
 const CACHE_KEY_EDUCATORS = 'cachedEducators';
 const CACHE_KEY_TOP_ACTIVITIES = 'cachedTopActivities';
 const CACHE_KEY_RESOURCE_TYPES = 'cachedResourceTypes';
+const CACHE_KEY_FACILITY_NAMES = 'cachedFacilityNames';
 
 export const cacheService = {
   saveActivities: (activities: Activity[]) => {
@@ -55,6 +56,15 @@ export const cacheService = {
   loadFacilityTypes: () => {
     const cachedFacilityTypes = localStorage.getItem(CACHE_KEY_FACILITY_TYPES);
     return cachedFacilityTypes ? JSON.parse(cachedFacilityTypes) : [];
+  },
+
+  saveFacilityNames: (facilityNames: string[]) => {
+    localStorage.setItem(CACHE_KEY_FACILITY_NAMES, JSON.stringify(facilityNames));
+  },
+
+  loadFacilityNames: () => {
+    const cachedFacilityNames = localStorage.getItem(CACHE_KEY_FACILITY_NAMES);
+    return cachedFacilityNames ? JSON.parse(cachedFacilityNames) : [];
   },
 
   saveActivityTypes: (activityTypes: string[]) => {
