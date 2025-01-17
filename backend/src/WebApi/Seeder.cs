@@ -30,6 +30,7 @@ public static class Seeder
         var reservationRepository = repositoryFactory.CreateRepository<Reservation>();
         var reviewRepository = repositoryFactory.CreateRepository<Review>();
         var resourceRepository = repositoryFactory.CreateRepository<Resource>();
+        var resourceDateRepository = repositoryFactory.CreateRepository<ResourceDate>();
 
         // Crear una instancia de Random para generar números aleatorios
         var random = new Random();
@@ -887,82 +888,82 @@ public static class Seeder
         // Crear recursos
         var resources = new List<Resource>
         {
-            new() { Name = "Silla", Type = "Mobiliario", UseFrecuency = 0.8f, ResourceCondition = "Buena", Facility = tallerArte! },
-            new() { Name = "Mesa", Type = "Mobiliario", UseFrecuency = 0.7f, ResourceCondition = "Buena", Facility = tallerArte! },
-            new() { Name = "Vasos", Type = "Utensilios", UseFrecuency = 0.9f, ResourceCondition = "Nueva", Facility = piscina! },
-            new() { Name = "Jugo", Type = "Bebida", UseFrecuency = 0.6f, ResourceCondition = "Buena", Facility = piscina! },
-            new() { Name = "Pinturas", Type = "Material", UseFrecuency = 0.5f, ResourceCondition = "Nueva", Facility = tallerArte! },
-            new() { Name = "Salvavidas", Type = "Equipo de seguridad", UseFrecuency = 0.4f, ResourceCondition = "Buena", Facility = piscina! },
-            new() { Name = "Microscopio", Type = "Equipo", UseFrecuency = 0.3f, ResourceCondition = "Buena", Facility = laboratorioCiencias! },
-            new() { Name = "Pipetas", Type = "Material", UseFrecuency = 0.5f, ResourceCondition = "Nueva", Facility = laboratorioCiencias! },
-            new() { Name = "Lienzos", Type = "Material", UseFrecuency = 0.7f, ResourceCondition = "Nueva", Facility = tallerArte! },
-            new() { Name = "Bocinas", Type = "Equipo", UseFrecuency = 0.6f, ResourceCondition = "Buena", Facility = salaMusica! },
-            new() { Name = "Piano", Type = "Instrumento", UseFrecuency = 0.8f, ResourceCondition = "Buena", Facility = salaMusica! },
-            new() { Name = "Guitarra", Type = "Instrumento", UseFrecuency = 0.7f, ResourceCondition = "Buena", Facility = salaMusica! },
-            new() { Name = "Batería", Type = "Instrumento", UseFrecuency = 0.6f, ResourceCondition = "Buena", Facility = salaMusica! },
-            new() { Name = "Pesas", Type = "Equipo de ejercicio", UseFrecuency = 0.5f, ResourceCondition = "Buena", Facility = gimnasio! },
-            new() { Name = "Cinta de correr", Type = "Equipo de ejercicio", UseFrecuency = 0.4f, ResourceCondition = "Buena", Facility = gimnasio! },
-            new() { Name = "Bicicleta estática", Type = "Equipo de ejercicio", UseFrecuency = 0.3f, ResourceCondition = "Buena", Facility = gimnasio! },
-            new() { Name = "Libros", Type = "Material de lectura", UseFrecuency = 0.9f, ResourceCondition = "Buena", Facility = biblioteca! },
-            new() { Name = "Computadora", Type = "Equipo", UseFrecuency = 0.8f, ResourceCondition = "Buena", Facility = biblioteca! },
-            new() { Name = "Proyector", Type = "Equipo", UseFrecuency = 0.7f, ResourceCondition = "Buena", Facility = biblioteca! },
-            new() { Name = "Cafetera", Type = "Electrodoméstico", UseFrecuency = 0.6f, ResourceCondition = "Buena", Facility = cafeteria! },
-            new() { Name = "Horno", Type = "Electrodoméstico", UseFrecuency = 0.5f, ResourceCondition = "Buena", Facility = cafeteria! },
-            new() { Name = "Refrigerador", Type = "Electrodoméstico", UseFrecuency = 0.4f, ResourceCondition = "Buena", Facility = cafeteria! },
-            new() { Name = "Tobogán", Type = "Equipo de Juego", UseFrecuency = 0.9f, ResourceCondition = "Buena", Facility = zonaJuegosAcuaticos! },
-            new() { Name = "Cubo de Agua", Type = "Equipo de Juego", UseFrecuency = 0.8f, ResourceCondition = "Buena", Facility = zonaJuegosAcuaticos! },
-            new() { Name = "Rociadores", Type = "Equipo de Juego", UseFrecuency = 0.7f, ResourceCondition = "Buena", Facility = zonaJuegosAcuaticos! },
-            new() { Name = "Arnés de Seguridad", Type = "Equipo de Seguridad", UseFrecuency = 0.6f, ResourceCondition = "Nueva", Facility = parqueAventuras! },
-            new() { Name = "Cuerda de Escalada", Type = "Equipo de Juego", UseFrecuency = 0.5f, ResourceCondition = "Buena", Facility = parqueAventuras! },
-            new() { Name = "Puente Colgante", Type = "Equipo de Juego", UseFrecuency = 0.4f, ResourceCondition = "Buena", Facility = parqueAventuras! },
-            new() { Name = "Jaula de Conejos", Type = "Habitat", UseFrecuency = 0.3f, ResourceCondition = "Buena", Facility = miniZoologico! },
-            new() { Name = "Jaula de Aves", Type = "Habitat", UseFrecuency = 0.2f, ResourceCondition = "Buena", Facility = miniZoologico! },
-            new() { Name = "Jaula de Reptiles", Type = "Habitat", UseFrecuency = 0.1f, ResourceCondition = "Buena", Facility = miniZoologico! },
-            new() { Name = "Caballetes", Type = "Mobiliario", UseFrecuency = 0.8f, ResourceCondition = "Buena", Facility = tallerArte! },
-            new() { Name = "Pinceles", Type = "Material", UseFrecuency = 0.7f, ResourceCondition = "Nueva", Facility = tallerArte! },
-            new() { Name = "Paletas de Pintura", Type = "Material", UseFrecuency = 0.6f, ResourceCondition = "Nueva", Facility = tallerArte! },
-            new() { Name = "Flotadores", Type = "Equipo de seguridad", UseFrecuency = 0.5f, ResourceCondition = "Buena", Facility = piscina! },
-            new() { Name = "Gorros de Natación", Type = "Accesorio", UseFrecuency = 0.4f, ResourceCondition = "Nueva", Facility = piscina! },
-            new() { Name = "Gafas de Natación", Type = "Accesorio", UseFrecuency = 0.3f, ResourceCondition = "Nueva", Facility = piscina! },
-            new() { Name = "Tizas", Type = "Material", UseFrecuency = 0.9f, ResourceCondition = "Nueva", Facility = laboratorioCiencias! },
-            new() { Name = "Probetas", Type = "Material", UseFrecuency = 0.8f, ResourceCondition = "Nueva", Facility = laboratorioCiencias! },
-            new() { Name = "Tableros de Dibujo", Type = "Mobiliario", UseFrecuency = 0.7f, ResourceCondition = "Buena", Facility = laboratorioCiencias! },
-            new() { Name = "Espejos", Type = "Equipo", UseFrecuency = 0.6f, ResourceCondition = "Buena", Facility = estudioDanza! },
-            new() { Name = "Barras de Ballet", Type = "Equipo", UseFrecuency = 0.5f, ResourceCondition = "Buena", Facility = estudioDanza! },
-            new() { Name = "Vestuario", Type = "Ropa", UseFrecuency = 0.4f, ResourceCondition = "Buena", Facility = estudioDanza! },
-            new() { Name = "Altavoces", Type = "Equipo", UseFrecuency = 0.3f, ResourceCondition = "Buena", Facility = salaMusica! },
-            new() { Name = "Micrófonos", Type = "Equipo", UseFrecuency = 0.2f, ResourceCondition = "Buena", Facility = salaMusica! },
-            new() { Name = "Atriles", Type = "Mobiliario", UseFrecuency = 0.1f, ResourceCondition = "Buena", Facility = salaMusica! },
-            new() { Name = "Colchonetas", Type = "Equipo de ejercicio", UseFrecuency = 0.9f, ResourceCondition = "Buena", Facility = gimnasio! },
-            new() { Name = "Balones de Yoga", Type = "Equipo de ejercicio", UseFrecuency = 0.8f, ResourceCondition = "Buena", Facility = gimnasio! },
-            new() { Name = "Bandas Elásticas", Type = "Equipo de ejercicio", UseFrecuency = 0.7f, ResourceCondition = "Buena", Facility = gimnasio! },
-            new() { Name = "Sillas de Lectura", Type = "Mobiliario", UseFrecuency = 0.6f, ResourceCondition = "Buena", Facility = biblioteca! },
-            new() { Name = "Mesas de Estudio", Type = "Mobiliario", UseFrecuency = 0.5f, ResourceCondition = "Buena", Facility = biblioteca! },
-            new() { Name = "Lámparas de Lectura", Type = "Equipo", UseFrecuency = 0.4f, ResourceCondition = "Buena", Facility = biblioteca! },
-            new() { Name = "Tazas", Type = "Utensilios", UseFrecuency = 0.3f, ResourceCondition = "Buena", Facility = cafeteria! },
-            new() { Name = "Platos", Type = "Utensilios", UseFrecuency = 0.2f, ResourceCondition = "Buena", Facility = cafeteria! },
-            new() { Name = "Cubiertos", Type = "Utensilios", UseFrecuency = 0.1f, ResourceCondition = "Buena", Facility = cafeteria! },
-            new() { Name = "Caballetes Viejos", Type = "Mobiliario", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = tallerArte! },
-            new() { Name = "Pinceles Usados", Type = "Material", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = tallerArte! },
-            new() { Name = "Flotadores Desgastados", Type = "Equipo de seguridad", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = piscina! },
-            new() { Name = "Gorros de Natación Viejos", Type = "Accesorio", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = piscina! },
-            new() { Name = "Microscopios Antiguos", Type = "Equipo", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = laboratorioCiencias! },
-            new() { Name = "Probetas Ralladas", Type = "Material", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = laboratorioCiencias! },
-            new() { Name = "Espejos Rotos", Type = "Equipo", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = estudioDanza! },
-            new() { Name = "Barras de Ballet Oxidadas", Type = "Equipo", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = estudioDanza! },
-            new() { Name = "Altavoces Antiguos", Type = "Equipo", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = salaMusica! },
-            new() { Name = "Micrófonos Viejos", Type = "Equipo", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = salaMusica! },
-            new() { Name = "Colchonetas Desgastadas", Type = "Equipo de ejercicio", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = gimnasio! },
-            new() { Name = "Balones de Yoga Viejos", Type = "Equipo de ejercicio", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = gimnasio! },
-            new() { Name = "Sillas de Lectura Viejas", Type = "Mobiliario", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = biblioteca! },
-            new() { Name = "Mesas de Estudio Desgastadas", Type = "Mobiliario", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = biblioteca! },
-            new() { Name = "Tazas Ralladas", Type = "Utensilios", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = cafeteria! },
-            new() { Name = "Platos Viejos", Type = "Utensilios", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = cafeteria! },
-            new() { Name = "Cubiertos Desgastados", Type = "Utensilios", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = cafeteria! },
-            new() { Name = "Tobogán Desgastado", Type = "Equipo de Juego", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = zonaJuegosAcuaticos! },
-            new() { Name = "Cuerda de Escalada Vieja", Type = "Equipo de Juego", UseFrecuency = 0.8f, ResourceCondition = "Deteriorada", Facility = parqueAventuras! },
-            new() { Name = "Jaula de Conejos Deteriorada", Type = "Habitat", UseFrecuency = 0.9f, ResourceCondition = "Deteriorada", Facility = miniZoologico! }
-            };
+            new() { Name = "Silla", Type = "Mobiliario", ResourceCondition = "Buena", Facility = tallerArte! },
+            new() { Name = "Mesa", Type = "Mobiliario", ResourceCondition = "Buena", Facility = tallerArte! },
+            new() { Name = "Vasos", Type = "Utensilios", ResourceCondition = "Nueva", Facility = piscina! },
+            new() { Name = "Jugo", Type = "Bebida", ResourceCondition = "Buena", Facility = piscina! },
+            new() { Name = "Pinturas", Type = "Material", ResourceCondition = "Nueva", Facility = tallerArte! },
+            new() { Name = "Salvavidas", Type = "Equipo de seguridad", ResourceCondition = "Buena", Facility = piscina! },
+            new() { Name = "Microscopio", Type = "Equipo", ResourceCondition = "Buena", Facility = laboratorioCiencias! },
+            new() { Name = "Pipetas", Type = "Material", ResourceCondition = "Nueva", Facility = laboratorioCiencias! },
+            new() { Name = "Lienzos", Type = "Material", ResourceCondition = "Nueva", Facility = tallerArte! },
+            new() { Name = "Bocinas", Type = "Equipo", ResourceCondition = "Buena", Facility = salaMusica! },
+            new() { Name = "Piano", Type = "Instrumento", ResourceCondition = "Buena", Facility = salaMusica! },
+            new() { Name = "Guitarra", Type = "Instrumento", ResourceCondition = "Buena", Facility = salaMusica! },
+            new() { Name = "Batería", Type = "Instrumento", ResourceCondition = "Buena", Facility = salaMusica! },
+            new() { Name = "Pesas", Type = "Equipo de ejercicio", ResourceCondition = "Buena", Facility = gimnasio! },
+            new() { Name = "Cinta de correr", Type = "Equipo de ejercicio", ResourceCondition = "Buena", Facility = gimnasio! },
+            new() { Name = "Bicicleta estática", Type = "Equipo de ejercicio", ResourceCondition = "Buena", Facility = gimnasio! },
+            new() { Name = "Libros", Type = "Material de lectura", ResourceCondition = "Buena", Facility = biblioteca! },
+            new() { Name = "Computadora", Type = "Equipo", ResourceCondition = "Buena", Facility = biblioteca! },
+            new() { Name = "Proyector", Type = "Equipo", ResourceCondition = "Buena", Facility = biblioteca! },
+            new() { Name = "Cafetera", Type = "Electrodoméstico", ResourceCondition = "Buena", Facility = cafeteria! },
+            new() { Name = "Horno", Type = "Electrodoméstico", ResourceCondition = "Buena", Facility = cafeteria! },
+            new() { Name = "Refrigerador", Type = "Electrodoméstico", ResourceCondition = "Buena", Facility = cafeteria! },
+            new() { Name = "Tobogán", Type = "Equipo de Juego", ResourceCondition = "Buena", Facility = zonaJuegosAcuaticos! },
+            new() { Name = "Cubo de Agua", Type = "Equipo de Juego", ResourceCondition = "Buena", Facility = zonaJuegosAcuaticos! },
+            new() { Name = "Rociadores", Type = "Equipo de Juego", ResourceCondition = "Buena", Facility = zonaJuegosAcuaticos! },
+            new() { Name = "Arnés de Seguridad", Type = "Equipo de Seguridad", ResourceCondition = "Nueva", Facility = parqueAventuras! },
+            new() { Name = "Cuerda de Escalada", Type = "Equipo de Juego", ResourceCondition = "Buena", Facility = parqueAventuras! },
+            new() { Name = "Puente Colgante", Type = "Equipo de Juego", ResourceCondition = "Buena", Facility = parqueAventuras! },
+            new() { Name = "Jaula de Conejos", Type = "Habitat", ResourceCondition = "Buena", Facility = miniZoologico! },
+            new() { Name = "Jaula de Aves", Type = "Habitat", ResourceCondition = "Buena", Facility = miniZoologico! },
+            new() { Name = "Jaula de Reptiles", Type = "Habitat", ResourceCondition = "Buena", Facility = miniZoologico! },
+            new() { Name = "Caballetes", Type = "Mobiliario", ResourceCondition = "Buena", Facility = tallerArte! },
+            new() { Name = "Pinceles", Type = "Material", ResourceCondition = "Nueva", Facility = tallerArte! },
+            new() { Name = "Paletas de Pintura", Type = "Material", ResourceCondition = "Nueva", Facility = tallerArte! },
+            new() { Name = "Flotadores", Type = "Equipo de seguridad", ResourceCondition = "Buena", Facility = piscina! },
+            new() { Name = "Gorros de Natación", Type = "Accesorio", ResourceCondition = "Nueva", Facility = piscina! },
+            new() { Name = "Gafas de Natación", Type = "Accesorio", ResourceCondition = "Nueva", Facility = piscina! },
+            new() { Name = "Tizas", Type = "Material", ResourceCondition = "Nueva", Facility = laboratorioCiencias! },
+            new() { Name = "Probetas", Type = "Material", ResourceCondition = "Nueva", Facility = laboratorioCiencias! },
+            new() { Name = "Tableros de Dibujo", Type = "Mobiliario", ResourceCondition = "Buena", Facility = laboratorioCiencias! },
+            new() { Name = "Espejos", Type = "Equipo", ResourceCondition = "Buena", Facility = estudioDanza! },
+            new() { Name = "Barras de Ballet", Type = "Equipo", ResourceCondition = "Buena", Facility = estudioDanza! },
+            new() { Name = "Vestuario", Type = "Ropa", ResourceCondition = "Buena", Facility = estudioDanza! },
+            new() { Name = "Altavoces", Type = "Equipo", ResourceCondition = "Buena", Facility = salaMusica! },
+            new() { Name = "Micrófonos", Type = "Equipo", ResourceCondition = "Buena", Facility = salaMusica! },
+            new() { Name = "Atriles", Type = "Mobiliario", ResourceCondition = "Buena", Facility = salaMusica! },
+            new() { Name = "Colchonetas", Type = "Equipo de ejercicio", ResourceCondition = "Buena", Facility = gimnasio! },
+            new() { Name = "Balones de Yoga", Type = "Equipo de ejercicio", ResourceCondition = "Buena", Facility = gimnasio! },
+            new() { Name = "Bandas Elásticas", Type = "Equipo de ejercicio", ResourceCondition = "Buena", Facility = gimnasio! },
+            new() { Name = "Sillas de Lectura", Type = "Mobiliario", ResourceCondition = "Buena", Facility = biblioteca! },
+            new() { Name = "Mesas de Estudio", Type = "Mobiliario", ResourceCondition = "Buena", Facility = biblioteca! },
+            new() { Name = "Lámparas de Lectura", Type = "Equipo", ResourceCondition = "Buena", Facility = biblioteca! },
+            new() { Name = "Tazas", Type = "Utensilios", ResourceCondition = "Buena", Facility = cafeteria! },
+            new() { Name = "Platos", Type = "Utensilios", ResourceCondition = "Buena", Facility = cafeteria! },
+            new() { Name = "Cubiertos", Type = "Utensilios", ResourceCondition = "Buena", Facility = cafeteria! },
+            new() { Name = "Caballetes Viejos", Type = "Mobiliario", ResourceCondition = "Deteriorada", Facility = tallerArte! },
+            new() { Name = "Pinceles Usados", Type = "Material", ResourceCondition = "Deteriorada", Facility = tallerArte! },
+            new() { Name = "Flotadores Desgastados", Type = "Equipo de seguridad", ResourceCondition = "Deteriorada", Facility = piscina! },
+            new() { Name = "Gorros de Natación Viejos", Type = "Accesorio", ResourceCondition = "Deteriorada", Facility = piscina! },
+            new() { Name = "Microscopios Antiguos", Type = "Equipo", ResourceCondition = "Deteriorada", Facility = laboratorioCiencias! },
+            new() { Name = "Probetas Ralladas", Type = "Material", ResourceCondition = "Deteriorada", Facility = laboratorioCiencias! },
+            new() { Name = "Espejos Rotos", Type = "Equipo", ResourceCondition = "Deteriorada", Facility = estudioDanza! },
+            new() { Name = "Barras de Ballet Oxidadas", Type = "Equipo", ResourceCondition = "Deteriorada", Facility = estudioDanza! },
+            new() { Name = "Altavoces Antiguos", Type = "Equipo", ResourceCondition = "Deteriorada", Facility = salaMusica! },
+            new() { Name = "Micrófonos Viejos", Type = "Equipo", ResourceCondition = "Deteriorada", Facility = salaMusica! },
+            new() { Name = "Colchonetas Desgastadas", Type = "Equipo de ejercicio", ResourceCondition = "Deteriorada", Facility = gimnasio! },
+            new() { Name = "Balones de Yoga Viejos", Type = "Equipo de ejercicio", ResourceCondition = "Deteriorada", Facility = gimnasio! },
+            new() { Name = "Sillas de Lectura Viejas", Type = "Mobiliario", ResourceCondition = "Deteriorada", Facility = biblioteca! },
+            new() { Name = "Mesas de Estudio Desgastadas", Type = "Mobiliario", ResourceCondition = "Deteriorada", Facility = biblioteca! },
+            new() { Name = "Tazas Ralladas", Type = "Utensilios", ResourceCondition = "Deteriorada", Facility = cafeteria! },
+            new() { Name = "Platos Viejos", Type = "Utensilios", ResourceCondition = "Deteriorada", Facility = cafeteria! },
+            new() { Name = "Cubiertos Desgastados", Type = "Utensilios", ResourceCondition = "Deteriorada", Facility = cafeteria! },
+            new() { Name = "Tobogán Desgastado", Type = "Equipo de Juego", ResourceCondition = "Deteriorada", Facility = zonaJuegosAcuaticos! },
+            new() { Name = "Cuerda de Escalada Vieja", Type = "Equipo de Juego", ResourceCondition = "Deteriorada", Facility = parqueAventuras! },
+            new() { Name = "Jaula de Conejos Deteriorada", Type = "Habitat", ResourceCondition = "Deteriorada", Facility = miniZoologico! }
+        };
 
 
         foreach (var resource in resources)
@@ -973,6 +974,64 @@ public static class Seeder
             }
         }
         await unitOfWork.CommitAsync();
+        #endregion
+
+
+        #region Frec. Uso Recurso
+        var resourcesDate = new List<ResourceDate>();
+
+        foreach (var resource in resources)
+        {
+            var randomDate = randomDateGenerator();
+            var randomUseFrequency = random.Next(1, 101); // Genera un número entre 1 y 100
+            
+            resourcesDate.Add(new ResourceDate
+            {
+                Resource = resource,
+                Date = randomDate,
+                UseFrequency = randomUseFrequency
+            });
+        }
+
+        foreach(var resourceDate in resourcesDate)
+        {
+            if(!await context.Set<ResourceDate>().AnyAsync(rd => rd.Id == resourceDate.Id))
+            {
+                await resourceDateRepository.AddAsync(resourceDate);
+            }
+        }
+
+        var useFrequency = 0;
+        //guardar en Resources las frecuencias de uso
+        foreach(var resource in resources)
+        {
+            useFrequency = resource.UseFrequency;
+            foreach(var resourceDate in resourcesDate)
+            {
+                if(resourceDate.Resource.Id == resource.Id)
+                {
+                    useFrequency += resourceDate.UseFrequency;
+                }
+            }
+            resource.UseFrequency = useFrequency;
+            resourceRepository.Update(resource);
+        }
+
+        await unitOfWork.CommitAsync();
+
+        // Método auxiliar para generar fechas aleatorias
+        DateOnly randomDateGenerator()
+        {
+            var start = new DateOnly(2020, 1, 1);
+            var end = DateOnly.FromDateTime(DateTime.Now);
+            
+            // Calcular la diferencia en días
+            int daysBetween = end.DayNumber - start.DayNumber;
+            
+            // Generar una fecha aleatoria dentro del rango
+            return start.AddDays(random.Next(daysBetween + 1));
+        }
+
         #endregion
     }
 
