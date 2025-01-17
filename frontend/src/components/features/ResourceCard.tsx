@@ -41,7 +41,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
   const navigate = useNavigate();
 
   const handleDefineUsageFrequency = () => {
-    navigate('/define-usage-frequency');
+    navigate(`/define-usage-frequency/${resource.id}`);
   };
 
   return (

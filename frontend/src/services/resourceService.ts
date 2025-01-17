@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ResourceFilters } from "../interfaces/ResourceFilters";
 import { ListResourceResponse } from "../interfaces/Resource";
+import { UsageFrequencyDate } from "../interfaces/UsageFrequencyDate";
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -12,7 +13,6 @@ export const resourceService = {
                 return response.data;
             }
             const query = buildFilterQuery(filters);
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', query);
             const response = await axios.get(`${API_URL}/resource/get-all?${query}`);
             return response.data;
         }
@@ -21,6 +21,25 @@ export const resourceService = {
                 throw error.response.data || 'Error al obtener los recursos.';
             } else {
                 throw 'Ha ocurrido un error inesperado al obtener los recursos.';
+            }
+        }
+    },
+
+    saveUsageFrequency: async (data: UsageFrequencyDate) => {
+        try {
+            const response = await axios.post(`${API_URL}/resource/post-useFrequency`, data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log(response.data)
+            return response.data;
+            
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw 'Ha ocurrido un error inesperado al guardar la frecuencia de uso.';
             }
         }
     }

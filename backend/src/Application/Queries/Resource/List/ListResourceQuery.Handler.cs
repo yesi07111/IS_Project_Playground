@@ -23,13 +23,6 @@ public class ListResourceQueryHandler : CommandHandler<ListResourceQuery, ListRe
     {
         var resourceRepository = _repositoryFactory.CreateRepository<Domain.Entities.Resource>();
 
-        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + query.Name);
-        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + query.MinUseFrequency);
-        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + query.MaxUseFrequency);
-        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + query.Condition);
-        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + query.FacilityTypes);
-        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + query.ResourceTypes);
-
         IEnumerable<object> resources = [];
         var resourceDtos = new List<object>();
 
@@ -68,11 +61,6 @@ public class ListResourceQueryHandler : CommandHandler<ListResourceQuery, ListRe
                 resourceDtos.Add(resourceDto);
             }
             resources = resourceDtos;
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!RECURSOS!!!!!!!!!!!!!!!");
-            foreach (ResourceDto x in resources)
-            {
-                Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + x.FacilityType);
-            }
         }
 
         return new ListResourceResponse(resources);

@@ -33,9 +33,14 @@ namespace Playground.Domain.Specifications
             return _expression;
         }
 
-        public ResourceDateSpecification ByResource(string resourceId)
+        public static ResourceDateSpecification ByResource(string resourceId)
         {
             return new ResourceDateSpecification(resourceDate => resourceDate.Resource.Id.ToString() == resourceId);
+        }
+
+        public static ResourceDateSpecification ByDate(DateTime date)
+        {
+            return new ResourceDateSpecification(resourceDate => resourceDate.Date.ToDateTime(default) == date);
         }
     }
 }
