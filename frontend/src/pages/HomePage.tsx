@@ -14,6 +14,7 @@ import { Activity } from '../interfaces/Activity';
 import { activityService } from '../services/activityService';
 import { ActivitiesFilters } from '../interfaces/ActivitiesFilters';
 import { cacheService } from '../services/cacheService';
+import { useAuth } from '../components/auth/authContext';
 
 interface HomePageProps {
     reload: boolean;
@@ -21,6 +22,9 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ reload }) => {
     const [activities, setActivities] = useState<Activity[]>([]);
+    const role = localStorage.getItem('authUserRole');
+    const userName = localStorage.getItem('authUserName');
+    const { isAuthenticated } = useAuth();
 
     const fetchActivities = useCallback(async () => {
         try {
@@ -81,60 +85,88 @@ const HomePage: React.FC<HomePageProps> = ({ reload }) => {
                     }
                 }}
             >
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        color: 'white',
-                        textAlign: 'center',
-                        zIndex: 1
-                    }}
-                >
-                    <Typography
-                        variant="h1"
+                {role === 'Educator' && isAuthenticated ?
+                    (<Box
                         sx={{
-                            fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
-                            fontWeight: 700,
-                            textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-                            mb: 2
+                            position: 'absolute',
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            color: 'white',
+                            textAlign: 'center',
+                            zIndex: 1
                         }}
                     >
-                        Bienvenido al Parque Infantil
-                    </Typography>
-                    <Typography
-                        variant="h4"
+                        <Typography
+                            variant="h1"
+                            sx={{
+                                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
+                                fontWeight: 700,
+                                textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                                mb: 2
+                            }}
+                        >
+                            Bienvenido Profesor {userName}
+                        </Typography>
+                    </Box>)
+                    :
+                    (<Box
                         sx={{
-                            fontSize: { xs: '1.2rem', sm: '1.5rem', md: '2rem' },
-                            maxWidth: '800px',
-                            mb: 4,
-                            px: 2
+                            position: 'absolute',
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            color: 'white',
+                            textAlign: 'center',
+                            zIndex: 1
                         }}
                     >
-                        El mejor lugar para la diversión y el aprendizaje de tus hijos 🎊
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        size="large"
-                        component={Link}
-                        to="/reservas"
-                        sx={{
-                            backgroundColor: '#FF6B6B',
-                            fontSize: '1.2rem',
-                            py: 2,
-                            px: 4,
-                            '&:hover': {
-                                backgroundColor: '#ff5252'
-                            }
-                        }}
-                    >
-                        ¡Reserva Ahora!
-                    </Button>
-                </Box>
+                        <Typography
+                            variant="h1"
+                            sx={{
+                                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
+                                fontWeight: 700,
+                                textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                                mb: 2
+                            }}
+                        >
+                            Bienvenido al Parque Infantil
+                        </Typography>
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontSize: { xs: '1.2rem', sm: '1.5rem', md: '2rem' },
+                                maxWidth: '800px',
+                                mb: 4,
+                                px: 2
+                            }}
+                        >
+                            El mejor lugar para la diversión y el aprendizaje de tus hijos 🎊
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            component={Link}
+                            to="/reservas"
+                            sx={{
+                                backgroundColor: '#FF6B6B',
+                                fontSize: '1.2rem',
+                                py: 2,
+                                px: 4,
+                                '&:hover': {
+                                    backgroundColor: '#ff5252'
+                                }
+                            }}
+                        >
+                            ¡Reserva Ahora!
+                        </Button>
+                    </Box>)}
             </Box>
 
             {/* Stats Section */}

@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, Typography, Box, Theme, Button } from '@mui/material';
 import { ResourceCardProps } from '../../interfaces/ResourceCardProps';
+import { useAuth } from '../auth/authContext';
 
 const StyledCard = styled(Card)(({ theme }: { theme: Theme }) => ({
   width: '90%',
@@ -39,6 +40,7 @@ const Badge = styled(Box)<{ bgcolor: string }>(({ theme, bgcolor }) => ({
 const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
   const rol = localStorage.getItem('authUserRole');
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const handleDefineUsageFrequency = () => {
     navigate(`/define-usage-frequency/${resource.id}`);
@@ -77,7 +79,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
             Instalación: {resource.facilityName} ({resource.facilityType})
           </Typography>
         </Box>
-        {rol === 'Educator' && (
+        {rol === 'Educator' && isAuthenticated && (
           <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
             <Button
               variant="contained"

@@ -105,15 +105,11 @@ const LoginPage: React.FC = () => {
                 localStorage.setItem('authId', response.id);
                 localStorage.setItem('authUserName', response.username);
                 localStorage.setItem('authUserRole', response.rolName);
-
                 login();
 
                 switch (response.rolName) {
                     case 'Parent':
                         navigate('/');
-                        break;
-                    case 'Educator':
-                        navigate('/educator');
                         break;
                     case 'Admin':
                         navigate('/admin');

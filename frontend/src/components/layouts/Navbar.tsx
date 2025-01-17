@@ -48,6 +48,9 @@ const Navbar: React.FC = () => {
     const [showConfetti, setShowConfetti] = useState(false);
     const { isAuthenticated } = useAuth();
     const [titleText, setTitleText] = useState('Parque Infantil');
+
+    const role = localStorage.getItem('authUserRole');
+
     // Obtener la última parte del pathname
     const lastPathSegment = location.pathname.split('/').pop();
 
@@ -216,6 +219,29 @@ const Navbar: React.FC = () => {
                         <Button
                             color="inherit"
                             component={Link}
+                            to="/resources"
+                            sx={{
+                                fontWeight: 500,
+                                py: 0.5,
+                            }}
+                        >
+                            Recursos
+                        </Button>
+                        {isAuthenticated && role === 'Educator' &&
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/statistics"
+                                sx={{
+                                    fontWeight: 500,
+                                    py: 0.5,
+                                }}
+                            >
+                                Estadísticas
+                            </Button>}
+                        <Button
+                            color="inherit"
+                            component={Link}
                             to="/reviews"
                             sx={{
                                 fontWeight: 500,
@@ -224,7 +250,7 @@ const Navbar: React.FC = () => {
                         >
                             Reseñas
                         </Button>
-                        {isAuthenticated && (
+                        {isAuthenticated && role !== 'Educator' && (
                             <Button
                                 color="inherit"
                                 component={Link}

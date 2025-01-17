@@ -18,6 +18,7 @@ import AdminPage from './pages/AdminPage';
 import UserManagementPage from './pages/UserManagementPage';
 import ResourcesPage from './pages/ResourcesPage';
 import DefineUsageFrequencyPage from './pages/UsageFrequencyPage';
+import ActivityFormPage from './pages/ActivityFormPage';
 
 // const [reload, setReload] = useState(false);
 /**
@@ -93,9 +94,8 @@ const App: React.FC = () => {
             <Route path="/define-usage-frequency/:resourceId" element={<DefineUsageFrequencyPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/educator" element={<EducatorPage />} />
             <Route path="/resources" element={<ResourcesPage />} />
-            <Route path='/activity-manager' element={<ActivityManagerPage />} />
+            <Route path="/activity-form" element={<ActivityFormPage />} />
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/activities/:id/:imagePath/:useCase" element={<ActivityInfoPage />} />
