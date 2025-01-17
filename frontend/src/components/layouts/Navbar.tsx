@@ -85,6 +85,7 @@ const Navbar: React.FC = () => {
             location.pathname === '/activities' ||
             location.pathname === '/reservations' ||
             location.pathname === '/reviews' ||
+            location.pathname === '/resources' ||
             lastPathSegment === 'ActivityView' ||
             lastPathSegment === 'ReviewView'
         ) {
@@ -108,6 +109,9 @@ const Navbar: React.FC = () => {
                     break;
                 case '/reviews':
                     setTitleText('Reseñas');
+                    break;
+                case '/resources':
+                    setTitleText('Recursos');
                     break;
                 default:
                     setTitleText('Parque Infantil');

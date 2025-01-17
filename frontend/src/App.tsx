@@ -16,6 +16,7 @@ import EducatorPage from './pages/EducatorPage';
 import ActivityManagerPage from './pages/ActivityManagerPage';
 import AdminPage from './pages/AdminPage';
 import UserManagementPage from './pages/UserManagementPage';
+import ResourcesPage from './pages/ResourcesPage';
 
 // const [reload, setReload] = useState(false);
 /**
@@ -91,6 +92,7 @@ const App: React.FC = () => {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/educator" element={<EducatorPage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
             <Route path='/activity-manager' element={<ActivityManagerPage />} />
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="/reviews" element={<ReviewsPage />} />
