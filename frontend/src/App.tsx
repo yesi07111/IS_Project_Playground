@@ -12,7 +12,6 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import ActivitiesPage from './pages/ActivitiesPage';
 import ActivityInfoPage from './pages/ActivityInfoPage';
 import ReviewsPage from './pages/ReviewsPage';
-import AdminPage from './pages/AdminPage';
 import UserManagementPage from './pages/UserManagementPage';
 import ResourcesPage from './pages/ResourcesPage';
 import DefineUsageFrequencyPage from './pages/UsageFrequencyPage';
