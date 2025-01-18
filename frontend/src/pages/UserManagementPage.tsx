@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import { Box, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Collapse, FormControl, Select, InputLabel, MenuItem, Input, Grid2, Pagination } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { SearchBar } from '../components/features/StyledSearchBar';
+import { FilterSelect } from '../components/features/StyledFilters';
 
 
 const UserManagementPage: React.FC<{ reload: boolean }> = ({ reload }) => {
@@ -11,10 +13,40 @@ const UserManagementPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [selectedPersonName, setSelectedPersonName] = useState<string>(''); //filtra por nombre de la persona
     const [selectedPersonLastName, setSelectedPersonLastName] = useState<string>(''); //filtra por apellido de la persona
     const [selectedUserName, setSelectedUserName] = useState<string>(''); //filtra por nombre de usuario
-    const [selectedUserRole, setSelectedUserRole] = useState<string[]>([]); //filtra por rol de usuario
+    const [selectedUserRole, setSelectedUserRole] = useState<string>(''); //filtra por rol de usuario
 
     const resourcesPerPage = 10;
 
-    return()
+    return (
+        <Box sx={{ width: '100vw', minHeight: '100vh', py: 4, px: 2, backgroundColor: '#f8f9fa' }}>
+            
+            {/* Buscador con filtros */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+                <SearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} labelText='Recursos' />
+                <FilterSelect
+                    selectedFilters={selectedFilters}
+                    handleFilterChange={handleFilterChange}
+                    handleApplyFilters={handleApplyFilters}
+                />
+            </Box>
+
+            {/* Sección plegable de filtros */}
+            {selectedFilters.length > 0 && (
+                <Box sx={{ mb: 4, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography variant="h6">Filtros</Typography>
+                        <IconButton onClick={toggleFiltersOpen}>
+                            {filtersOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
+                    </Box>
+                    <Collapse in={filtersOpen}>
+                        {selectedFilters.map((filter) => (
+                            <Box key={filter} sx={{ mt: 2 }}>
+         
+      
+        
+        
+
+    )
 }
 export default UserManagementPage;
