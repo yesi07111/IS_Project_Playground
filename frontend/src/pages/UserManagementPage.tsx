@@ -83,7 +83,29 @@ const UserManagementPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                         </FormControl>
                                     </Box>
                                 )}
-        
+                                {filter === "Apellidos" && (
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Typography>🔍 Buscar por apellidos:</Typography>
+                                        <FormControl sx={{ ml: 2, width: 200 }} variant="outlined">
+                                            <Input
+                                                type="text"
+                                                value={selectedPersonLastName || ''}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setSelectedPersonLastName(value || ''); // Actualiza el estado con el apellido
+                                                }}
+                                                placeholder="Escribe el apellido"
+                                                sx={{
+                                                    textAlign: 'left',
+                                                    '&::placeholder': {
+                                                        color: '#aaa',
+                                                        fontStyle: 'italic',
+                                                    },
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Box>
+                                )}
         
 
     )
