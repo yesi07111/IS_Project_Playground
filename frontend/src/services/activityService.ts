@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ActivitiesFilters } from '../interfaces/ActivitiesFilters';
-import { ActivityDetailArray, ListActivityResponse } from '../interfaces/Activity';
+import { ActivityData, ActivityDetailArray, ListActivityResponse } from '../interfaces/Activity';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -35,6 +35,21 @@ export const activityService = {
                 throw error.response.data || 'Error al obtener los detalles de la actividad.';
             } else {
                 throw 'Ha ocurrido un error inesperado al obtener los detalles de la actividad.';
+            }
+        }
+    },
+
+    createActivity: async (activityData: ActivityData) => {
+        try {
+            console.table(activityData);
+            const response = await axios.post(`${API_URL}/activity/post`, activityData);
+            console.log(response);
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado durante la creacion de actividad.');
             }
         }
     }

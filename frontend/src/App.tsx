@@ -12,8 +12,6 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import ActivitiesPage from './pages/ActivitiesPage';
 import ActivityInfoPage from './pages/ActivityInfoPage';
 import ReviewsPage from './pages/ReviewsPage';
-import EducatorPage from './pages/EducatorPage';
-import ActivityManagerPage from './pages/ActivityManagerPage';
 import AdminPage from './pages/AdminPage';
 import UserManagementPage from './pages/UserManagementPage';
 import ResourcesPage from './pages/ResourcesPage';
