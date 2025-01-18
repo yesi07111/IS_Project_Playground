@@ -60,7 +60,29 @@ const UserManagementPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                             </FormControl>
                                         </Box>
                                     )}
-      
+                                {filter === "Nombre" && (
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Typography>🔍 Buscar por nombre:</Typography>
+                                        <FormControl sx={{ ml: 2, width: 200 }} variant="outlined">
+                                            <Input
+                                                type="text"
+                                                value={selectedPersonName || ''}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setSelectedPersonName(value || ''); // Actualiza el estado con el nombre
+                                                }}
+                                                placeholder="Escribe el nombre"
+                                                sx={{
+                                                    textAlign: 'left',
+                                                    '&::placeholder': {
+                                                        color: '#aaa',
+                                                        fontStyle: 'italic',
+                                                    },
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Box>
+                                )}
         
         
 
