@@ -106,8 +106,37 @@ const UserManagementPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                         </FormControl>
                                     </Box>
                                 )}
-        
+                                {filter === "Nombre de usuario" && (
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Typography>🔍 Buscar por nombre de usuario:</Typography>
+                                        <FormControl sx={{ ml: 2, width: 200 }} variant="outlined">
+                                            <Input
+                                                type="text"
+                                                value={selectedUserName || ''}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setSelectedUserName(value || ''); // Actualiza el estado con el nombre del recurso
+                                                }}
+                                                placeholder="Escribe el nombre"
+                                                sx={{
+                                                    textAlign: 'left',
+                                                    '&::placeholder': {
+                                                        color: '#aaa',
+                                                        fontStyle: 'italic',
+                                                    },
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Box>
+                                )}
+                            </Box>
+                        ))}
+                    </Collapse>
+                </Box>
+            )}
 
+            
+            
     )
 }
 export default UserManagementPage;
