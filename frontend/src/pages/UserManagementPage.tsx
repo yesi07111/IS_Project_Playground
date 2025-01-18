@@ -42,7 +42,24 @@ const UserManagementPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                     <Collapse in={filtersOpen}>
                         {selectedFilters.map((filter) => (
                             <Box key={filter} sx={{ mt: 2 }}>
-         
+                                {filter === "Tipo de Rol" && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <Typography>Rol:</Typography>
+                                            <FormControl sx={{ ml: 2, minWidth: 250 }} variant="outlined">
+                                                <InputLabel id="role-select-label">Escoger Rol</InputLabel>
+                                                <Select
+                                                    labelId="role-select-label"
+                                                    value={selectedUserRole}
+                                                    onChange={(e) => setSelectedUserRole(e.target.value)}
+                                                    label="Escoger Rol"
+                                                >
+                                                    <MenuItem value="Admin">Administrador</MenuItem>
+                                                    <MenuItem value="Educator">Educador</MenuItem>
+                                                    <MenuItem value="Parent">Padre</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        </Box>
+                                    )}
       
         
         
