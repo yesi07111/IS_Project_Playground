@@ -108,13 +108,29 @@ const Navbar: React.FC = () => {
                     setTitleText('Actividades');
                     break;
                 case '/reservations':
-                    setTitleText('Mis Reservas');
+                    if (isAuthenticated && role==='Admin')
+                    {
+                        setTitleText('Reservas');
+                    }
+                    else
+                    {
+                        setTitleText('Mis Reservas');
+                    }
                     break;
                 case '/reviews':
                     setTitleText('Reseñas');
                     break;
                 case '/resources':
                     setTitleText('Recursos');
+                    break;
+                case '/user-manager':
+                    setTitleText('Usuarios');
+                    break;
+                case '/facilities-manager':
+                    setTitleText('Instalaciones');
+                    break;
+                case '/activity-request-manager':
+                    setTitleText('Solicitudes de Actividades');
                     break;
                 default:
                     setTitleText('Parque Infantil');
@@ -205,6 +221,45 @@ const Navbar: React.FC = () => {
                         >
                             Inicio
                         </Button>
+                        {isAuthenticated && role === 'Admin' && (
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/user-manager"
+                                sx={{
+                                    fontWeight: 500,
+                                    py: 0.5,
+                                }}
+                            >
+                                Usuarios
+                            </Button>
+                        )}
+                        {isAuthenticated && role === 'Admin' && (
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/facilities-manager"
+                                sx={{
+                                    fontWeight: 500,
+                                    py: 0.5,
+                                }}
+                            >
+                                Instalaciones
+                            </Button>
+                        )}
+                        {isAuthenticated && role === 'Admin' && (
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/activity-request-manager"
+                                sx={{
+                                    fontWeight: 500,
+                                    py: 0.5,
+                                }}
+                            >
+                                Solicitudes de actividades
+                            </Button>
+                        )}
                         <Button
                             color="inherit"
                             component={Link}
@@ -250,7 +305,7 @@ const Navbar: React.FC = () => {
                         >
                             Reseñas
                         </Button>
-                        {isAuthenticated && role !== 'Educator' && (
+                        {isAuthenticated && role === 'Parent' && (
                             <Button
                                 color="inherit"
                                 component={Link}
@@ -261,6 +316,19 @@ const Navbar: React.FC = () => {
                                 }}
                             >
                                 Mis Reservas
+                            </Button>
+                        )}
+                        {isAuthenticated && role === 'Admin' && (
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/reservations"
+                                sx={{
+                                    fontWeight: 500,
+                                    py: 0.5,
+                                }}
+                            >
+                                Reservas
                             </Button>
                         )}
                         {isAuthenticated ? (
