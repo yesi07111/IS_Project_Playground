@@ -150,6 +150,11 @@ namespace Playground.Domain.Specifications
             return new ActivitySpecification(activity => activity.Facility.Id == facility);
         }
 
+        public static ActivitySpecification ByDescription(string description)
+        {
+            return new ActivitySpecification(activity => activity.Description == description);
+        }
+
         /// <summary>
         /// Crea una especificación para filtrar actividades por su fecha de creación.
         /// </summary>
