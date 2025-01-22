@@ -5,33 +5,26 @@ using Microsoft.AspNetCore.Identity;
 using Playground.Application.Factories;
 using Playground.Application.Repositories;
 using Playground.Domain.Specifications;
-using Playground.Application.Commands.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.Application.Commands.Auth.Register;
 
-public class RegisterCommandHandler(UserManager<User> userManager, IEmailSenderService emailSender, IRepositoryFactory repositoryFactory, IUnitOfWork unitOfWork) : CommandHandler<RegisterCommand, UserCreationResponse>
+public class RegisterCommandHandler(UserManager<Domain.Entities.Auth.User> userManager, IEmailSenderService emailSender, IRepositoryFactory repositoryFactory, IUnitOfWork unitOfWork) : CommandHandler<RegisterCommand, UserCreationResponse>
 {
     public override async Task<UserCreationResponse> ExecuteAsync(RegisterCommand command, CancellationToken ct = default)
     {
-        System.Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-        System.Console.WriteLine("HERE COMES THE GENERAL! RISE UP!");
-        System.Console.WriteLine("Rol: {0}", command.Rol);
         // Buscar el rol existente por nombre
         var rolRepository = repositoryFactory.CreateRepository<Rol>();
         var nameRolSpecification = RolSpecification.ByName(command.Rol);
 
-        System.Console.WriteLine("nameRolSpecification: {0}", nameRolSpecification);
-
         var existingRol = (await rolRepository.GetBySpecificationAsync(nameRolSpecification)).FirstOrDefault();
-
-        System.Console.WriteLine("existingRol: {0}", existingRol);
 
         if (existingRol == null)
         {
             ThrowError("El rol especificado no existe.");
         }
 
-        var user = new User
+        var user = new Domain.Entities.Auth.User
         {
             FirstName = command.FirstName,
             LastName = command.LastName,
@@ -49,7 +42,7 @@ public class RegisterCommandHandler(UserManager<User> userManager, IEmailSenderS
 
         user.FullCode = code;
 
-        var userRepository = repositoryFactory.CreateRepository<User>();
+        var userRepository = repositoryFactory.CreateRepository<Domain.Entities.Auth.User>();
         userRepository.Update(user);
 
         await unitOfWork.CommitAsync();

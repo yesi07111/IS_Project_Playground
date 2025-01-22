@@ -1,4 +1,3 @@
-using Playground.Domain.Entities.Auth;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
@@ -29,7 +28,7 @@ public class RegisterCommandValidator : Validator<RegisterCommand>
             .MustAsync(async (usn, ct) =>
             {
                 var scope = CreateScope();
-                var userManager = scope.Resolve<UserManager<User>>();
+                var userManager = scope.Resolve<UserManager<Domain.Entities.Auth.User>>();
                 var usr = await userManager.FindByNameAsync(usn);
                 return usr == null;
             }).WithMessage("El nombre de usuario ya está en uso.");
@@ -41,7 +40,7 @@ public class RegisterCommandValidator : Validator<RegisterCommand>
             .MustAsync(async (email, ct) =>
             {
                 var scope = CreateScope();
-                var userManager = scope.Resolve<UserManager<User>>();
+                var userManager = scope.Resolve<UserManager<Domain.Entities.Auth.User>>();
                 var usr = await userManager.FindByEmailAsync(email);
                 return usr == null;
             }).WithMessage("El correo electrónico ya está en uso.");
