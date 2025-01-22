@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
-import { FilterSelectProps } from '../../interfaces/FilterSelectProps';
+import { FilterSelectProps } from '../../interfaces/Filters';
 import { useLocation } from 'react-router-dom';
 
 export const FilterSelect: React.FC<FilterSelectProps> = ({ selectedFilters, handleFilterChange, handleApplyFilters }) => {

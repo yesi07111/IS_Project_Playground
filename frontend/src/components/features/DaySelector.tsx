@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { DaySelectorProps } from "../../interfaces/DaySelectorProps";
+import { DaySelectorProps } from "../../interfaces/Filters";
 
 export const DaySelector: React.FC<DaySelectorProps> = ({ daysOfWeek, setDaysOfWeek }) => {
     const currentDay = new Date().getDay(); // Obtiene el día actual (0 = Domingo, 1 = Lunes, ..., 6 = Sábado)

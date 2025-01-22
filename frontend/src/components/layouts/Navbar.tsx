@@ -41,25 +41,20 @@ font-size: 1.5rem;
  * También gestiona el estado de autenticación del usuario para mostrar opciones de perfil o inicio de sesión.
  *
  * @returns {JSX.Element} El componente de barra de navegación.
- */
-const Navbar: React.FC = () => {
+ */const Navbar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [showConfetti, setShowConfetti] = useState(false);
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated } = useAuth(); // Asegúrate de incluir isEmailVerified
     const [titleText, setTitleText] = useState('Parque Infantil');
 
     const role = localStorage.getItem('authUserRole');
 
     // Obtener la última parte del pathname
     const lastPathSegment = location.pathname.split('/').pop();
-
-    // Determina si se debe mostrar el botón de retroceso
     const showBackButton = location.pathname !== '/';
+    const userId = localStorage.getItem('authId') ?? "";
 
-    /**
-     * Maneja la acción de retroceso, navegando a diferentes rutas según la ubicación actual.
-     */
     const handleBack = async () => {
         if (location.pathname === '/verify-email') {
             const storedFormData = localStorage.getItem('formData');
@@ -79,14 +74,11 @@ const Navbar: React.FC = () => {
         }
     };
 
-    /**
-     * Efecto que muestra confeti cuando la ruta es la página de inicio.
-     */
     useEffect(() => {
         if (
             location.pathname === '/' ||
             location.pathname === '/activities' ||
-            location.pathname === '/reservations' ||
+            location.pathname === '/my-reservations' ||
             location.pathname === '/reviews' ||
             location.pathname === '/resources' ||
             lastPathSegment === 'ActivityView' ||
@@ -98,17 +90,11 @@ const Navbar: React.FC = () => {
         }
     }, [location.pathname, lastPathSegment]);
 
-    /**
-     * Efecto que actualiza el texto del título basado en la ruta actual.
-     */
     useEffect(() => {
         const updateTitleText = () => {
             switch (location.pathname) {
                 case '/activities':
                     setTitleText('Actividades');
-                    break;
-                case '/reservations':
-                    setTitleText('Mis Reservas');
                     break;
                 case '/reviews':
                     setTitleText('Reseñas');
@@ -119,14 +105,15 @@ const Navbar: React.FC = () => {
                 default:
                     setTitleText('Parque Infantil');
             }
+
+            if (location.pathname.startsWith("/my-reservations")) {
+                setTitleText("Mis Reservas")
+            }
         };
 
         updateTitleText();
     }, [location.pathname]);
 
-    /**
-     * Maneja el evento de pasar el ratón sobre el texto, activando el confeti.
-     */
     const handleMouseEnter = () => {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 7000);
@@ -254,7 +241,7 @@ const Navbar: React.FC = () => {
                             <Button
                                 color="inherit"
                                 component={Link}
-                                to="/reservations"
+                                to={`/my-reservations/${userId}`}
                                 sx={{
                                     fontWeight: 500,
                                     py: 0.5,

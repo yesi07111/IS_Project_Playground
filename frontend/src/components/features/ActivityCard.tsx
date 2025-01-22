@@ -10,9 +10,9 @@ import {
   Theme,
   Link
 } from '@mui/material';
-import { ActivityCardProps } from '../../interfaces/ActivityCardProps';
+import { ActivityCardProps } from '../../interfaces/Activity';
 import { useLocation } from 'react-router-dom';
-import { parseDate } from '../../services/dateService';
+import { dateService } from '../../services/dateService';
 
 const StyledCard = styled(Card)(({ theme }: { theme: Theme }) => ({
   width: '90%',
@@ -58,7 +58,7 @@ const Badge = styled(Box)<{ bgcolor: string }>(({ theme, bgcolor }) => ({
 
 const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
   const location = useLocation();
-  const { formattedDate, formattedTime } = parseDate(activity.date);
+  const { formattedDate, formattedTime } = dateService.parseDate(activity.date);
   const encodedImagePath = encodeURIComponent(activity.image);
   const viewSuffix = location.pathname === '/activities' ? 'ActivityView' : 'ReviewView';
 
