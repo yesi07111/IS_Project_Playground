@@ -19,8 +19,6 @@ import EditUserProfilePage from './pages/EditUserProfilePage';
 import { authService } from './services/authService';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import ReservationsPage from './pages/ReservationPage';
-
-import AdminPage from './pages/AdminPage';
 import UserManagementPage from './pages/UserManagementPage';
 import AdminPage from './pages/AdminPage';
 import DefineUsageFrequencyPage from './pages/UsageFrequencyPage';
