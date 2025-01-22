@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Playground.Infraestructure.Data.DbContexts;
@@ -11,9 +12,11 @@ using Playground.Infraestructure.Data.DbContexts;
 namespace Infraestructure.Migrations.Postgres
 {
     [DbContext(typeof(DefaultDbContext))]
-    partial class DefaultDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250105053054_AddUserProfileImagesTable")]
+    partial class AddUserProfileImagesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,9 +132,6 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Pending")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("ReservedPlaces")
                         .HasColumnType("integer");

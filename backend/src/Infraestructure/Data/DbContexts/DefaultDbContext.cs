@@ -1,7 +1,6 @@
 using Playground.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using Playground.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -50,6 +49,12 @@ public class DefaultDbContext : IdentityDbContext<User>
     /// Conjunto de datos para los roles.
     /// </summary>
     public DbSet<Rol> Rol { get; set; }
+
+
+    /// <summary>
+    /// Conjunto de datos para las imágenes del perfil de usuario.
+    /// </summary>
+    public DbSet<UserProfileImages> UserProfileImages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
