@@ -24,6 +24,7 @@ export interface Activity {
     currentCapacity: number;
     isPublic: string;
     isNew: string;
+    pending: boolean
 }
 /**
  * Interfaz que define la estructura de la respuesta de la lista de actividades.
@@ -80,4 +81,17 @@ export interface ActivityDetail {
 }
 export interface ActivityDetailArray {
     result: ActivityDetail
+}
+
+export interface ActivityData {
+    name: string;
+    description: string;
+    educator: string;
+    type: string;
+    date: Date;
+    time: Date;
+    recommendedAge: number;
+    facility: string 
+    pending: boolean
+    private: boolean
 }

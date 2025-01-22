@@ -393,6 +393,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
                 CurrentCapacity = ad.ReservedPlaces,
                 IsPublic = ad.Activity.ItsPrivate ? "false" : "true",
                 IsNew = isNew,
+                Pending = ad.Pending,
             };
 
             activityDtos.Add(activityDto);
@@ -429,6 +430,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
                 CurrentCapacity = ad.ReservedPlaces,
                 IsPublic = ad.Activity.ItsPrivate ? "false" : "true",
                 IsNew = isNew,
+                Pending = ad.Pending,
             };
 
             activityDtos.Add(activityDto);

@@ -113,9 +113,11 @@ const ActivitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const fetchAllActivities = useCallback(async (filters: ActivitiesFilters[] = [{ type: 'Casos de Uso', useCase: 'ActivityView' }]) => {
         try {
             const response: ListActivityResponse = await activityService.getAllActivities(filters);
-            const activitiesArray: Activity[] = Array.isArray(response.result)
+            const activitiesArrayR: Activity[] = Array.isArray(response.result)
                 ? response.result as Activity[]
                 : [];
+            //asegurarme de que las actividades mostradas del filtrado no sean pendientes
+            const activitiesArray: Activity[] = activitiesArrayR.filter(activity => !activity.pending)
 
             cacheActivityImages(activitiesArray);
             setActivities(activitiesArray.map(activity => ({
@@ -352,9 +354,11 @@ const ActivitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
 
         try {
             const response: ListActivityResponse = await activityService.getAllActivities(filters);
-            const activitiesArray: Activity[] = Array.isArray(response.result)
+            const activitiesArrayR: Activity[] = Array.isArray(response.result)
                 ? response.result as Activity[]
                 : Array.from(response.result);
+            //asegurarme de que las actividades mostradas del filtrado no sean pendientes
+            const activitiesArray: Activity[] = activitiesArrayR.filter(activity => !activity.pending)
 
             cacheActivityImages(activitiesArray);
             setActivities(activitiesArray);

@@ -23,6 +23,8 @@ namespace Playground.Domain.Entities
         /// </summary>
         public DateTime DateTime { get; set; }
 
+        public bool Pending { get; set; } //pendiente NewLaura
+
         /// <summary>
         /// Obtiene o establece el número actual de participantes en la actividad.
         /// </summary>

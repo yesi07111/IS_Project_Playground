@@ -161,6 +161,7 @@ const RegisterPage: React.FC = () => {
                 localStorage.setItem('DeleteToken', result.id);
             }
             localStorage.setItem('pendingVerificationEmail', formData.username);
+            localStorage.setItem('authUserRole', result.rolName);
             formData.password = '';
             localStorage.setItem('formData', JSON.stringify(formData));
             navigate('/verify-email');

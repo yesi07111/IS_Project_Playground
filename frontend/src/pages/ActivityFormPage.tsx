@@ -16,11 +16,12 @@ import {
     Grid,
     Grid2
 } from '@mui/material';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { facilityService } from '../services/facilityService';
 import { FacilityResponse } from '../interfaces/FacilityResponse';
 import { cacheService } from '../services/cacheService';
+import { activityService } from '../services/activityService';
 
 const ActivityFormPage: React.FC = () => {
     const educatorId = localStorage.getItem('authId');
@@ -35,11 +36,12 @@ const ActivityFormPage: React.FC = () => {
         description: '',
         educator: (role === 'Educator') ? educatorId : '',
         type: '',
-        recommendedAge: '',
+        recommendedAge: null as number | null,
         private: false,
         facility: '',
         facilityId: '',
-        day: null as Date | null // Aseguramos que sea de tipo Date o null
+        day: null as Date | null, // Aseguramos que sea de tipo Date o null
+        time: null as Date | null
     });
 
     const fetchAllFacilityNames = useCallback(async () => {
@@ -77,11 +79,18 @@ const ActivityFormPage: React.FC = () => {
     const handleDateChange = (newValue: Date | null) => {
         setFormData({
             ...formData,
-            day: newValue
+            day: newValue,
         });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleTimeChange = (newValue: Date | null) => {
+        setFormData({
+            ...formData,
+            time: newValue,
+        });
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         let selectedName = '';
         let facilityId = '';
         let facility = null;
@@ -95,6 +104,7 @@ const ActivityFormPage: React.FC = () => {
             !formData.educator ||
             !formData.type ||
             !formData.day ||
+            !formData.time ||
             !formData.recommendedAge ||
             !formData.facility) {
             setError('Por favor, completa todos los campos obligatorios.');
@@ -107,7 +117,25 @@ const ActivityFormPage: React.FC = () => {
         formData.facilityId = facilityId;
 
         console.log('Datos enviados:', formData);
-        setSuccess(true);
+
+        try {
+            const result = await activityService.createActivity({
+                name: formData.name,
+                description: formData.description,
+                educator: formData.educator,
+                type: formData.type,
+                date: formData.day,
+                time: formData.time,
+                recommendedAge: formData.recommendedAge,
+                facility: formData.facilityId,
+                pending: role === 'Educator',
+                private: formData.private
+            });
+            setSuccess(true);
+        }
+        catch (error) {
+            setError('Hubo un error al crear la actividad');
+        }
     };
 
     return (
@@ -135,7 +163,7 @@ const ActivityFormPage: React.FC = () => {
                 </Typography>
 
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                {success && <Alert severity="success" sx={{ mb: 2 }}>Actividad creada con éxito.</Alert>}
+                {success && role === 'Educator' && <Alert severity="success" sx={{ mb: 2 }}>Solicitud realizada con éxito.</Alert>}
 
                 <Box component="form" onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -254,17 +282,26 @@ const ActivityFormPage: React.FC = () => {
                                 <Typography variant="body2" color="text.secondary">
                                     Día de la actividad
                                 </Typography>
-                                <Box sx={{ mt: 2 }}>
-                                    <DatePicker
-                                        value={formData.day}
-                                        onChange={handleDateChange}
-                                        slotProps={{
-                                            textField: {
-                                                sx: { ml: 2 },
-                                            },
-                                        }}
-                                    />
-                                </Box>
+                                <DatePicker
+                                    value={formData.day}
+                                    onChange={handleDateChange}
+                                    slotProps={{
+                                        textField: {
+                                            sx: { ml: 2 },
+                                        },
+                                    }}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <Typography variant="body2" color="text.secondary">
+                                    Hora de la actividad
+                                </Typography>
+                                <TimePicker
+                                    value={formData.time}
+                                    onChange={handleTimeChange}
+                                />
                             </LocalizationProvider>
                         </Grid>
                         <Grid item xs={12}>

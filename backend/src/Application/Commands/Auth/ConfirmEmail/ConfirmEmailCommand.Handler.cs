@@ -3,6 +3,7 @@ using Playground.Application.Services;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using Playground.Application.Commands.Responses;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Playground.Application.Commands.Auth.ConfirmEmail
@@ -11,7 +12,7 @@ namespace Playground.Application.Commands.Auth.ConfirmEmail
     {
         public override async Task<UserActionResponse> ExecuteAsync(ConfirmEmailCommand command, CancellationToken ct = default)
         {
-            var user = await userManager.FindByNameAsync(command.UserName);
+            var user = await userManager.Users.Include(u => u.Rol).FirstOrDefaultAsync(u => u.UserName == command.UserName);
             if (user == null)
             {
                 ThrowError($"Usuario con nombre de usuario: {command.UserName} no encontrado.");
