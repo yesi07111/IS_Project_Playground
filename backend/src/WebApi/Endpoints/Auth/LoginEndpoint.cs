@@ -1,18 +1,18 @@
-using Playground.Application.Commands.Auth.Login;
 using FastEndpoints;
-using Playground.Application.Commands.Responses;
+using Playground.Application.Responses;
+using Playground.Application.Queries.Auth.Login;
 
 namespace Playground.WebApi.Endpoints;
 
-public class LoginEndpoint : Endpoint<LoginCommand, UserActionResponse>
+public class LoginEndpoint : Endpoint<LoginQuery, UserActionResponse>
 {
     public override void Configure()
     {
         AllowAnonymous();
-        Post("/auth/login");
+        Get("/auth/login");
     }
 
-    public override Task<UserActionResponse> ExecuteAsync(LoginCommand req, CancellationToken ct)
+    public override Task<UserActionResponse> ExecuteAsync(LoginQuery req, CancellationToken ct)
     {
         return req.ExecuteAsync(ct);
     }

@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Playground.Application.Commands.DeleteFailUser;
-using Playground.Application.Commands.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.WebApi.Endpoints;
 

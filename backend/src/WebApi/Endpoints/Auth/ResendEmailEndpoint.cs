@@ -1,18 +1,18 @@
-using Playground.Application.Commands.Auth.ResendEmail;
 using FastEndpoints;
-using Playground.Application.Commands.Responses;
+using Playground.Application.Responses;
+using Playground.Application.Queries.Auth.ResendEmail;
 
 namespace Playground.WebApi.Endpoints.Auth;
 
-public class ResendVerificationEmailEndpoint : Endpoint<ResendEmailCommand, UserCreationResponse>
+public class ResendVerificationEmailEndpoint : Endpoint<ResendEmailQuery, UserCreationResponse>
 {
     public override void Configure()
     {
         AllowAnonymous();
-        Post("/auth/resend-verification-email");
+        Get("/auth/resend-verification-email");
     }
 
-    public override async Task<UserCreationResponse> ExecuteAsync(ResendEmailCommand req, CancellationToken ct)
+    public override async Task<UserCreationResponse> ExecuteAsync(ResendEmailQuery req, CancellationToken ct)
     {
         return await req.ExecuteAsync(ct);
     }

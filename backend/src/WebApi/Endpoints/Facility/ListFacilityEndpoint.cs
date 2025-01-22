@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Playground.Application.Queries.Facility.List;
-using Playground.Application.Queries.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.WebApi.Endpoints.Facility;
 

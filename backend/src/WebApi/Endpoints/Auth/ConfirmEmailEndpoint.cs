@@ -1,10 +1,10 @@
-using Playground.Application.Commands.Auth.ConfirmEmail;
+using Playground.Application.Queries.Auth.ConfirmEmail;
 using FastEndpoints;
-using Playground.Application.Commands.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.WebApi.Endpoints.Auth;
 
-public class ConfirmEmailEndpoint : Endpoint<ConfirmEmailCommand, UserActionResponse>
+public class ConfirmEmailEndpoint : Endpoint<ConfirmEmailQuery, UserActionResponse>
 {
     public override void Configure()
     {
@@ -12,7 +12,7 @@ public class ConfirmEmailEndpoint : Endpoint<ConfirmEmailCommand, UserActionResp
         Get("/auth/confirm-email");
     }
 
-    public override async Task<UserActionResponse> ExecuteAsync(ConfirmEmailCommand req, CancellationToken ct)
+    public override async Task<UserActionResponse> ExecuteAsync(ConfirmEmailQuery req, CancellationToken ct)
     {
         return await req.ExecuteAsync(ct);
     }
