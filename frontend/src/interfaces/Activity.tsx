@@ -32,7 +32,7 @@ export interface Activity {
  * @property {Activity[]} activities - Lista de actividades.
  */
 export interface ListActivityResponse {
-    result: object[];
+    result: Activity[] | string[];
 }
 
 /**
@@ -57,6 +57,7 @@ export interface ListActivityResponse {
  * @property {string[]} comments - Comentarios sobre la actividad.
  * @property {string[]} resources - Recursos disponibles para la actividad.
  * @property {Date} date - Fecha de la actividad.
+ * @property {strung} isPublic - Indica si la actividad es pública.
  */
 export interface ActivityDetail {
     id: string;
@@ -67,6 +68,7 @@ export interface ActivityDetail {
     color: string;
     maximumCapacity: number;
     currentCapacity: number;
+    educatorId: string;
     educatorFullName: string;
     educatorUsername: string;
     facilityName: string;
@@ -78,9 +80,21 @@ export interface ActivityDetail {
     comments: string[];
     resources: string[];
     date: Date;
+    isPublic: string;
 }
-export interface ActivityDetailArray {
-    result: ActivityDetail
+export interface GetActivityResponse {
+    result: ActivityDetail;
+}
+
+/**
+ * Interfaz para las propiedades del componente ActivityCard.
+ * 
+ * Esta interfaz define las propiedades que debe recibir el componente
+ * ActivityCard, incluyendo un objeto de tipo Activity que contiene
+ * los detalles de la actividad a mostrar.
+ */
+export interface ActivityCardProps {
+    activity: Activity;
 }
 
 export interface ActivityData {
@@ -95,3 +109,4 @@ export interface ActivityData {
     pending: boolean
     private: boolean
 }
+
