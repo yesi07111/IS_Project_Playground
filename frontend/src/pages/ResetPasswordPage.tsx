@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Paper, TextField, Button, Typography, Alert } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import kidsPlay from '/images/decorative/xylophone.png';
 import stars from '/images/decorative/toy-train.png';
 import { authService } from '../services/authService';
 import { useAuth } from '../components/auth/authContext';
 import { FieldErrors } from '../interfaces/Error';
+import Swal from 'sweetalert2';
 import { tokenService } from '../services/tokenService';
 
 /**
- * Componente funcional que representa la página de verificación de correo electrónico.
+ * Componente funcional que representa la página de restablecimiento de contraseña.
  * 
- * Este componente permite a los usuarios verificar su correo electrónico ingresando un código
+ * Este componente permite a los usuarios restablecer su contraseña ingresando un código
  * de verificación enviado a su dirección de correo. Utiliza elementos de Material-UI como `Box`,
  * `Container`, `Paper`, `TextField`, `Button`, `Typography` y `Alert`.
  * 
@@ -21,16 +22,15 @@ import { tokenService } from '../services/tokenService';
  *   reenviar el código.
  * - **Efectos secundarios**: Usa `useEffect` para cargar el correo electrónico del usuario desde
  *   `localStorage` y manejar cambios de ruta.
- * - **Verificación de correo**: Permite al usuario ingresar un código de verificación y manejar
- *   el proceso de verificación a través de `authService`.
+ * - **Restablecimiento de contraseña**: Permite al usuario ingresar un código de verificación y manejar
+ *   el proceso de restablecimiento a través de `authService`.
  * - **Reenvío de código**: Permite al usuario solicitar un nuevo código de verificación si es necesario,
  *   con un temporizador para evitar múltiples solicitudes en poco tiempo.
  * 
- * @returns {JSX.Element} El componente de la página de verificación de correo electrónico.
+ * @returns {JSX.Element} El componente de la página de restablecimiento de contraseña.
  */
-const VerifyEmailPage: React.FC = () => {
+const ResetPasswordPage: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const { login } = useAuth();
     const [verificationCode, setVerificationCode] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -45,36 +45,22 @@ const VerifyEmailPage: React.FC = () => {
     const [timeLeft, setTimeLeft] = useState<number>(0);
 
     useEffect(() => {
-        const storedEmail = localStorage.getItem('formData');
+        const storedEmail = localStorage.getItem('pendingVerificationEmail');
         if (storedEmail) {
-            const parsedData = JSON.parse(storedEmail);
-            setEmail(parsedData.email);
+            setEmail(storedEmail);
+            console.log('En ResetPasswordPage, correo electrónico pendiente de verificación:', storedEmail);
         }
     }, []);
 
-    useEffect(() => {
-        const handleRouteChange = () => {
-            const storedData = localStorage.getItem('formData');
-            const deleteToken = localStorage.getItem('DeleteToken');
-
-            if (storedData && deleteToken) {
-                localStorage.setItem("ToDelete", "true");
-            }
-        };
-
-        handleRouteChange();
-    }, [location]);
-
     /**
-     * Limpia los datos almacenados en `localStorage` relacionados con el registro y verificación.
+     * Limpia los datos almacenados en `localStorage` relacionados con el restablecimiento de contraseña.
      */
     const clearLocalStorage = async () => {
-        localStorage.removeItem('formData');
         localStorage.removeItem('pendingVerificationEmail');
     };
 
     /**
-     * Maneja el envío del formulario de verificación de correo.
+     * Maneja el envío del formulario de restablecimiento de contraseña.
      * 
      * Verifica el código ingresado por el usuario utilizando el servicio de autenticación.
      * En caso de éxito, inicia sesión y redirige al usuario a la página principal.
@@ -83,21 +69,38 @@ const VerifyEmailPage: React.FC = () => {
      */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const userName = localStorage.getItem('pendingVerificationEmail');
+        const storedEmail = localStorage.getItem('pendingVerificationEmail');
+        const fullCode = localStorage.getItem('fullCode');
+        const newPassword = localStorage.getItem('newPassword');
+        localStorage.removeItem('hasCalledEndpoint');
 
-        if (!userName) {
+        if (!storedEmail) {
             setError('No se encontró un usuario para la verificación.');
             return;
         }
+        if (!fullCode) {
+            setError('No se encontró un código de verificación.');
+            return;
+        }
+        if (!newPassword) {
+            setError('No se encontró una nueva contraseña.');
+            return;
+        }
         try {
-            const response = await authService.verifyEmail(userName, verificationCode);
-            console.log("Response de verify")
-            console.table(response)
-            if (response.token && response.id && response.username) {
-                clearLocalStorage();
-                localStorage.setItem('authToken', response.token);
-                localStorage.setItem('authId', response.id);
-                localStorage.setItem('authUsername', response.username);
+            console.log('Enviando solicitud de restablecimiento de contraseña...');
+            await authService.resetPassword(storedEmail, verificationCode, fullCode, newPassword);
+            const loginResponse = await authService.login(storedEmail, newPassword);
+            if (loginResponse.token && loginResponse.id && loginResponse.username) {
+                await clearLocalStorage();
+                localStorage.setItem('authToken', loginResponse.token);
+                localStorage.setItem('authId', loginResponse.id);
+                localStorage.setItem('authUsername', loginResponse.username);
+                await Swal.fire({
+                    title: 'Éxito',
+                    text: 'Cambio de contraseña exitoso',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
                 login();
                 tokenService.startTokenRefreshCheck();
                 navigate('/');
@@ -116,6 +119,29 @@ const VerifyEmailPage: React.FC = () => {
             } else {
                 setError('Error durante la verificación.');
             }
+
+            if (!isResendDisabled) {
+                setIsResendDisabled(true);
+                setTimeLeft(180); // 180 seconds = 3 minutes
+
+                const timer = setInterval(() => {
+                    setTimeLeft((prevTime) => {
+                        if (prevTime <= 1) {
+                            clearInterval(timer);
+                            setIsResendDisabled(false);
+                            return 0;
+                        }
+                        return prevTime - 1;
+                    });
+                }, 1000);
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Vuelva a intentar cuando acabe el temporizador.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
         }
     };
 
@@ -126,15 +152,15 @@ const VerifyEmailPage: React.FC = () => {
      * Desactiva el botón de reenvío durante un tiempo determinado para evitar múltiples solicitudes.
      */
     const handleResendCode = async () => {
-        const userName = localStorage.getItem('pendingVerificationEmail');
+        const storedEmail = localStorage.getItem('pendingVerificationEmail');
 
-        if (!userName) {
+        if (!storedEmail) {
             setError('No se encontró un usuario para la verificación.');
             return;
         }
         try {
-            const res = await authService.resendVerificationCode(userName);
-            console.table(res)
+            const response = await authService.sendResetPasswordCode(storedEmail);
+            localStorage.setItem("fullCode", response.token)
             setSuccess('Código de verificación reenviado con éxito.');
             setIsResendDisabled(true);
             setTimeLeft(180); // 180 seconds = 3 minutes
@@ -254,7 +280,7 @@ const VerifyEmailPage: React.FC = () => {
                             mb: 2
                         }}
                     >
-                        Verifica tu correo
+                        Restablece tu contraseña
                     </Typography>
 
                     <Typography
@@ -266,7 +292,7 @@ const VerifyEmailPage: React.FC = () => {
                         }}
                     >
                         Hemos enviado un código de verificación a tu correo electrónico {email}.
-                        Por favor, introdúcelo a continuación para completar tu registro.
+                        Por favor, introdúcelo a continuación para restablecer tu contraseña.
                     </Typography>
 
                     {error && (
@@ -327,8 +353,9 @@ const VerifyEmailPage: React.FC = () => {
                                     backgroundColor: '#1565c0'
                                 }
                             }}
+                            onClick={handleSubmit}
                         >
-                            Verificar
+                            Restablecer
                         </Button>
 
                         <Button
@@ -359,4 +386,4 @@ const VerifyEmailPage: React.FC = () => {
     );
 };
 
-export default VerifyEmailPage;
+export default ResetPasswordPage;

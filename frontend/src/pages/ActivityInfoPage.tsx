@@ -8,7 +8,11 @@ import { cacheService } from '../services/cacheService';
 import pattern1 from '/images/decorative/swing.png';
 import pattern2 from '/images/decorative/tea-set.png';
 import CommentsContainer from '../components/features/CommentsContainer';
-import { parseDate } from '../services/dateService';
+import { DataPagesProps } from '../interfaces/Pages';
+import { dateService } from '../services/dateService';
+import UserLink from '../components/auth/UserLink';
+import Swal from 'sweetalert2';
+import { ReservationFormData } from '../interfaces/Reservation';
 
 const BackgroundImage = styled(Box)({
     position: 'absolute',
@@ -53,7 +57,7 @@ const LoadingorErrorBox = styled(Box)({
     },
 });
 
-const ActivityInfoPage: React.FC<{ reload: boolean }> = ({ reload }) => {
+const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
     const { id, imagePath, useCase } = useParams<{ id: string; imagePath: string; useCase: string }>();
     const [activity, setActivity] = useState<ActivityDetail | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -88,6 +92,70 @@ const ActivityInfoPage: React.FC<{ reload: boolean }> = ({ reload }) => {
         }
     }, [reload, fetchActivityDetail]);
 
+    const handleReservation = async () => {
+        const availableSpots = activity ? activity.maximumCapacity - activity.currentCapacity : 0;
+
+        // Solicitar la cantidad de niños
+        const { value: amount } = await Swal.fire({
+            title: 'Reserva de Actividad',
+            text: 'Ingrese la cantidad de niños para la reserva:',
+            input: 'number',
+            inputAttributes: {
+                min: '1',
+                max: availableSpots.toString(),
+                step: '1'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Siguiente',
+            cancelButtonText: 'Cancelar',
+            preConfirm: (value) => {
+                const parsedValue = parseInt(value);
+                if (!value || isNaN(parsedValue) || parsedValue <= 0) {
+                    Swal.showValidationMessage('Por favor, ingrese un número válido.');
+                    return 0;
+                } else if (parsedValue > availableSpots) {
+                    Swal.showValidationMessage(`La cantidad de niños no puede superar la disponibilidad actual de ${availableSpots}.`);
+                    return 0;
+                }
+                return parsedValue;
+            }
+        });
+        console.log("Amount: ", amount)
+        if (!amount) {
+            return; // Si el usuario cancela o no ingresa un valor válido
+        }
+
+        // Solicitar comentarios adicionales
+        const { value: comments } = await Swal.fire({
+            title: 'Comentarios Adicionales',
+            text: 'Comentarios adicionales (Opcional):',
+            input: 'text',
+            showCancelButton: true,
+            confirmButtonText: 'Reservar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        const formData: ReservationFormData = {
+            amount: parseInt(amount), // Asegúrate de que amount es un número
+            comments: comments || "Sin comentarios adicionales",
+            userId: localStorage.getItem('authId') ?? "",
+            activityId: id ?? "",
+        };
+
+        console.log("Datos a enviar de reserva");
+        console.table(formData);
+
+        try {
+            const result = await activityService.reserveActivityDate(formData);
+            if (result.success) {
+                Swal.fire("Éxito", "Reserva realizada con éxito, está pendiente a revisión por parte de un administrador.", "success");
+            } else {
+                Swal.fire("Fallo", "Ha ocurrido un error inesperado al intentar reservar, por favor intente de nuevo.", "error");
+            }
+        } catch (error) {
+            console.error("Ha ocurrido un error al intentar reservar la actividad: ", error);
+        }
+    };
     if (error) {
         return (
             <Box sx={{
@@ -126,7 +194,7 @@ const ActivityInfoPage: React.FC<{ reload: boolean }> = ({ reload }) => {
         );
     }
 
-    const { formattedDate, formattedTime } = parseDate(activity.date);
+    const { formattedDate, formattedTime } = dateService.parseDate(activity.date);
     const isPastActivity = new Date(activity.date) < new Date();
     const availableSpots = activity.maximumCapacity - activity.currentCapacity;
     const comments = activity.comments.map((commentStr) => {
@@ -179,6 +247,9 @@ const ActivityInfoPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                     <Typography variant="h6" sx={{ color: '#DA70D6', marginBottom: 1 }}>
                         🕒 Hora: {formattedTime}
                     </Typography>
+                    <Typography variant="h6" sx={{ color: '#FFEA00', marginBottom: 1 }}>
+                        🌐 Disponibilidad: {activity.isPublic}
+                    </Typography>
                     <Typography variant="h6" sx={{ color: '#8a2be2' }}>
                         {isPastActivity ? '👥 Asistentes' : '👥 Capacidad'}: {activity.currentCapacity}/{activity.maximumCapacity}
                     </Typography>
@@ -187,7 +258,7 @@ const ActivityInfoPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                             <Typography variant="body1" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
                                 ¡Quedan solo {availableSpots} plazas disponibles, reserva ahora!
                             </Typography>
-                            <Button variant="contained" color="primary" sx={{ marginTop: 2 }}>
+                            <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={handleReservation}>
                                 Reservar
                             </Button>
                         </>
@@ -206,7 +277,13 @@ const ActivityInfoPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                         👨‍🏫 Educador
                     </Typography>
                     <Typography variant="body1">Nombre: {activity.educatorFullName}</Typography>
-                    <Typography variant="body1">Usuario: {activity.educatorUsername}</Typography>
+                    <Typography variant="body1">
+                        Usuario:
+                        <UserLink
+                            username={activity.educatorUsername}
+                            userId={activity.educatorId}
+                        />
+                    </Typography>
                 </SectionBox>
 
                 <SectionBox>

@@ -6,7 +6,7 @@ import { Activity, ListActivityResponse } from '../interfaces/Activity';
 import { SelectChangeEvent } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { ActivitiesFilters } from '../interfaces/ActivitiesFilters';
+import { ActivitiesFilters } from '../interfaces/Filters';
 import { activityService } from '../services/activityService';
 import { userService } from '../services/userService';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -16,12 +16,13 @@ import { facilityService } from '../services/facilityService';
 import { DaySelector } from '../components/features/DaySelector';
 import { FilterSelect } from '../components/features/StyledFilters';
 import { SearchBar } from '../components/features/StyledSearchBar';
-import { parseDate } from '../services/dateService';
 import { cacheService } from '../services/cacheService';
 import CreateActivityButton from '../components/features/CreateActivityButton';
 import { useAuth } from '../components/auth/authContext';
+import { DataPagesProps } from '../interfaces/Pages';
+import { dateService } from '../services/dateService';
 
-const ActivitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
+const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -186,7 +187,7 @@ const ActivitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     }, []);
 
     const filteredActivities = activities.filter(activity => {
-        const { formattedDate, formattedTime } = parseDate(activity.date);
+        const { formattedDate, formattedTime } = dateService.parseDate(activity.date);
         const participants = `${activity.currentCapacity}/${activity.maximumCapacity}`;
 
         return activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

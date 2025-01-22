@@ -12,42 +12,80 @@ import pattern4 from '/images/decorative/soccer.png';
 
 import { Activity } from '../interfaces/Activity';
 import { activityService } from '../services/activityService';
-import { ActivitiesFilters } from '../interfaces/ActivitiesFilters';
+import { ActivitiesFilters } from '../interfaces/Filters';
 import { cacheService } from '../services/cacheService';
+import { DataPagesProps } from '../interfaces/Pages';
 import { useAuth } from '../components/auth/authContext';
 
-interface HomePageProps {
-    reload: boolean;
-}
-
-const HomePage: React.FC<HomePageProps> = ({ reload }) => {
+const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     const [activities, setActivities] = useState<Activity[]>([]);
     const role = localStorage.getItem('authUserRole');
     const userName = localStorage.getItem('authUserName');
+    const [activityImages, setActivityImages] = useState<{ [key: string]: string }>(() => cacheService.loadImages() || {});
     const { isAuthenticated } = useAuth();
+    const [reserveRoute, setReserveRoute] = useState<string>("/");
+
+
+    const cacheActivityImages = useCallback((activitiesArray: Activity[]) => {
+        setActivityImages((prevImagesMap) => {
+            const newImagesMap = { ...prevImagesMap };
+            activitiesArray.forEach((activity: Activity) => {
+                if (!newImagesMap[activity.id]) {
+                    newImagesMap[activity.id] = activity.image;
+                }
+            });
+            cacheService.saveImages(newImagesMap);
+            return newImagesMap;
+        });
+    }, []);
 
     const fetchActivities = useCallback(async () => {
+        if (!navigator.onLine) {
+            // Si no hay conexión, cargar desde el caché
+            const cachedActivities = cacheService.loadTopActivities();
+            const cachedImages = cacheService.loadImages();
+            setActivityImages(cachedImages);
+            setActivities(cachedActivities.map((activity: Activity) => ({
+                ...activity,
+                image: cachedImages[activity.id] || activity.image,
+            })));
+            return;
+        }
+
         try {
             const filters: ActivitiesFilters[] = [{ type: 'Casos de Uso', useCase: 'HomeView' }];
             const response = await activityService.getAllActivities(filters);
             const activitiesArray = response.result as Activity[];
-            setActivities(activitiesArray);
-            cacheService.saveTopActivities(activitiesArray);
+            cacheActivityImages(activitiesArray);
+            setActivities(activitiesArray.map(activity => ({
+                ...activity,
+                image: activityImages[activity.id] || activity.image,
+            })));
+            cacheService.saveTopActivities(activitiesArray); // Guardar en caché
         } catch (error) {
             console.error('Error fetching activities:', error);
             const cachedActivities = cacheService.loadTopActivities();
-            setActivities(cachedActivities);
+            const cachedImages = cacheService.loadImages();
+            setActivityImages(cachedImages);
+            setActivities(cachedActivities.map((activity: Activity) => ({
+                ...activity,
+                image: cachedImages[activity.id] || activity.image,
+            })));
         }
+    }, [cacheActivityImages, activityImages]);
+
+    useEffect(() => {
+        fetchActivities();
     }, []);
 
     useEffect(() => {
-        const cachedActivities = cacheService.loadTopActivities();
-        if (cachedActivities.length > 0) {
-            setActivities(cachedActivities);
-        } else {
-            fetchActivities();
+        if (isAuthenticated) {
+            setReserveRoute("/activities")
         }
-    }, [fetchActivities]);
+        else {
+            setReserveRoute("/login")
+        }
+    }, [isAuthenticated]);
 
     useEffect(() => {
         if (reload) {
@@ -153,7 +191,7 @@ const HomePage: React.FC<HomePageProps> = ({ reload }) => {
                             variant="contained"
                             size="large"
                             component={Link}
-                            to="/reservas"
+                            to={reserveRoute}
                             sx={{
                                 backgroundColor: '#FF6B6B',
                                 fontSize: '1.2rem',
