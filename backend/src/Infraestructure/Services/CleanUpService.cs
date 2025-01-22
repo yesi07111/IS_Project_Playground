@@ -2,7 +2,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Playground.Application.Commands.CleanUp;
-using Playground.Application.Services;
 
 namespace Playground.Infraestructure.Services
 {
@@ -10,7 +9,7 @@ namespace Playground.Infraestructure.Services
     /// Servicio que se ejecuta en segundo plano para realizar tareas de limpieza periódicas.
     /// Implementa IHostedService para integrarse con el ciclo de vida del host de la aplicación.
     /// </summary>
-    public class CleanUpService : ICleanUpService, IHostedService, IDisposable
+    public class CleanUpService : IHostedService, IDisposable
     {
         private readonly ILogger<CleanUpService> _logger;
         private Timer? _timer;
@@ -49,9 +48,8 @@ namespace Playground.Infraestructure.Services
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var command = new CleanUpUnverifiedUsersCommand();
                 var handler = scope.ServiceProvider.GetRequiredService<CleanUpUnverifiedUsersCommandHandler>();
-                handler.ExecuteAsync(command).Wait();
+                handler.ExecuteAsync().Wait();
             }
         }
 

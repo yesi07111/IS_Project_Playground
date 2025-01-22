@@ -6,7 +6,7 @@ using OneOf;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using Playground.Application.Commands.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.Infraestructure.Services;
 
@@ -55,7 +55,14 @@ public class EmailSenderService : IEmailSenderService
     /// <param name="email">La dirección de correo electrónico del destinatario.</param>
     /// <param name="resetCode">El código de restablecimiento de contraseña.</param>
     /// <returns>Una tarea que representa la operación asincrónica.</returns>
-    public Task SendPasswordResetCodeAsync(User user, string email, string resetCode) => throw new NotImplementedException();
+    public async Task SendPasswordResetCodeAsync(User user, string email, string resetCode)
+    {
+        string reducedCode = _codeGenerator.GenerateReducedCode(resetCode);
+
+        string message = $"Username: {user.UserName} \nCode: {reducedCode}";
+
+        await QueueSendEmailAsync(email, "Password Reset", message);
+    }
 
     /// <summary>
     /// Envía un enlace de restablecimiento de contraseña al correo electrónico del usuario.

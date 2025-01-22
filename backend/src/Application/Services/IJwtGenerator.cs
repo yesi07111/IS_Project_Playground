@@ -12,5 +12,5 @@ public interface IJwtGenerator
     /// </summary>
     /// <param name="user">El usuario para el que se genera el token.</param>
     /// <returns>Una tarea que representa la operación asincrónica, con el token JWT como resultado.</returns>
-    Task<string> GetToken(User user);
+    string GetToken(User user);
 }
