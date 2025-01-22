@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="FastEndpoints" Version="5.31.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
   </ItemGroup>
 
   <PropertyGroup>

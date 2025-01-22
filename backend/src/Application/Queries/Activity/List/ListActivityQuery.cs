@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Playground.Application.Queries.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.Application.Queries.Activity.List;
 

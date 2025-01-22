@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Playground.Application.Queries.User.List;
-using Playground.Application.Queries.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.WebApi.Endpoints.User;
 

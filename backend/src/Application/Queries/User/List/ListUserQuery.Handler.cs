@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Playground.Application.Factories;
-using Playground.Application.Queries.Dtos;
-using Playground.Application.Queries.Responses;
+using Playground.Application.Dtos;
+using Playground.Application.Responses;
 using Playground.Domain.Specifications;
 using Playground.Domain.Specifications.BaseSpecifications;
 using Playground.Domain.SmartEnum;
@@ -30,7 +30,7 @@ public class ListUserQueryHandler : CommandHandler<ListUserQuery, ListUserRespon
             {
                 if (AreAllPropertiesNull(query))
                 {
-                    users = await userRepository.GetAllAsync();
+                    users = await userRepository.GetAllAsync(u => u.Rol);
                 }
                 else
                 {
@@ -50,9 +50,9 @@ public class ListUserQueryHandler : CommandHandler<ListUserQuery, ListUserRespon
     {
         ISpecification<Domain.Entities.Auth.User> specification = new UserSpecification(user => true);
 
-        if (!string.IsNullOrEmpty(query.UserName))
+        if (!string.IsNullOrEmpty(query.Username))
         {
-            specification = specification.And(UserSpecification.ByUserName(query.UserName));
+            specification = specification.And(UserSpecification.ByUserName(query.Username));
         }
 
         if (!string.IsNullOrEmpty(query.Email))
@@ -93,7 +93,7 @@ public class ListUserQueryHandler : CommandHandler<ListUserQuery, ListUserRespon
 
     private static bool AreAllPropertiesNull(ListUserQuery query)
     {
-        return string.IsNullOrEmpty(query.UserName) &&
+        return string.IsNullOrEmpty(query.Username) &&
                string.IsNullOrEmpty(query.Email) &&
                string.IsNullOrEmpty(query.EmailConfirmed) &&
                string.IsNullOrEmpty(query.FirstName) &&
@@ -107,9 +107,11 @@ public class ListUserQueryHandler : CommandHandler<ListUserQuery, ListUserRespon
         return users.Select(user => new UserDto
         {
             Id = user.Id,
-            UserName = user.UserName!,
+            Username = user.UserName!,
             FirstName = user.FirstName,
-            LastName = user.LastName
+            LastName = user.LastName,
+            Email = user.Email!,
+            Rol = user.Rol.Name
         }).ToList();
     }
 }

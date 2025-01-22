@@ -9,7 +9,9 @@ import {
     Link as MuiLink,
     InputAdornment,
     IconButton,
-    Alert
+    Alert,
+    Checkbox,
+    FormControlLabel
 } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -17,41 +19,39 @@ import decoration1 from '/images/decorative/toy-train.png';
 import decoration2 from '/images/decorative/swing.png';
 import { authService } from '../services/authService';
 import { useAuth } from '../components/auth/authContext';
-import { FieldErrors } from '../types/FieldErrors';
+import { FieldErrors } from '../interfaces/Error';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import Swal from 'sweetalert2';
+import { tokenService } from '../services/tokenService';
+import { OnlinePagesProps } from '../interfaces/Pages';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
-/**
- * Componente funcional que representa la página de registro de usuario.
- * 
- * Este componente utiliza varios elementos de Material-UI para estructurar
- * la página, incluyendo `Box`, `Container`, `Paper`, `TextField`, `Button`,
- * `Typography`, `Link`, `InputAdornment`, `IconButton`, y `Alert`.
- * 
- * Funcionalidades principales:
- * - **Manejo de estado**: Utiliza `useState` para manejar el estado del formulario,
- *   errores de campo, visibilidad de la contraseña y mensajes de error.
- * - **Efectos secundarios**: Usa `useEffect` para manejar la persistencia de datos
- *   en `localStorage` y limpiar datos al cambiar de página.
- * - **Formulario de registro**: Permite al usuario ingresar sus datos personales
- *   y de cuenta, con validación de errores y manejo de visibilidad de la contraseña.
- * - **Navegación**: Utiliza `useNavigate` para redirigir al usuario tras un registro
- *   exitoso.
- * 
- * @returns {JSX.Element} El componente de la página de registro.
- */
-const RegisterPage: React.FC = () => {
+const RegisterPage: React.FC<OnlinePagesProps> = ({ online, useCaptcha }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
-    const { setCanAccessVerifyEmail } = useAuth();
+    const { setCanAccessVerifyEmail, login } = useAuth();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         email: '',
         username: '',
         password: '',
+        confirmPassword: '',
         userType: 'Parent'
     });
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+        statusCode: 0,
+        message: '',
+        errors: {}
+    });
+
+    const [passwordMatchError, setPasswordMatchError] = useState('');
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [isHuman, setIsHuman] = useState(false);
+
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     useEffect(() => {
         const storedFormData = localStorage.getItem('formData');
@@ -96,11 +96,6 @@ const RegisterPage: React.FC = () => {
         }
     }, [location.pathname]);
 
-    /**
-     * Maneja los cambios en los campos del formulario de registro.
-     * 
-     * @param {React.ChangeEvent<HTMLInputElement>} e - Evento de cambio del input.
-     */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newFormData = {
             ...formData,
@@ -108,23 +103,31 @@ const RegisterPage: React.FC = () => {
         };
         setFormData(newFormData);
         localStorage.setItem('formData', JSON.stringify(newFormData));
+
+        if (e.target.name === 'confirmPassword' || e.target.name === 'password') {
+            if (newFormData.password !== newFormData.confirmPassword) {
+                setPasswordMatchError('NO coinciden.');
+            } else {
+                setPasswordMatchError('Coinciden.');
+            }
+        }
     };
 
-    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
-        statusCode: 0,
-        message: '',
-        errors: {}
-    });
+    const handleCaptchaVerification = async () => {
+        if (!executeRecaptcha) {
+            console.log('El reCAPTCHA no está disponible todavía');
+            return;
+        }
 
-    /**
-     * Maneja el envío del formulario de registro.
-     * 
-     * Realiza el registro del usuario utilizando el servicio de autenticación.
-     * En caso de éxito, almacena el token de eliminación y redirige al usuario.
-     * En caso de error, muestra mensajes de error apropiados.
-     * 
-     * @param {React.FormEvent} e - Evento de envío del formulario.
-     */
+        const action = 'register';
+        const token = await executeRecaptcha(action);
+        setCaptchaToken(token);
+        console.log("Token Recaptcha:")
+        console.log(token)
+        setIsHuman(true);
+        console.log('CAPTCHA completado con éxito');
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setCanAccessVerifyEmail(true);
@@ -135,26 +138,42 @@ const RegisterPage: React.FC = () => {
             errors: {}
         });
 
-        const ToDelete = localStorage.getItem("ToDelete");
-        if (ToDelete) {
-            const storedFormData = localStorage.getItem('formData');
-            const deleteToken = localStorage.getItem('DeleteToken') ?? '';
-            if (storedFormData) {
-                setFormData(JSON.parse(storedFormData));
-                await authService.deleteUserFromDB(deleteToken, formData.firstName, formData.lastName, formData.username, formData.email, formData.userType);
-                localStorage.removeItem('DeleteToken');
-                localStorage.removeItem('ToDelete');
-            }
+        if (formData.password !== formData.confirmPassword) {
+            setPasswordMatchError('NO coinciden.');
+            return;
+        }
+
+        if (!isHuman) {
+            setError('Por favor, verifica que eres humano.');
+            return;
         }
 
         try {
+            if (online) {
+                if (useCaptcha && captchaToken) {
+                    const response = await authService.verifyCaptcha(captchaToken);
+                    if (!response.isValid) {
+                        console.log("Response del verifyCaptcha")
+                        console.table(response)
+                        setError('Se ha detectado un comportamiento sospechoso, por favor vuelva a intentarlo.');
+                        setIsHuman(false)
+                        return;
+                    }
+                } else {
+                    setError('Ha ocurrido un error inesperado, por favor vuelva a intentarlo.');
+                    setIsHuman(false)
+                    return;
+                }
+            }
+
+            // Proceder con el registro
             const result = await authService.register({
-                FirstName: formData.firstName,
-                LastName: formData.lastName,
-                Username: formData.username,
-                Password: formData.password,
-                Email: formData.email,
-                Rol: formData.userType
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                username: formData.username,
+                password: formData.password,
+                email: formData.email,
+                rol: formData.userType
             });
 
             if (result.id) {
@@ -163,6 +182,7 @@ const RegisterPage: React.FC = () => {
             localStorage.setItem('pendingVerificationEmail', formData.username);
             localStorage.setItem('authUserRole', result.rolName);
             formData.password = '';
+            formData.confirmPassword = '';
             localStorage.setItem('formData', JSON.stringify(formData));
             navigate('/verify-email');
         } catch (error) {
@@ -182,16 +202,6 @@ const RegisterPage: React.FC = () => {
         }
     };
 
-    /**
-     * Evalúa la fortaleza de la contraseña proporcionada.
-     * 
-     * La fortaleza se determina en función de la presencia de mayúsculas,
-     * minúsculas, números, caracteres especiales y longitud mínima.
-     * 
-     * @param {string} password - La contraseña a evaluar.
-     * @returns {{ label: string, color: string }} Un objeto que indica la etiqueta
-     * y el color asociado a la fortaleza de la contraseña.
-     */
     const evaluatePasswordStrength = (password: string) => {
         let strength = 0;
         if (/[A-Z]/.test(password)) strength++;
@@ -217,6 +227,93 @@ const RegisterPage: React.FC = () => {
                 color: '#ff0000'
             }
         }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+        if (credentialResponse.credential) {
+            try {
+                const tokenDecoded = await tokenService.decodeToken(credentialResponse.credential);
+                // Almacenar los datos en localStorage
+                if (tokenDecoded && tokenDecoded.claims) {
+                    const { given_name, family_name, picture, email, email_verified } = tokenDecoded.claims;
+                    const { value: username } = await Swal.fire({
+                        title: 'Introduce tu nombre de usuario',
+                        input: 'text',
+                        inputLabel: 'Nombre de usuario',
+                        inputPlaceholder: 'Introduce tu nombre de usuario',
+                        showCancelButton: true,
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'El nombre de usuario no puede estar vacío.';
+                            }
+                            if (value.length < 3 || value.length > 15) {
+                                return 'El nombre de usuario debe tener entre 3 y 15 caracteres.';
+                            }
+                            if (!/^(?=[a-zA-Z0-9._]{3,15}$)(?!.*[_.]{2})[^_.].*[^_.]$/.test(value)) {
+                                return 'Nombre de usuario no válido.';
+                            }
+                            if (value.trim().length === 0) {
+                                return 'El nombre de usuario no puede ser solo espacios en blanco.';
+                            }
+                            return null;
+                        }
+                    });
+
+                    if (username) {
+                        localStorage.setItem('username', username);
+                        try {
+                            if (given_name && family_name && picture && email && email_verified) {
+                                const response = await authService.googleAccess({
+                                    firstName: given_name,
+                                    lastName: family_name,
+                                    imageUrl: picture,
+                                    email: email,
+                                    isConfirmed: email_verified ? 'true' : 'false',
+                                    username: username,
+                                    rol: 'Parent',
+                                    action: 'register'
+                                });
+
+                                if (response.token && response.id && response.username) {
+                                    localStorage.setItem('authToken', response.token);
+                                    localStorage.setItem('authId', response.id);
+                                    localStorage.setItem('authUsername', response.username);
+                                    login();
+                                    tokenService.startTokenRefreshCheck();
+                                    navigate('/');
+                                }
+                            }
+                        } catch (error) {
+                            console.error("Error durante el registro con Google: ", error);
+                            throw error;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error al decodificar el token de autenticación de Google: ", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.',
+                });
+            }
+        } else {
+            console.error("No se recibió credencial en la respuesta.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se recibió credencial. Por favor, inténtalo de nuevo.',
+            });
+        }
+    };
+
+    const handleGoogleFailure = () => {
+        console.error('Fallo el inicio de sesión con Google');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Fallo el inicio de sesión con Google. Por favor, inténtalo de nuevo.',
+        });
     };
 
     return (
@@ -309,6 +406,25 @@ const RegisterPage: React.FC = () => {
                         ¡Únete a la diversión!
                     </Typography>
 
+                    {online && (
+                        <>
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleFailure}
+                            />
+
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    color: 'gray',
+                                    my: 2
+                                }}
+                            >
+                                o
+                            </Typography>
+                        </>
+                    )}
+
                     {error && (
                         <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
                             {error}
@@ -316,7 +432,7 @@ const RegisterPage: React.FC = () => {
                     )}
 
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
-                        {(['firstName', 'lastName', 'email', 'username', 'password'] as const).map((field) => (
+                        {(['firstName', 'lastName', 'email', 'username', 'password', 'confirmPassword'] as const).map((field) => (
                             <TextField
                                 key={field}
                                 margin="normal"
@@ -329,17 +445,18 @@ const RegisterPage: React.FC = () => {
                                         {field === 'email' && 'Correo Electrónico '}
                                         {field === 'username' && 'Nombre de Usuario '}
                                         {field === 'password' && 'Contraseña '}
+                                        {field === 'confirmPassword' && 'Confirmar Contraseña '}
                                         <span style={{ color: '#ff0000' }}>*</span>
                                     </span>
                                 }
-                                type={field === 'password' ? (showPassword ? 'text' : 'password') : 'text'}
+                                type={(field === 'password' || field === 'confirmPassword') ? (showPassword ? 'text' : 'password') : 'text'}
                                 id={field}
                                 value={formData[field]}
                                 onChange={handleChange}
                                 error={!!fieldErrors.errors[field]}
                                 helperText={fieldErrors.errors[field]?.join(' ')}
                                 slotProps={{
-                                    input: field === 'password' ? {
+                                    input: (field === 'password' || field === 'confirmPassword') ? {
                                         endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton
@@ -376,7 +493,29 @@ const RegisterPage: React.FC = () => {
                             </Typography>
                         )}
 
-                        <input type="hidden" name="userType" value={formData.userType} />
+                        {formData.confirmPassword && (
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    mt: 1,
+                                    mb: 2
+                                }}
+                            >
+                                Las contraseñas: <span style={{ color: passwordMatchError.includes('NO') ? 'red' : 'green' }}>{passwordMatchError}</span>
+                            </Typography>
+                        )}
+
+                        {online && useCaptcha && (<FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={isHuman}
+                                    onChange={handleCaptchaVerification}
+                                    name="isHuman"
+                                    color="primary"
+                                />
+                            }
+                            label="Verifica que eres humano"
+                        />)}
 
                         <Button
                             type="submit"
@@ -391,6 +530,7 @@ const RegisterPage: React.FC = () => {
                                     backgroundColor: 'primary.dark'
                                 }
                             }}
+                            disabled={formData.password !== formData.confirmPassword || (online && useCaptcha && !captchaToken)}
                         >
                             Registrarse
                         </Button>

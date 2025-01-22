@@ -1,39 +1,36 @@
-using FastEndpoints;
-using Playground.Application.Commands.Responses;
 using Playground.Application.Factories;
 using Playground.Application.Repositories;
-using Playground.Domain.Entities.Auth;
+using Playground.Application.Responses;
 using Playground.Domain.Specifications;
 
-namespace Playground.Application.Commands.CleanUp
+namespace Playground.Application.Commands.CleanUp;
+
+public class CleanUpUnverifiedUsersCommandHandler
 {
-    public class CleanUpUnverifiedUsersCommandHandler : CommandHandler<CleanUpUnverifiedUsersCommand, CleanUpUnverifiedUsersResponse>
+    private readonly IRepository<Domain.Entities.Auth.User> _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CleanUpUnverifiedUsersCommandHandler(IRepositoryFactory repositoryFactory, IUnitOfWork unitOfWork)
     {
-        private readonly IRepository<User> _userRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        _userRepository = repositoryFactory.CreateRepository<Domain.Entities.Auth.User>();
+        _unitOfWork = unitOfWork;
+    }
 
-        public CleanUpUnverifiedUsersCommandHandler(IRepositoryFactory repositoryFactory, IUnitOfWork unitOfWork)
+    public async Task<CleanUpUnverifiedUsersResponse> ExecuteAsync(CancellationToken ct = default)
+    {
+        var unverifiedUsersSpecification = UserSpecification.ByEmailConfirmed(false)
+            .And(UserSpecification.ByCreatedAt(DateTime.UtcNow.AddDays(-7), "less"))
+            .And(UserSpecification.ByDeletedAt(null));
+
+        var users = (await _userRepository.GetBySpecificationAsync(unverifiedUsersSpecification)).ToList();
+
+        foreach (var user in users)
         {
-            _userRepository = repositoryFactory.CreateRepository<User>();
-            _unitOfWork = unitOfWork;
+            _userRepository.MarkDeleted(user);
         }
 
-        public override async Task<CleanUpUnverifiedUsersResponse> ExecuteAsync(CleanUpUnverifiedUsersCommand command, CancellationToken ct = default)
-        {
-            var unverifiedUsersSpecification = UserSpecification.ByEmailConfirmed(false)
-                .And(UserSpecification.ByCreatedAt(DateTime.UtcNow.AddDays(-7), "less"))
-                .And(UserSpecification.ByDeletedAt(null));
+        await _unitOfWork.CommitAsync();
 
-            var users = (await _userRepository.GetBySpecificationAsync(unverifiedUsersSpecification)).ToList();
-
-            foreach (var user in users)
-            {
-                _userRepository.MarkDeleted(user);
-            }
-
-            await _unitOfWork.CommitAsync();
-
-            return new CleanUpUnverifiedUsersResponse(users.Count);
-        }
+        return new CleanUpUnverifiedUsersResponse(users.Count);
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextField } from '@mui/material';
-import { SearchBarProps } from '../../interfaces/SearchBarProps';
+import { SearchBarProps } from '../../interfaces/Filters';
 
 export const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, handleSearchChange, labelText }) => {
     return (

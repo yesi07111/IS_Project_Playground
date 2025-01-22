@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Container,
@@ -17,32 +17,21 @@ import kidsBalloons from '/images/decorative/learning.png';
 import kidsStudying from '/images/decorative/tree-house.png';
 import { useAuth } from '../components/auth/authContext';
 import { authService } from '../services/authService';
-import { FieldGeneralErrors } from '../types/FieldGeneralErrors'
+import { FieldGeneralErrors } from '../interfaces/Error';
+import Swal from 'sweetalert2';
+import { OnlinePagesProps } from '../interfaces/Pages';
+import { passwordService } from '../services/passwordService';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import { tokenService } from '../services/tokenService';
 
-/**
- * Componente funcional que representa la página de inicio de sesión.
- * 
- * Este componente utiliza varios elementos de Material-UI para estructurar
- * la página, incluyendo `Box`, `Container`, `Paper`, `TextField`, `Button`,
- * `Typography`, `Link`, `InputAdornment`, `IconButton`, y `Alert`.
- * 
- * Funcionalidades principales:
- * - **Manejo de estado**: Utiliza `useState` para manejar el estado del formulario,
- *   errores de campo, visibilidad de la contraseña y mensajes de error.
- * - **Autenticación**: Usa el contexto de autenticación `useAuth` para manejar
- *   el inicio de sesión y la navegación posterior.
- * - **Formulario de inicio de sesión**: Permite al usuario ingresar su identificador
- *   y contraseña, con validación de errores y manejo de visibilidad de la contraseña.
- * - **Navegación**: Utiliza `useNavigate` para redirigir al usuario tras un inicio
- *   de sesión exitoso.
- * 
- * @returns {JSX.Element} El componente de la página de inicio de sesión.
- */
-const LoginPage: React.FC = () => {
+const LoginPage: React.FC<OnlinePagesProps> = ({ online }) => {
     const [showPassword, setShowPassword] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
+    const [lockoutDuration, setLockoutDuration] = useState<number | null>(null);
+    const [lockoutIdentifier, setLockoutIdentifier] = useState<string | null>(null);
+    const { setCanAccessPasswordReset } = useAuth();
     const [formData, setFormData] = useState({
         identifier: '',
         password: ''
@@ -56,11 +45,6 @@ const LoginPage: React.FC = () => {
         }
     });
 
-    /**
-     * Maneja los cambios en los campos del formulario de inicio de sesión.
-     * 
-     * @param {React.ChangeEvent<HTMLInputElement>} e - Evento de cambio del input.
-     */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
@@ -68,22 +52,10 @@ const LoginPage: React.FC = () => {
         });
     };
 
-    /**
- * Maneja el cambio a la página de registro.
- */
     const handleRegister = () => {
-        navigate('/register')
-    }
+        navigate('/register');
+    };
 
-    /**
-     * Maneja el envío del formulario de inicio de sesión.
-     * 
-     * Realiza la autenticación del usuario utilizando el servicio de autenticación.
-     * En caso de éxito, almacena el token de autenticación y redirige al usuario.
-     * En caso de error, muestra mensajes de error apropiados.
-     * 
-     * @param {React.FormEvent} e - Evento de envío del formulario.
-     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -94,6 +66,11 @@ const LoginPage: React.FC = () => {
                 generalErrors: []
             }
         });
+
+        if (lockoutDuration && lockoutIdentifier === formData.identifier) {
+            handleLoginClick();
+            return;
+        }
 
         try {
             const response = await authService.login(
@@ -119,7 +96,6 @@ const LoginPage: React.FC = () => {
                         break;
                 }
             }
-
         } catch (error) {
             const apiError = error as FieldGeneralErrors;
             if (apiError && apiError.errors) {
@@ -128,10 +104,132 @@ const LoginPage: React.FC = () => {
                     message: apiError.message || 'Ocurrieron errores de validación.',
                     errors: apiError.errors
                 });
+
+                const lockoutMatch = apiError.errors.generalErrors[0].match(/(\d+) minutos/);
+                if (lockoutMatch) {
+                    const duration = parseInt(lockoutMatch[1], 10);
+                    setLockoutDuration(duration * 60);
+                    setLockoutIdentifier(formData.identifier);
+                }
             } else {
                 setError('Hubo un error durante el inicio de sesión. Por favor, inténtalo de nuevo.');
             }
         }
+    };
+
+    useEffect(() => {
+        if (lockoutDuration) {
+            const timer = setInterval(() => {
+                setLockoutDuration((prev) => {
+                    if (prev && prev > 1) {
+                        return prev - 1;
+                    } else {
+                        clearInterval(timer);
+                        setFieldGeneralErrors({
+                            statusCode: 0,
+                            message: '',
+                            errors: {
+                                generalErrors: []
+                            }
+                        });
+                        setLockoutIdentifier(null);
+                        return null;
+                    }
+                });
+            }, 1000);
+
+            return () => clearInterval(timer);
+        }
+    }, [lockoutDuration]);
+
+    const handleLoginClick = () => {
+        if (lockoutDuration) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cuenta bloqueada',
+                text: `La cuenta está bloqueada por ${Math.floor(lockoutDuration / 60)}:${(lockoutDuration % 60).toString().padStart(2, '0')} minutos debido a 5 intentos fallidos. Si reestableces tu contraseña puedes acceder nuevamente a tu cuenta.`,
+                showCancelButton: true,
+                confirmButtonText: 'Restablecer contraseña',
+                cancelButtonText: 'Cerrar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleResetPassword();
+                }
+            });
+        }
+    };
+
+    const handleResetPassword = async () => {
+        const response = await passwordService.ResetPassword();
+        if (response) {
+            setCanAccessPasswordReset(true);
+            navigate('/reset-password');
+        }
+    };
+
+
+    const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+        if (credentialResponse.credential) {
+            try {
+                const tokenDecoded = await tokenService.decodeToken(credentialResponse.credential);
+                // Almacenar los datos en localStorage
+                if (tokenDecoded && tokenDecoded.claims) {
+                    const { given_name, family_name, picture, email, email_verified } = tokenDecoded.claims;
+
+                    try {
+                        if (given_name && family_name && picture && email && email_verified) {
+                            const response = await authService.googleAccess({
+                                firstName: given_name,
+                                lastName: family_name,
+                                imageUrl: picture,
+                                email: email,
+                                isConfirmed: email_verified ? 'true' : 'false',
+                                username: '',
+                                rol: 'Parent',
+                                action: 'login'
+                            });
+
+                            if (response.token && response.id && response.username) {
+                                localStorage.setItem('authToken', response.token);
+                                localStorage.setItem('authId', response.id);
+                                localStorage.setItem('authUsername', response.username);
+                                login();
+                                tokenService.startTokenRefreshCheck();
+                                navigate('/');
+                            }
+
+                        }
+                    } catch (error) {
+                        const generalError = error as FieldGeneralErrors;
+                        setFieldGeneralErrors(generalError);
+                    }
+                }
+            } catch (error) {
+                console.error("Error al decodificar el token de autenticación de Google: ", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.',
+                });
+            }
+        } else {
+            console.error("No se recibió credencial en la respuesta.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se recibió credencial. Por favor, inténtalo de nuevo.',
+            });
+        }
+    };
+
+
+    const handleGoogleFailure = () => {
+        console.error('Fallo el inicio de sesión con Google');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Fallo el inicio de sesión con Google. Por favor, inténtalo de nuevo.',
+        });
     };
 
     return (
@@ -220,8 +318,7 @@ const LoginPage: React.FC = () => {
                             color: 'primary.main',
                             fontWeight: 700,
                             mb: 4
-                        }}
-                    >
+                        }}>
                         ¡Bienvenido de nuevo!
                     </Typography>
 
@@ -235,6 +332,32 @@ const LoginPage: React.FC = () => {
                         <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
                             {fieldGeneralErrors.errors.generalErrors.join(' ')}
                         </Alert>
+                    )}
+
+                    {online && (
+                        <>
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleFailure}
+                            />
+
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    color: 'gray',
+                                    my: 2
+                                }}
+                            >
+
+                                o
+                            </Typography>
+                        </>
+                    )}
+
+                    {lockoutDuration && (
+                        <Typography variant="body2" sx={{ mb: 0 }}>
+                            Tiempo restante de bloqueo: {Math.floor(lockoutDuration / 60)}:{(lockoutDuration % 60).toString().padStart(2, '0')}
+                        </Typography>
                     )}
 
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
@@ -279,13 +402,31 @@ const LoginPage: React.FC = () => {
                                     } : undefined
                                 }}
                                 sx={{
-                                    mb: 3,
+                                    mb: 0,
+                                    mt: 4,
                                     '& .MuiInputBase-root': {
                                         backgroundColor: 'rgba(255, 255, 255, 0.7)'
                                     }
                                 }}
                             />
                         ))}
+
+                        <Typography variant="body2" sx={{ textAlign: 'right', mb: 2, fontSize: '0.960rem' }}>
+                            <MuiLink
+                                component={Link}
+                                to="/reset-password"
+                                sx={{
+                                    color: 'primary.main',
+                                    textDecoration: 'none',
+                                    '&:hover': {
+                                        textDecoration: 'underline'
+                                    }
+                                }}
+                                onClick={handleResetPassword}
+                            >
+                                ¿Olvidaste tu contraseña?
+                            </MuiLink>
+                        </Typography>
 
                         <Button
                             type="submit"
@@ -300,6 +441,7 @@ const LoginPage: React.FC = () => {
                                     backgroundColor: 'primary.dark'
                                 }
                             }}
+                            onClick={handleLoginClick}
                         >
                             Iniciar Sesión
                         </Button>

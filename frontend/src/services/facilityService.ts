@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FacilityFilters } from '../interfaces/FacilityFilters';
+import { FacilityFilters } from '../interfaces/Filters';
 
 const API_URL = 'http://localhost:5117/api';
 

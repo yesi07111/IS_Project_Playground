@@ -1,11 +1,11 @@
 using FastEndpoints;
-using Playground.Application.Queries.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.Application.Queries.User.List;
 
 public record ListUserQuery : ICommand<ListUserResponse>
 {
-    public string? UserName { get; init; }
+    public string? Username { get; init; }
     public string? Email { get; init; }
     public string? EmailConfirmed { get; init; }
     public string? FirstName { get; init; }

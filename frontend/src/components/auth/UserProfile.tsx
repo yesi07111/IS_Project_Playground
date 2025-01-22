@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IconButton, Menu, MenuItem, Avatar } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './authContext';
 
 /**
@@ -13,8 +13,11 @@ import { useAuth } from './authContext';
  * @returns {JSX.Element} El componente de perfil de usuario con el menú desplegable.
  */
 const UserProfile: React.FC = () => {
-    const { logout, isEmailVerified } = useAuth(); // Cambia a isEmailVerified
+    const { logout } = useAuth();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const userId = localStorage.getItem('authId');
+    const navigate = useNavigate();
+
 
     /**
      * Maneja la apertura del menú al hacer clic en el botón de ícono.
@@ -30,6 +33,7 @@ const UserProfile: React.FC = () => {
      */
     const handleClose = () => {
         setAnchorEl(null);
+        navigate('/'); // Redirigir a la página de inicio
     };
 
     return (
@@ -70,11 +74,8 @@ const UserProfile: React.FC = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleClose} component={Link} to="/profile">Ver Perfil</MenuItem>
-                {!isEmailVerified && (
-                    <MenuItem onClick={handleClose} component={Link} to="/verify-email">Verificar Email</MenuItem>
-                )}
-                <MenuItem onClick={handleClose} component={Link} to="/reservas">Ver Mis Reservas</MenuItem>
+                <MenuItem onClick={handleClose} component={Link} to={`/profile/${userId}`}>Ver Perfil</MenuItem>
+                <MenuItem onClick={handleClose} component={Link} to={`/my-reservations/${userId}`}>Ver Mis Reservas</MenuItem>
                 <MenuItem onClick={handleClose} component={Link} to="/reviews">Ver Mis Reseñas</MenuItem>
                 <MenuItem onClick={() => { handleClose(); logout(); }}>Cerrar Sesión</MenuItem>
             </Menu>

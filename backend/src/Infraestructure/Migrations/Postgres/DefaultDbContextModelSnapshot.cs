@@ -17,86 +17,11 @@ namespace Infraestructure.Migrations.Postgres
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("public")
                 .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
@@ -117,22 +42,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserLogins", "public");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -151,7 +61,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", "public");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Activity", b =>
@@ -199,7 +109,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasIndex("FacilityId");
 
-                    b.ToTable("Activity");
+                    b.ToTable("Activity", "public");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.ActivityDate", b =>
@@ -233,7 +143,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("ActivityDate");
+                    b.ToTable("ActivityDate", "public");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Auth.Rol", b =>
@@ -248,7 +158,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasKey("Id");
 
-                    b.ToTable("Rol");
+                    b.ToTable("Rol", "public");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Auth.User", b =>
@@ -338,7 +248,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasIndex("RolId");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers", "public");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Facility", b =>
@@ -377,7 +287,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasKey("Id");
 
-                    b.ToTable("Facility");
+                    b.ToTable("Facility", "public");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Reservation", b =>
@@ -418,7 +328,7 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Reservation");
+                    b.ToTable("Reservation", "public");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Resource", b =>
@@ -451,45 +361,14 @@ namespace Infraestructure.Migrations.Postgres
                     b.Property<DateTime>("UpdateAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UseFrequency")
-                        .HasColumnType("integer");
+                    b.Property<float>("UseFrecuency")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FacilityId");
 
-                    b.ToTable("Resource");
-                });
-
-            modelBuilder.Entity("Playground.Domain.Entities.ResourceDate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UseFrequency")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.ToTable("ResourceDate");
+                    b.ToTable("Resource", "public");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Review", b =>
@@ -526,44 +405,44 @@ namespace Infraestructure.Migrations.Postgres
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Review");
+                    b.ToTable("Review", "public");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Playground.Domain.Entities.UserProfileImages", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("Playground.Domain.Entities.Auth.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OtherImages")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProfileImage")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserProfileImages", "public");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Playground.Domain.Entities.Auth.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Playground.Domain.Entities.Auth.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -647,17 +526,6 @@ namespace Infraestructure.Migrations.Postgres
                     b.Navigation("Facility");
                 });
 
-            modelBuilder.Entity("Playground.Domain.Entities.ResourceDate", b =>
-                {
-                    b.HasOne("Playground.Domain.Entities.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-                });
-
             modelBuilder.Entity("Playground.Domain.Entities.Review", b =>
                 {
                     b.HasOne("Playground.Domain.Entities.ActivityDate", "ActivityDate")
@@ -673,6 +541,15 @@ namespace Infraestructure.Migrations.Postgres
                     b.Navigation("ActivityDate");
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Playground.Domain.Entities.UserProfileImages", b =>
+                {
+                    b.HasOne("Playground.Domain.Entities.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Playground.Domain.Entities.Auth.Rol", b =>

@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { ActivitiesFilters } from '../interfaces/ActivitiesFilters';
-import { ActivityData, ActivityDetailArray, ListActivityResponse } from '../interfaces/Activity';
+import { ActivitiesFilters } from '../interfaces/Filters';
+import { ActivityData, GetActivityResponse, ListActivityResponse } from '../interfaces/Activity';
+import { ReservationCreationResponse, ReservationFormData } from '../interfaces/Reservation';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -24,7 +25,7 @@ export const activityService = {
         }
     },
 
-    getActivity: async (id: string, useCase: string): Promise<ActivityDetailArray> => {
+    getActivity: async (id: string, useCase: string): Promise<GetActivityResponse> => {
         try {
             const query = new URLSearchParams({ Id: id, UseCase: useCase }).toString();
             const response = await axios.get(`${API_URL}/activity/get?${query}`);
@@ -35,6 +36,18 @@ export const activityService = {
                 throw error.response.data || 'Error al obtener los detalles de la actividad.';
             } else {
                 throw 'Ha ocurrido un error inesperado al obtener los detalles de la actividad.';
+            }
+        }
+    },
+    reserveActivityDate: async (data: ReservationFormData): Promise<ReservationCreationResponse> => {
+        try {
+            const response = await axios.post(`${API_URL}/activity/reserve`, data);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al reservar para esta actividad.');
             }
         }
     },

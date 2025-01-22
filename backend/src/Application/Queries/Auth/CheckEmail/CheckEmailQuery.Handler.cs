@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Playground.Application.Factories;
-using Playground.Application.Queries.Responses;
+using Playground.Application.Responses;
 using Playground.Application.Repositories;
 
 namespace Playground.Application.Queries.CheckEmail;
@@ -23,9 +23,9 @@ public class CheckEmailQueryHandler : CommandHandler<CheckEmailQuery, CheckEmail
             ThrowError($"No se encontró al usuario con id {query.Id}");
         }
 
-        if (user.UserName != query.UserName)
+        if (user.UserName != query.Username)
         {
-            ThrowError($"No coincide el nombre del usuario: {user.UserName} con el proporcionado: {query.UserName}");
+            ThrowError($"No coincide el nombre del usuario: {user.UserName} con el proporcionado: {query.Username}");
 
         }
 

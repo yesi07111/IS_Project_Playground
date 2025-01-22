@@ -6,6 +6,9 @@ using Playground.Application.Factories;
 using Playground.Application.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+
+//    "SecretKeyOld": "6Lehl60qAAAAALMOs19mjSscXIm28fY2lo7WwlGi",
+//     "SiteKeyOld": "6Lehl60qAAAAAAOjg1ltmhMzDS-S-qoqEMYOBVXq"
 namespace Playground.WebApi;
 
 public static class Seeder
@@ -42,6 +45,7 @@ public static class Seeder
         context.Set<Activity>().RemoveRange(context.Set<Activity>());
         context.Set<Facility>().RemoveRange(context.Set<Facility>());
         context.Set<Resource>().RemoveRange(context.Set<Resource>());
+        context.Set<UserProfileImages>().RemoveRange(context.Set<UserProfileImages>());
         context.Users.RemoveRange(context.Users);
 
         await unitOfWork.CommitAsync();
@@ -832,7 +836,7 @@ public static class Seeder
                 .Distinct()
                 .ToList();
 
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 18; i++)
             {
                 if (parentsWithReservations.Count == 0)
                     break; // Si no hay padres con reservas, salir del bucle

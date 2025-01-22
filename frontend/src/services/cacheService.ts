@@ -9,6 +9,7 @@ const CACHE_KEY_FACILITY_TYPES = 'cachedFacilityTypes';
 const CACHE_KEY_ACTIVITY_TYPES = 'cachedActivityTypes';
 const CACHE_KEY_EDUCATORS = 'cachedEducators';
 const CACHE_KEY_TOP_ACTIVITIES = 'cachedTopActivities';
+const CACHE_KEY_PROFILE_IMAGES = 'cachedProfileImages'
 const CACHE_KEY_RESOURCE_TYPES = 'cachedResourceTypes';
 const CACHE_KEY_FACILITY_NAMES = 'cachedFacilityNames';
 
@@ -113,6 +114,18 @@ export const cacheService = {
   loadTopActivities: () => {
     const cachedTopActivities = localStorage.getItem(CACHE_KEY_TOP_ACTIVITIES);
     return cachedTopActivities ? JSON.parse(cachedTopActivities) : [];
+  },
+
+  saveUserImages: (username: string, mainImage: string, otherImages: string[]) => {
+    const cachedImages = cacheService.loadImages();
+    cachedImages[username] = { main: mainImage, others: otherImages };
+    localStorage.setItem(CACHE_KEY_PROFILE_IMAGES, JSON.stringify(cachedImages));
+  },
+
+  loadUserImages: (username: string) => {
+    const cachedImages = localStorage.getItem(CACHE_KEY_PROFILE_IMAGES);
+    const cachedImagesObject = cachedImages ? JSON.parse(cachedImages) : {};
+    return cachedImagesObject[username] || { main: '', others: [] };
   },
 
   clearCache: () => {

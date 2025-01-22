@@ -5,7 +5,8 @@ import kidsPlay from '/images/decorative/xylophone.png';
 import stars from '/images/decorative/toy-train.png';
 import { authService } from '../services/authService';
 import { useAuth } from '../components/auth/authContext';
-import { FieldErrors } from '../types/FieldErrors';
+import { FieldErrors } from '../interfaces/Error';
+import { tokenService } from '../services/tokenService';
 
 /**
  * Componente funcional que representa la página de verificación de correo electrónico.
@@ -53,14 +54,11 @@ const VerifyEmailPage: React.FC = () => {
 
     useEffect(() => {
         const handleRouteChange = () => {
-            const currentPage = window.location.pathname;
             const storedData = localStorage.getItem('formData');
             const deleteToken = localStorage.getItem('DeleteToken');
 
-            console.log("Log desde VerifyEmailPage. wwindow.location.pathname: " + currentPage + ". StoredData: " + storedData + ". DeleteToken: " + deleteToken + ".")
             if (storedData && deleteToken) {
                 localStorage.setItem("ToDelete", "true");
-
             }
         };
 
@@ -93,12 +91,15 @@ const VerifyEmailPage: React.FC = () => {
         }
         try {
             const response = await authService.verifyEmail(userName, verificationCode);
+            console.log("Response de verify")
+            console.table(response)
             if (response.token && response.id && response.username) {
-                await clearLocalStorage();
+                clearLocalStorage();
                 localStorage.setItem('authToken', response.token);
                 localStorage.setItem('authId', response.id);
-                localStorage.setItem('authUserName', response.username);
+                localStorage.setItem('authUsername', response.username);
                 login();
+                tokenService.startTokenRefreshCheck();
                 navigate('/');
             }
         } catch (err) {
@@ -132,7 +133,8 @@ const VerifyEmailPage: React.FC = () => {
             return;
         }
         try {
-            await authService.resendVerificationCode(userName);
+            const res = await authService.resendVerificationCode(userName);
+            console.table(res)
             setSuccess('Código de verificación reenviado con éxito.');
             setIsResendDisabled(true);
             setTimeLeft(180); // 180 seconds = 3 minutes

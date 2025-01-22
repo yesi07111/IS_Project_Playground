@@ -1,9 +1,8 @@
 using Ardalis.SmartEnum;
 using FastEndpoints;
-using Microsoft.AspNetCore.Mvc;
 using Playground.Application.Factories;
-using Playground.Application.Queries.Dtos;
-using Playground.Application.Queries.Responses;
+using Playground.Application.Dtos;
+using Playground.Application.Responses;
 using Playground.Application.Repositories;
 using Playground.Application.Services;
 using Playground.Domain.Entities;
@@ -86,6 +85,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
                         Color = "white",
                         MaximumCapacity = ad.Activity.Facility.MaximumCapacity,
                         CurrentCapacity = ad.ReservedPlaces,
+                        IsPublic = ad.Activity.ItsPrivate ? "false" : "true",
                     })
                     .OrderByDescending(dto => dto.Rating)
                     .Take(3)

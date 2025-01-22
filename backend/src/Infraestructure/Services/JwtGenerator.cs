@@ -4,7 +4,6 @@ using Playground.Application.Services;
 using Playground.Domain.Entities.Auth;
 using Playground.Infraestructure.Configurations;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -38,21 +37,16 @@ public class JwtGenerator : IJwtGenerator
     /// </summary>
     /// <param name="user">El usuario para el que se genera el token.</param>
     /// <returns>Una tarea que representa la operación asincrónica, con el token JWT como resultado.</returns>
-    public async Task<string> GetToken(User user)
+    public string GetToken(User user)
     {
         var credentials = new SigningCredentials(options.EncryptedKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
-            new Claim(ClaimTypes.NameIdentifier, user.Id ?? string.Empty),
-            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+            new(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new(ClaimTypes.NameIdentifier, user.Id ?? string.Empty),
+            new(ClaimTypes.Email, user.Email ?? string.Empty),
         };
-
-        var roles = (await userManager.GetRolesAsync(user))
-                                      .Select(r => new Claim(ClaimTypes.Role, r));
-
-        claims.AddRange(roles);
 
         var token = new JwtSecurityToken(options.Issuer,
                                          options.Audience,

@@ -1,19 +1,27 @@
 using FastEndpoints;
 using Playground.Application.Commands.CleanUp;
-using Playground.Application.Commands.Responses;
+using Playground.Application.Responses;
 
 namespace Playground.WebApi.Endpoints;
 
-public class CleanUpUnverifiedUsersEndpoint : Endpoint<CleanUpUnverifiedUsersCommand, CleanUpUnverifiedUsersResponse>
+public class CleanUpUnverifiedUsersEndpoint : EndpointWithoutRequest<CleanUpUnverifiedUsersResponse>
 {
+    private readonly CleanUpUnverifiedUsersCommandHandler _commandHandler;
+
+    public CleanUpUnverifiedUsersEndpoint(CleanUpUnverifiedUsersCommandHandler commandHandler)
+    {
+        _commandHandler = commandHandler;
+    }
+
     public override void Configure()
     {
         Delete("auth/cleanup-unverified-users");
         AllowAnonymous();
     }
 
-    public override Task<CleanUpUnverifiedUsersResponse> ExecuteAsync(CleanUpUnverifiedUsersCommand req, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
-        return req.ExecuteAsync(ct);
+        var response = await _commandHandler.ExecuteAsync(ct);
+        await SendAsync(response, cancellation: ct);
     }
 }

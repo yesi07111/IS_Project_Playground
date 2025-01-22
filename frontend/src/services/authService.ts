@@ -1,6 +1,9 @@
 import axios from 'axios';
-import { RegisterData } from '../interfaces/RegisterData';
-import { UserResponse } from '../interfaces/UserActionResponse';
+import {
+    DeleteFailUserResponse, GoogleAccessData, RegisterData, UserActionResponse, GoogleTokenValidationResponse,
+    CheckEmailResponse, ReCaptchaVerificationResponse, ReCaptchaSiteKeyResponse, GoogleClientIdResponse,
+} from '../interfaces/Auth';
+import { UserCreationResponse } from '../interfaces/Auth';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -19,11 +22,9 @@ export const authService = {
      * @returns {Promise<any>} Los datos de la respuesta del servidor.
      * @throws {Error} Si ocurre un error durante el registro.
      */
-    register: async (data: RegisterData) => {
+    register: async (data: RegisterData): Promise<UserActionResponse> => {
         try {
-            console.log("Esta llamando al back, respuesta:")
             const response = await axios.post(`${API_URL}/auth/register`, data);
-            console.table(response.data)
             return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
@@ -47,7 +48,7 @@ export const authService = {
      * @returns {Promise<any>} Los datos de la respuesta del servidor.
      * @throws {Error} Si ocurre un error durante la verificación del correo.
      */
-    verifyEmail: async (Username: string, code: string) => {
+    verifyEmail: async (Username: string, code: string): Promise<UserActionResponse> => {
         try {
             const response = await axios.get(`${API_URL}/auth/confirm-email`, {
                 params: { username: Username, code }
@@ -65,7 +66,7 @@ export const authService = {
     /**
      * Reenvía el código de verificación al correo electrónico del usuario.
      * 
-     * Este método envía una solicitud POST al endpoint de reenvío de código de verificación
+     * Este método envía una solicitud GET al endpoint de reenvío de código de verificación
      * con el nombre de usuario. Si la solicitud es exitosa, devuelve los datos de la respuesta.
      * En caso de error, lanza un mensaje de error específico si es un error de Axios, o un mensaje
      * genérico si es otro tipo de error.
@@ -74,9 +75,11 @@ export const authService = {
      * @returns {Promise<any>} Los datos de la respuesta del servidor.
      * @throws {Error} Si ocurre un error al reenviar el código de verificación.
      */
-    resendVerificationCode: async (userName: string) => {
+    resendVerificationCode: async (userName: string): Promise<UserCreationResponse> => {
         try {
-            const response = await axios.post(`${API_URL}/auth/resend-verification-email`, { userName });
+            // Construir la URL con los parámetros de consulta
+            const queryParams = new URLSearchParams({ userName }).toString();
+            const response = await axios.get(`${API_URL}/auth/resend-verification-email?${queryParams}`);
             return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
@@ -101,10 +104,8 @@ export const authService = {
      * @param {string} email - Correo electrónico del usuario.
      * @param {string} userType - Tipo de usuario.
      */
-    deleteUserFromDB: async (id: string, firstName: string, lastName: string, userName: string, email: string, userType: string) => {
+    deleteUserFromDB: async (id: string, firstName: string, lastName: string, userName: string, email: string, userType: string): Promise<DeleteFailUserResponse> => {
         try {
-            console.log("Va a llamar a delete-fail-user en back");
-
             // Construir la URL con los parámetros de consulta
             const queryParams = new URLSearchParams({
                 id,
@@ -116,15 +117,21 @@ export const authService = {
             }).toString();
 
             // Hacer la solicitud DELETE con los parámetros de consulta
-            await axios.delete(`${API_URL}/auth/delete-fail-user?${queryParams}`);
-        } catch (error) {
-            console.error('Error al borrar al usuario:', error);
+            const response = await axios.delete(`${API_URL}/auth/delete-fail-user?${queryParams}`);
+            return response.data;
+
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error eliminando al usuario.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al intentar eliminar al usuario.';
+            }
         }
     },
     /**
      * Inicia sesión en el sistema.
      * 
-     * Este método envía una solicitud POST al endpoint de inicio de sesión con el identificador
+     * Este método envía una solicitud GET al endpoint de inicio de sesión con el identificador
      * y la contraseña del usuario. Si la solicitud es exitosa, devuelve los datos de la respuesta.
      * En caso de error, lanza un mensaje de error específico si es un error de Axios, o un mensaje
      * genérico si es otro tipo de error.
@@ -134,9 +141,15 @@ export const authService = {
      * @returns {Promise<UserResponse>} Los datos de la respuesta del servidor.
      * @throws {Error} Si ocurre un error durante el inicio de sesión.
      */
-    login: async (Identifier: string, Password: string): Promise<UserResponse> => {
+    login: async (Identifier: string, Password: string): Promise<UserActionResponse> => {
         try {
-            const response = await axios.post(`${API_URL}/auth/login`, { Identifier, Password });
+            // Construir la URL con los parámetros de consulta
+            const queryParams = new URLSearchParams({
+                Identifier,
+                Password
+            }).toString();
+
+            const response = await axios.get(`${API_URL}/auth/login?${queryParams}`);
             return response.data;
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
@@ -157,17 +170,17 @@ export const authService = {
     * 
     * @param {string} Token - Token de autenticación del usuario.
     * @param {string} Id - ID del usuario.
-    * @param {string} UserName - Nombre de usuario.
+    * @param {string} Username - Nombre de usuario.
     * @returns {Promise<any>} Los datos de la respuesta del servidor.
     * @throws {Error} Si ocurre un error al verificar el estado del correo.
     */
-    checkVerifiedEmail: async (Token: string, Id: string, UserName: string) => {
+    checkVerifiedEmail: async (Token: string, Id: string, Username: string): Promise<CheckEmailResponse> => {
         try {
             // Construir la URL con los parámetros de consulta
             const queryParams = new URLSearchParams({
                 Token,
                 Id,
-                UserName
+                Username
             }).toString();
 
             // Hacer la solicitud GET con los parámetros de consulta
@@ -178,6 +191,96 @@ export const authService = {
                 throw error.response.data;
             } else {
                 throw new Error('Ha ocurrido un error inesperado al verificar el estado del correo del usuario actual.');
+            }
+        }
+    },
+
+    resetPassword: async (identifier: string, reducedCode: string, fullCode: string, newPassword: string): Promise<UserCreationResponse> => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/reset-password`, { identifier: identifier, reducedCode: reducedCode, fullCode: fullCode, newPassword: newPassword });
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al verificar el email.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al verificar el email.';
+            }
+        }
+    },
+
+    sendResetPasswordCode: async (identifier: string): Promise<UserActionResponse> => {
+        try {
+            const queryParams = new URLSearchParams({ identifier }).toString();
+
+            const response = await axios.get(`${API_URL}/auth/send-reset-password-email?${queryParams}`);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error reenviando el código de verificación.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al reenviar el código de verificación.';
+            }
+        }
+    },
+
+    verifyCaptcha: async (token: string): Promise<ReCaptchaVerificationResponse> => {
+        try {
+            const params = new URLSearchParams({ token }).toString();
+            const response = await axios.get(`${API_URL}/auth/verify-captcha?${params}`);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al verificar el captcha.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al verificar el captcha.';
+            }
+        }
+    },
+    getReCaptchaSiteKey: async (): Promise<ReCaptchaSiteKeyResponse> => {
+        try {
+            const response = await axios.get(`${API_URL}/auth/get-captcha-site-key`);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al verificar el captcha.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al verificar el captcha.';
+            }
+        }
+    },
+    getGoogleClientId: async (): Promise<GoogleClientIdResponse> => {
+        try {
+            const response = await axios.get(`${API_URL}/auth/get-google-client-id`);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al obtener el clientId de Google.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al obtener el clientId de Google.';
+            }
+        }
+    },
+    googleAccess: async (data: GoogleAccessData): Promise<UserActionResponse> => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/google-access`, data)
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al intentar acceder con Google.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al intentar acceder con Google.';
+            }
+        }
+    },
+    checkGoogleToken: async (token: string): Promise<GoogleTokenValidationResponse> => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/check-google-token`, { 'token': token })
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al chequear la validez del token con Google.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al chequear la validez del token con Google.';
             }
         }
     }
