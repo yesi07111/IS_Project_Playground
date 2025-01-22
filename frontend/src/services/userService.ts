@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { UserFilters } from '../interfaces/UserFilters';
+import { UserFilters } from '../interfaces/Filters';
+import { EditUserData, GetUserResponse } from '../interfaces/User';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -22,7 +23,31 @@ export const userService = {
             }
         }
     },
-
+    getUser: async (userId: string, useCase: string): Promise<GetUserResponse> => {
+        try {
+            const queryParams = new URLSearchParams({ Id: userId, useCase: useCase }).toString();
+            const response = await axios.get(`${API_URL}/user/get?${queryParams}`);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al obtener los datos del usuario.');
+            }
+        }
+    },
+    editUser: async (data: EditUserData): Promise<GetUserResponse> => {
+        try {
+            const response = await axios.put(`${API_URL}/user/edit`, data);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al obtener los datos del usuario.');
+            }
+        }
+    },
 };
 
 function buildFilterQuery(filters: UserFilters) {
