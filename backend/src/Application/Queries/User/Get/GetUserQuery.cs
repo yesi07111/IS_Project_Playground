@@ -2,9 +2,9 @@
 using FastEndpoints;
 using Playground.Application.Responses;
 
-namespace Playground.Application.Queries.Activity.Get;
+namespace Playground.Application.Queries.User.Get;
 
-public record GetActivityQuery : ICommand<GetActivityResponse>
+public record GetUserQuery : ICommand<GetUserResponse>
 {
     public string Id { get; init; } = string.Empty;
     public string UseCase { get; init; } = string.Empty;

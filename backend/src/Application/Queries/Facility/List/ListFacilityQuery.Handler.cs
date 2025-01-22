@@ -1,8 +1,8 @@
 using Ardalis.SmartEnum;
 using FastEndpoints;
 using Playground.Application.Factories;
-using Playground.Application.Queries.Dtos;
-using Playground.Application.Queries.Responses;
+using Playground.Application.Dtos;
+using Playground.Application.Responses;
 using Playground.Application.Repositories;
 using Playground.Domain.Specifications;
 using Playground.Domain.Specifications.BaseSpecifications;
