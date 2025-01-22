@@ -33,6 +33,6 @@ public class ConfirmEmailQueryHandler(UserManager<Domain.Entities.Auth.User> use
             return null;
         }
 
-        return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, jwtGenerator.GetToken(user));
+        return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, jwtGenerator.GetToken(user), "Parent");
     }
 }

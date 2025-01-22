@@ -3,14 +3,21 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using Playground.Application.Responses;
 using Playground.Domain.SmartEnum;
+using Playground.Application.Factories;
+using Playground.Domain.Specifications;
 
 namespace Playground.Application.Queries.Auth.Login
 {
-    public class LoginQueryHandler(UserManager<Domain.Entities.Auth.User> userManager, IJwtGenerator jwtGenerator, ILoginProvider loginProviderId, IAccessFailedService accessFailedService) : CommandHandler<LoginQuery, UserActionResponse>
+    public class LoginQueryHandler(IRepositoryFactory repositoryFactory, UserManager<Domain.Entities.Auth.User> userManager, IJwtGenerator jwtGenerator, ILoginProvider loginProviderId, IAccessFailedService accessFailedService) : CommandHandler<LoginQuery, UserActionResponse>
     {
         public override async Task<UserActionResponse> ExecuteAsync(LoginQuery query, CancellationToken ct = default)
         {
-            var user = await userManager.FindByEmailAsync(query.Identifier) ?? await userManager.FindByNameAsync(query.Identifier);
+            var userRepository = repositoryFactory.CreateRepository<Domain.Entities.Auth.User>();
+            var userNameSpecification = UserSpecification.ByUserName(query.Identifier);
+            var emailSpecification = UserSpecification.ByEmail(query.Identifier);
+            var user = (await userRepository.GetBySpecificationAsync(userNameSpecification, u => u.Rol)).FirstOrDefault() ??
+                        (await userRepository.GetBySpecificationAsync(emailSpecification, u => u.Rol)).FirstOrDefault();
+
             if (user is null)
             {
                 await accessFailedService.IncrementAccessFailedCountAsync(query.Identifier);
@@ -43,7 +50,8 @@ namespace Playground.Application.Queries.Auth.Login
 
             return new UserActionResponse(Guid.Parse(user.Id),
                                           user.UserName!,
-                                          token);
+                                          token,
+                                          user.Rol!.Name);
         }
     }
 }

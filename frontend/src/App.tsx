@@ -22,21 +22,14 @@ import ReservationsPage from './pages/ReservationPage';
 
 import AdminPage from './pages/AdminPage';
 import UserManagementPage from './pages/UserManagementPage';
-import ResourcesPage from './pages/ResourcesPage';
+import AdminPage from './pages/AdminPage';
 import DefineUsageFrequencyPage from './pages/UsageFrequencyPage';
 import ActivityFormPage from './pages/ActivityFormPage';
+import ResourcesPage from './pages/ResourcesPage';
+// import EducatorPage from './pages/EducatorPage';
+// import ActivityManagerPage from './pages/ActivityManagerPage';
 
-// const [reload, setReload] = useState(false);
-/**
- * Configuración del tema de Material-UI para la aplicación.
- * 
- * Este objeto define el tema personalizado de Material-UI, incluyendo la paleta de colores,
- * la tipografía y las modificaciones de estilo para componentes específicos como MuiCard y MuiCardMedia.
- * 
- * - **palette**: Define los colores primarios y secundarios, con variantes claras y oscuras.
- * - **typography**: Configura el peso de la fuente para los encabezados h5 y el tamaño de fuente para body2.
- * - **components**: Sobrescribe estilos para componentes de Material-UI, ajustando el radio de borde de las tarjetas.
- */
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -138,6 +131,11 @@ const App: React.FC = () => {
                 <Route path="/edit-profile/:id" element={<EditUserProfilePage />} />
                 <Route path="/activities/:id/:imagePath/:useCase" element={<ActivityInfoPage reload={false} />} />
                 <Route path="/my-reservations/:id" element={<ReservationsPage />}></Route>
+                <Route path="/resources" element={<ResourcesPage reload={false} />} />
+                <Route path="/define-usage-frequency/:resourceId" element={<DefineUsageFrequencyPage />} />
+                <Route path="/activity-form" element={<ActivityFormPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/user-manager" element={<UserManagementPage />} />
                 <Route
                   path="/verify-email"
                   element={
@@ -159,35 +157,6 @@ const App: React.FC = () => {
           </AuthProvider>
         </GoogleReCaptchaProvider>
       </GoogleOAuthProvider>
-      <AuthProvider>
-        <Router>
-          <Navbar />
-          {/* En esta sección se agregan las rutas de las páginas a usar */}
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            {/*<Route path="/" element={<UserManagementPage />} />*/}
-            <Route path="/define-usage-frequency/:resourceId" element={<DefineUsageFrequencyPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/resources" element={<ResourcesPage />} />
-            <Route path="/activity-form" element={<ActivityFormPage />} />
-            <Route path="/activities" element={<ActivitiesPage />} />
-            <Route path="/reviews" element={<ReviewsPage />} />
-            <Route path="/activities/:id/:imagePath/:useCase" element={<ActivityInfoPage />} />
-            <Route
-              path="/verify-email"
-              element={
-                <ProtectedRoute redirectTo="/login">
-                  <VerifyEmailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/user-manager" element={<UserManagementPage />} />
-
-          </Routes>
-        </Router>
-      </AuthProvider>
     </ThemeProvider>
   );
 };

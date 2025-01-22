@@ -19,6 +19,6 @@ public class SendResetPasswordEmailQueryHandler(UserManager<Domain.Entities.Auth
 
         await emailSender.SendPasswordResetCodeAsync(user, user.Email!, code);
 
-        return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, code);
+        return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, code, "Parent");
     }
 }

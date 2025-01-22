@@ -16,6 +16,6 @@ public class RefreshTokenCommandHandler(UserManager<Domain.Entities.Auth.User> u
             ThrowError($"Usuario con Identificador: {command.UserId} no encontrado.");
         }
 
-        return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, jwtGenerator.GetToken(user));
+        return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, jwtGenerator.GetToken(user), "Parent");
     }
 }

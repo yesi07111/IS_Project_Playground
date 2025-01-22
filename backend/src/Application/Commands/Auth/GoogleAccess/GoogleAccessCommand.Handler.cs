@@ -45,7 +45,7 @@ namespace Playground.Application.Commands.Auth.GoogleAccess
                 if (!result.Succeeded)
                     ThrowError("No se pudo crear al usuario.");
 
-                return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, jwtGenerator.GetToken(user));
+                return new UserActionResponse(Guid.Parse(user.Id), user.UserName!, jwtGenerator.GetToken(user), "Parent");
             }
             else
             {
@@ -58,7 +58,7 @@ namespace Playground.Application.Commands.Auth.GoogleAccess
                     ThrowError("Su usuario de Google no está registrado.");
                 }
 
-                return new UserActionResponse(Guid.Parse(userInBD.Id), userInBD.UserName!, jwtGenerator.GetToken(userInBD));
+                return new UserActionResponse(Guid.Parse(userInBD.Id), userInBD.UserName!, jwtGenerator.GetToken(userInBD), "Parent");
             }
         }
     }
