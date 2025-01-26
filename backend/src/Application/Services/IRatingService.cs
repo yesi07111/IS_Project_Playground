@@ -13,7 +13,7 @@ namespace Playground.Application.Services
         /// <param name="activity">La actividad para la cual se desea calcular la calificación promedio.</param>
         /// <param name="reviewRepository">El repositorio de reseñas utilizado para obtener las calificaciones.</param>
         /// <returns>La calificación promedio de la actividad.</returns>
-        double CalculateAverageRating(Domain.Entities.Activity activity, IRepository<Domain.Entities.Review> reviewRepository);
+        double CalculateAverageRating(Domain.Entities.ActivityDate activity, IRepository<Domain.Entities.Review> reviewRepository);
 
         /// <summary>
         /// Calcula la calificación promedio de una actividad específica, con una cantidad de dígitos específicos a redondear.
@@ -22,6 +22,6 @@ namespace Playground.Application.Services
         /// <param name="reviewRepository">El repositorio de reseñas utilizado para obtener las calificaciones.</param>
         /// <param name="round">El valor utilizado para redondear las calificaciones.</param>
         /// <returns>La calificación promedio de la actividad.</returns>
-        double CalculateAverageRating(Domain.Entities.Activity activity, IRepository<Domain.Entities.Review> reviewRepository, int round);
+        double CalculateAverageRating(Domain.Entities.ActivityDate activity, IRepository<Domain.Entities.Review> reviewRepository, int round);
     }
 }

@@ -11,10 +11,10 @@ namespace Playground.Infraestructure.Services
     public class RatingService : IRatingService
     {
         /// <inheritdoc />
-        public double CalculateAverageRating(Activity activity, IRepository<Review> reviewRepository)
+        public double CalculateAverageRating(ActivityDate activity, IRepository<Review> reviewRepository)
         {
             var reviews = reviewRepository.GetBySpecificationAsync(
-                ReviewSpecification.ByActivity(activity.Id),
+                ReviewSpecification.ByActivityDate(activity.Id),
                 r => r.ActivityDate,
                 r => r.ActivityDate.Activity
             ).Result;
@@ -26,10 +26,10 @@ namespace Playground.Infraestructure.Services
             return 0.0;
         }
 
-        public double CalculateAverageRating(Activity activity, IRepository<Review> reviewRepository, int round)
+        public double CalculateAverageRating(ActivityDate activity, IRepository<Review> reviewRepository, int round)
         {
             var reviews = reviewRepository.GetBySpecificationAsync(
-                            ReviewSpecification.ByActivity(activity.Id),
+                            ReviewSpecification.ByActivityDate(activity.Id),
                             r => r.ActivityDate,
                             r => r.ActivityDate.Activity
                         ).Result;
