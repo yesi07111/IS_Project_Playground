@@ -102,6 +102,9 @@ font-size: 1.5rem;
                 case '/resources':
                     setTitleText('Recursos');
                     break;
+                case '/statistics':
+                    setTitleText('Estadísticas');
+                    break;
                 default:
                     setTitleText('Parque Infantil');
             }
