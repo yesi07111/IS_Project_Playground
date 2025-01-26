@@ -38,11 +38,13 @@ public class GetActivityQueryHandler(IRepositoryFactory repositoryFactory, IRati
         var resourceSpecification = ResourceSpecification.ByFacility(activityDate.Activity.Facility.Id);
         var resources = await resourceRepository.GetBySpecificationAsync(resourceSpecification, r => r.Facility);
 
+        // Filtrar recursos cuyo estado sea "Bueno"
+        var filteredResources = resources.Where(r => r.ResourceCondition == ResourceStateSmartEnum.Bueno.Name);
+
         if (isUseCase)
         {
             if (useCase == UseCaseSmartEnum.ActivityView)
             {
-
                 activityDetailDto = new ActivityDetailDto
                 {
                     Id = activityDate.Activity.Id,
@@ -63,21 +65,21 @@ public class GetActivityQueryHandler(IRepositoryFactory repositoryFactory, IRati
                     UsagePolicy = activityDate.Activity.Facility.UsagePolicy,
                     RecommendedAge = activityDate.Activity.RecommendedAge.ToString(),
                     Comments = [],
-                    Resources = resources.Select(r => r.Name),
+                    Resources = filteredResources.Select(r => r.Name),
                     Date = activityDate.DateTime,
                     IsPublic = activityDate.Activity.ItsPrivate ? "Privada" : "Pública"
                 };
             }
             else if (useCase == UseCaseSmartEnum.ReviewView)
             {
-                var _reviewRepository = repositoryFactory.CreateRepository<Review>();
+                var _reviewRepository = repositoryFactory.CreateRepository<Domain.Entities.Review>();
                 activityDetailDto = new ActivityDetailDto
                 {
                     Id = activityDate.Activity.Id,
                     Name = activityDate.Activity.Name,
                     Description = activityDate.Activity.Description,
                     Image = "",
-                    Rating = ratingService.CalculateAverageRating(activityDate.Activity, _reviewRepository),
+                    Rating = ratingService.CalculateAverageRating(activityDate, _reviewRepository),
                     Color = "white",
                     MaximumCapacity = activityDate.Activity.Facility.MaximumCapacity,
                     CurrentCapacity = activityDate.ReservedPlaces,
@@ -90,8 +92,8 @@ public class GetActivityQueryHandler(IRepositoryFactory repositoryFactory, IRati
                     ActivityType = activityDate.Activity.Type,
                     UsagePolicy = activityDate.Activity.Facility.UsagePolicy,
                     RecommendedAge = activityDate.Activity.RecommendedAge.ToString(),
-                    Comments = await commentsService.GetCommentsAsync(activityDate.Activity.Id, _reviewRepository),
-                    Resources = resources.Select(r => r.Name),
+                    Comments = await commentsService.GetCommentsAsync(activityDate.Id, _reviewRepository),
+                    Resources = filteredResources.Select(r => r.Name),
                     Date = activityDate.DateTime,
                     IsPublic = activityDate.Activity.ItsPrivate ? "Privada" : "Pública"
                 };
