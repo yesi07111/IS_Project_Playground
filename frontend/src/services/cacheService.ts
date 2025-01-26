@@ -117,9 +117,14 @@ export const cacheService = {
   },
 
   saveUserImages: (username: string, mainImage: string, otherImages: string[]) => {
-    const cachedImages = cacheService.loadImages();
+    const cachedImages = cacheService.loadUsersImages();
     cachedImages[username] = { main: mainImage, others: otherImages };
     localStorage.setItem(CACHE_KEY_PROFILE_IMAGES, JSON.stringify(cachedImages));
+  },
+
+  loadUsersImages: () => {
+    const cachedImages = localStorage.getItem(CACHE_KEY_PROFILE_IMAGES);
+    return cachedImages ? JSON.parse(cachedImages) : {};
   },
 
   loadUserImages: (username: string) => {
@@ -136,5 +141,6 @@ export const cacheService = {
     localStorage.setItem(CACHE_KEY_ACTIVITY_TYPES, JSON.stringify([]));
     localStorage.setItem(CACHE_KEY_EDUCATORS, JSON.stringify([]));
     localStorage.setItem(CACHE_KEY_TOP_ACTIVITIES, JSON.stringify([]));
+    localStorage.setItem(CACHE_KEY_PROFILE_IMAGES, JSON.stringify({}));
   }
 };
