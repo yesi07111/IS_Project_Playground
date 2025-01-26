@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Avatar, IconButton } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { Theme } from '@mui/material/styles';
+import { Box, Typography, Avatar, IconButton } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import decoration1 from '/images/decorative/toy-train.png';
@@ -12,6 +10,8 @@ import { passwordService } from '../services/passwordService';
 import { cacheService } from '../services/cacheService';
 import { UserResponse } from '../interfaces/User';
 import { userService } from '../services/userService';
+import CustomButton from '../components/features/StyledButton';
+import CustomBox from '../components/features/StyledBox';
 
 const UserProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +20,7 @@ const UserProfilePage: React.FC = () => {
   const [userImage, setUserImage] = useState<string>('');
   const [userData, setUserData] = useState<UserResponse | null>(null);
   const [isCurrentUser, setIsCurrentUser] = useState<boolean>(false);
+  const [rol, setRol] = useState<string>('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -30,6 +31,7 @@ const UserProfilePage: React.FC = () => {
           const authId = localStorage.getItem('authId');
           setIsCurrentUser(authId === data.result.id);
           loadUserImage(data.result.username);
+          setRol(data.result.rol)
         } catch (error) {
           console.error('Error al obtener los datos del usuario:', error);
         }
@@ -45,13 +47,10 @@ const UserProfilePage: React.FC = () => {
     const { main, others } = cacheService.loadUserImages(username);
 
     if (main) {
-      setUserImage('/' + main);
-      console.log('Imagen principal cargada desde la caché:', main);
+      setUserImage(main);
     } else if (others.length === 1) {
       setUserImage(others[0]);
-      console.log('Imagen alternativa cargada desde la caché:', others[0]);
     } else if (others.length > 1) {
-      // Mostrar opciones al usuario para seleccionar una imagen
       const selectedImage = window.prompt(
         'No se encontró la imagen principal. Seleccione una de las siguientes imágenes:\n' +
         others.map((img: string, index: number) => `${index + 1}: ${img}`).join('\n')
@@ -59,7 +58,6 @@ const UserProfilePage: React.FC = () => {
       const selectedIndex = parseInt(selectedImage || '', 10) - 1;
       if (selectedIndex >= 0 && selectedIndex < others.length) {
         setUserImage(others[selectedIndex]);
-        console.log('Imagen seleccionada por el usuario:', others[selectedIndex]);
       } else {
         console.error('Selección inválida.');
       }
@@ -67,15 +65,14 @@ const UserProfilePage: React.FC = () => {
       try {
         const response = await imageUploadService.saveUserImage(username, null!);
         const imageUrl = response.imageUrl.replace(/^public[\\/]/, '').replace(/\\/g, '/');
-        console.log("Imageurl: " + imageUrl)
         cacheService.saveUserImages(username, imageUrl, response.others);
         setUserImage(`/${imageUrl}`);
-        console.log('Imagen cargada desde el servidor:', imageUrl);
       } catch (error) {
         console.error('Error cargando la imagen:', error);
       }
     }
   };
+
   const handleEditProfile = () => {
     localStorage.setItem("firstName", userData?.firstName ?? '')
     localStorage.setItem("lastName", userData?.lastName ?? '')
@@ -84,10 +81,6 @@ const UserProfilePage: React.FC = () => {
 
     navigate(`/edit-profile/${id}`);
   };
-
-  useEffect(() => {
-    console.log('Imagen de usuario actualizada:', userImage);
-  }, [userImage]);
 
   const handleResetPassword = async () => {
     const response = await passwordService.ResetPassword();
@@ -101,17 +94,11 @@ const UserProfilePage: React.FC = () => {
     const file = event.target.files?.[0];
     if (file && userData) {
       try {
-        console.log("Guardando la imagen...");
         const response = await imageUploadService.saveUserImage(userData.username, file);
         const imageUrl = response.imageUrl.replace(/^public[\\/]/, '').replace(/\\/g, '/');
-        console.log('Imagen guardada exitosamente: ', imageUrl);
+        cacheService.saveUserImages(userData.username, `/${imageUrl}`, response.others);
 
-        // Guardar la imagen en la caché
-        const cachedImages = cacheService.loadImages();
-        cachedImages[userData.username] = `/${imageUrl}`;
-        cacheService.saveImages(cachedImages);
-
-        setUserImage(`/${imageUrl}`); // Actualiza la imagen después de la carga
+        setUserImage(`/${imageUrl}`);
       } catch (error) {
         console.error('Error guardando la imagen:', error);
       }
@@ -202,65 +189,46 @@ const UserProfilePage: React.FC = () => {
 
         {userData && (
           <>
-            <Typography variant="h3" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+            {(rol == "Parent" || rol == "") && <Typography variant="h3" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
               🎉 Bienvenido de vuelta al Mundo de Diversión 🎈
-            </Typography>
+            </Typography>}
 
-            <StyledBox>
+            {(rol == "Educator" || rol == "") && <Typography variant="h3" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+              Cuenta de Educador
+            </Typography>}
+
+            {(rol == "Admin" || rol == "") && <Typography variant="h3" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+              Cuenta de Administración
+            </Typography>}
+
+            <CustomBox>
               <Typography variant="h6">👤 Nombre: {userData.firstName}</Typography>
-            </StyledBox>
-            <StyledBox>
+            </CustomBox>
+            <CustomBox>
               <Typography variant="h6">👥 Apellido: {userData.lastName}</Typography>
-            </StyledBox>
-            <StyledBox>
+            </CustomBox>
+            <CustomBox>
               <Typography variant="h6">📛 Nombre de Usuario: @{userData.username}</Typography>
-            </StyledBox>
-            <StyledBox>
+            </CustomBox>
+            <CustomBox>
               <Typography variant="h6">📧 Email: {userData.email}</Typography>
-            </StyledBox>
+            </CustomBox>
           </>
         )}
 
         {isCurrentUser && (
           <>
-            <StyledButton variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleResetPassword}>
+            <CustomButton variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleResetPassword}>
               Resetear Contraseña
-            </StyledButton>
-            <StyledButton variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleEditProfile}>
+            </CustomButton>
+            <CustomButton variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleEditProfile}>
               Editar Perfil
-            </StyledButton>
+            </CustomButton>
           </>
         )}
       </Box>
     </Box>
   );
 };
-
-const StyledBox = styled(Box)(({ theme }: { theme: Theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  width: '100%',
-  maxWidth: 600,
-  padding: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[1] || 'none',
-  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  '&:hover': {
-    boxShadow: theme.shadows[6] || 'none',
-    transform: 'scale(1.05)',
-  },
-}));
-
-const StyledButton = styled(Button)(({ theme }: { theme: Theme }) => ({
-  borderRadius: 20,
-  padding: theme.spacing(1, 3),
-  fontWeight: 'bold',
-  transition: 'background-color 0.3s ease-in-out, transform 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'scale(1.1)',
-  },
-}));
 
 export default UserProfilePage;

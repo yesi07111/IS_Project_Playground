@@ -50,7 +50,6 @@ const RegisterPage: React.FC<OnlinePagesProps> = ({ online, useCaptcha }) => {
     const [passwordMatchError, setPasswordMatchError] = useState('');
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [isHuman, setIsHuman] = useState(false);
-
     const { executeRecaptcha } = useGoogleReCaptcha();
 
     useEffect(() => {
@@ -143,7 +142,7 @@ const RegisterPage: React.FC<OnlinePagesProps> = ({ online, useCaptcha }) => {
             return;
         }
 
-        if (!isHuman) {
+        if (useCaptcha && !isHuman) {
             setError('Por favor, verifica que eres humano.');
             return;
         }
