@@ -26,6 +26,7 @@ export interface Activity {
     isNew: string;
     pending: boolean
 }
+
 /**
  * Interfaz que define la estructura de la respuesta de la lista de actividades.
  * 
@@ -34,7 +35,6 @@ export interface Activity {
 export interface ListActivityResponse {
     result: Activity[] | string[];
 }
-
 /**
  * Interfaz que define la estructura de una actividad detallada.
  * 
@@ -105,8 +105,16 @@ export interface ActivityData {
     date: Date;
     time: Date;
     recommendedAge: number;
-    facility: string 
+    facility: string
     pending: boolean
     private: boolean
+}
+
+export interface ActivityLinkProps {
+    id: string;
+    image: string;
+    viewSuffix: string;
+    fontSize?: string;
+    textDisplayed: string;
 }
 

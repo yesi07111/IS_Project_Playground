@@ -37,3 +37,14 @@ export interface EditUserData {
     password: string;
     confirmPassword: string;
 };
+
+export interface Comment {
+    username: string;
+    rating: number;
+    comment: string;
+}
+
+export interface CommentsContainerProps {
+    comments: Comment[];
+    invisible: boolean;
+}

@@ -1,9 +1,10 @@
-import { SelectChangeEvent } from "@mui/material/Select";
+import { SelectChangeEvent } from '@mui/material';
 
 export interface FilterSelectProps {
     selectedFilters: string[];
     handleFilterChange: (event: SelectChangeEvent<string[]>) => void;
     handleApplyFilters: () => void;
+    menuItems: { label: string; value: string }[];
 }
 
 export interface ActivitiesFilters {
@@ -47,5 +48,10 @@ export interface SearchBarProps {
     searchTerm: string;
     handleSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     labelText: string;
+}
+export interface ReviewsFilters {
+    type: string;
+    useCase?: string;
+    value?: string;
 }
 
