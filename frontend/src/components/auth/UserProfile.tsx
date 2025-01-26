@@ -76,7 +76,7 @@ const UserProfile: React.FC = () => {
             >
                 <MenuItem onClick={handleClose} component={Link} to={`/profile/${userId}`}>Ver Perfil</MenuItem>
                 <MenuItem onClick={handleClose} component={Link} to={`/my-reservations/${userId}`}>Ver Mis Reservas</MenuItem>
-                <MenuItem onClick={handleClose} component={Link} to="/reviews">Ver Mis Reseñas</MenuItem>
+                <MenuItem onClick={handleClose} component={Link} to={`/my-reviews/${userId}`}>Ver Mis Reseñas</MenuItem>
                 <MenuItem onClick={() => { handleClose(); logout(); }}>Cerrar Sesión</MenuItem>
             </Menu>
         </>

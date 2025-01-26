@@ -106,6 +106,6 @@ namespace Playground.Application.Repositories
                 /// Marca una entidad de usuario como eliminada, actualizando sus propiedades.
                 /// </summary>
                 /// <param name="entity">La entidad de usuario a marcar como eliminada.</param>
-                void MarkDeleted(User entity);
+                void MarkDeleted(T entity);
         }
 }

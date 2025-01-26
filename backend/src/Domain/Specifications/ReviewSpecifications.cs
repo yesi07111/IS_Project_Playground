@@ -115,9 +115,9 @@ namespace Playground.Domain.Specifications
         /// </summary>
         /// <param name="activity">La actividad asociada a la reseña.</param>
         /// <returns>Una especificación que filtra por actividad.</returns>
-        public static ReviewSpecification ByActivity(Guid activity)
+        public static ReviewSpecification ByActivityDate(Guid activity)
         {
-            return new ReviewSpecification(review => review.ActivityDate.Activity.Id == activity);
+            return new ReviewSpecification(review => review.ActivityDate.Id == activity);
         }
 
         /// <summary>

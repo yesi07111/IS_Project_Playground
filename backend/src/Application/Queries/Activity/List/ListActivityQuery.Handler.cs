@@ -45,7 +45,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
         // Crear repositorios usando el factory
         var activityRepository = _repositoryFactory.CreateRepository<Domain.Entities.Activity>();
         var activityDateRepository = _repositoryFactory.CreateRepository<ActivityDate>();
-        var reviewRepository = _repositoryFactory.CreateRepository<Review>();
+        var reviewRepository = _repositoryFactory.CreateRepository<Domain.Entities.Review>();
         var isUseCase = SmartEnum<UseCaseSmartEnum>.TryFromName(query.UseCase, out UseCaseSmartEnum useCase);
 
         IEnumerable<object> Result = [];
@@ -63,9 +63,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
             else if (useCase == UseCaseSmartEnum.HomeView)
             {
                 // Obtener todas las actividades no activas
-                ISpecification<ActivityDate> activityDateSpecification =
-                    new ActivityDateSpecification(activityDate => true)
-                        .And(ActivityDateSpecification.ByDateLessOrEqual(DateTime.UtcNow.AddDays(-1)));
+                ISpecification<ActivityDate> activityDateSpecification = ActivityDateSpecification.ByDateLessOrEqual(DateTime.UtcNow.AddDays(-1)).And(ActivityDateSpecification.ByPending(false));
 
                 var activities = await activityDateRepository.GetBySpecificationAsync(
                     activityDateSpecification,
@@ -81,7 +79,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
                         Name = ad.Activity.Name,
                         Date = ad.DateTime,
                         Image = _imageService.GetImageForActivity(ad.Activity),
-                        Rating = _ratingService.CalculateAverageRating(ad.Activity, reviewRepository),
+                        Rating = _ratingService.CalculateAverageRating(ad, reviewRepository),
                         Color = "white",
                         MaximumCapacity = ad.Activity.Facility.MaximumCapacity,
                         CurrentCapacity = ad.ReservedPlaces,
@@ -164,7 +162,6 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
 
                 Result = activityDtos;
             }
-
             return new ListActivityResponse(Result);
         }
 
@@ -397,7 +394,8 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
             };
 
             activityDtos.Add(activityDto);
-        };
+        }
+        ;
 
         return activityDtos;
     }
@@ -406,7 +404,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
     private async Task<List<ActivityDto>> MapAndFilterActivitiesAsync(
     IEnumerable<ActivityDate> activityDates,
     IRepository<ActivityDate> activityDateRepository,
-    IRepository<Review> reviewRepository,
+    IRepository<Domain.Entities.Review> reviewRepository,
     IImageService imageService,
     IRatingService ratingService,
     string? ratingFilter)
@@ -416,7 +414,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
         foreach (var ad in activityDates)
         {
             var isNew = await SeeIfActivityIsNew(activityDateRepository, ad.Activity.Id);
-            var rating = ratingService.CalculateAverageRating(ad.Activity, reviewRepository);
+            var rating = ratingService.CalculateAverageRating(ad, reviewRepository);
 
             var activityDto = new ActivityDto
             {
@@ -439,7 +437,7 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
         // Aplicar el filtro de calificación si es necesario
         if (double.TryParse(ratingFilter, out double ratingValue))
         {
-            activityDtos = activityDtos.Where(dto => dto.Rating >= ratingValue).ToList();
+            activityDtos = [.. activityDtos.Where(dto => dto.Rating >= ratingValue)];
         }
 
         return activityDtos;

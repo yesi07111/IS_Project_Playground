@@ -7,12 +7,12 @@ import {
   Typography,
   Rating,
   Box,
-  Theme,
-  Link
+  Theme
 } from '@mui/material';
 import { ActivityCardProps } from '../../interfaces/Activity';
 import { useLocation } from 'react-router-dom';
 import { dateService } from '../../services/dateService';
+import ActivityLink from './ActivityLink';
 
 const StyledCard = styled(Card)(({ theme }: { theme: Theme }) => ({
   width: '90%',
@@ -42,7 +42,7 @@ const BadgeContainer = styled(Box)(({ theme }: { theme: Theme }) => ({
   top: theme.spacing(1),
   right: theme.spacing(1),
   display: 'flex',
-  gap: theme.spacing(1) // Espaciado entre los badges
+  gap: theme.spacing(1)
 }));
 
 const Badge = styled(Box)<{ bgcolor: string }>(({ theme, bgcolor }) => ({
@@ -55,22 +55,20 @@ const Badge = styled(Box)<{ bgcolor: string }>(({ theme, bgcolor }) => ({
   boxShadow: theme.shadows[2],
 }));
 
-
 const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
   const location = useLocation();
   const { formattedDate, formattedTime } = dateService.parseDate(activity.date);
-  const encodedImagePath = encodeURIComponent(activity.image);
   const viewSuffix = location.pathname === '/activities' ? 'ActivityView' : 'ReviewView';
 
   return (
     <StyledCard>
       <BadgeContainer>
         {activity.isNew && (
-          <Badge bgcolor="orange"> {/* Cambiado a un color naranja para el badge "Nueva" */}
+          <Badge bgcolor="orange">
             Nueva!
           </Badge>
         )}
-        <Badge bgcolor={activity.isPublic === 'true' ? '#1976d2' : '#d32f2f'}> {/* Azul para Pública, Rojo para Privada */}
+        <Badge bgcolor={activity.isPublic === 'true' ? '#1976d2' : '#d32f2f'}>
           {activity.isPublic === 'true' ? 'Pública' : 'Privada'}
         </Badge>
       </BadgeContainer>
@@ -134,15 +132,11 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
                   ({activity.rating}/5)
                 </Typography>
               </Box>
-              <Link href={`/activities/${activity.id}/${encodedImagePath}/${viewSuffix}`} color="primary" sx={{ fontSize: '1.2rem' }}>
-                Ver detalles
-              </Link>
+              <ActivityLink id={activity.id} image={activity.image} viewSuffix={viewSuffix} textDisplayed='Ver Detalles' />
             </Box>
           ) : (
             <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-              <Link href={`/activities/${activity.id}/${encodedImagePath}/${viewSuffix}`} color="primary" sx={{ fontSize: '1.5rem' }}>
-                Ver detalles
-              </Link>
+              <ActivityLink id={activity.id} image={activity.image} viewSuffix={viewSuffix} fontSize="1.5rem" textDisplayed='Ver Detalles' />
             </Box>
           )}
         </StyledBox>

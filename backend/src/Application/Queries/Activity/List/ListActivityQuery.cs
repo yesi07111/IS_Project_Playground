@@ -22,5 +22,6 @@ public record ListActivityQuery : ICommand<ListActivityResponse>
     public string? DaysOfWeek { get; init; }
     public int? Capacity { get; init; }
     public string? IsNew { get; init; }
+    public string? UserId { get; init; }
     public string UseCase { get; init; } = string.Empty;
 }

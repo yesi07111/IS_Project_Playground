@@ -6,9 +6,6 @@ using Playground.Application.Factories;
 using Playground.Application.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-
-//    "SecretKeyOld": "6Lehl60qAAAAALMOs19mjSscXIm28fY2lo7WwlGi",
-//     "SiteKeyOld": "6Lehl60qAAAAAAOjg1ltmhMzDS-S-qoqEMYOBVXq"
 namespace Playground.WebApi;
 
 public static class Seeder
@@ -980,7 +977,6 @@ public static class Seeder
         await unitOfWork.CommitAsync();
         #endregion
 
-
         #region Frec. Uso Recurso
         var resourcesDate = new List<ResourceDate>();
 
@@ -988,7 +984,7 @@ public static class Seeder
         {
             var randomDate = randomDateGenerator();
             var randomUseFrequency = random.Next(1, 101); // Genera un número entre 1 y 100
-            
+
             resourcesDate.Add(new ResourceDate
             {
                 Resource = resource,
@@ -997,9 +993,9 @@ public static class Seeder
             });
         }
 
-        foreach(var resourceDate in resourcesDate)
+        foreach (var resourceDate in resourcesDate)
         {
-            if(!await context.Set<ResourceDate>().AnyAsync(rd => rd.Id == resourceDate.Id))
+            if (!await context.Set<ResourceDate>().AnyAsync(rd => rd.Id == resourceDate.Id))
             {
                 await resourceDateRepository.AddAsync(resourceDate);
             }
@@ -1007,12 +1003,12 @@ public static class Seeder
 
         var useFrequency = 0;
         //guardar en Resources las frecuencias de uso
-        foreach(var resource in resources)
+        foreach (var resource in resources)
         {
             useFrequency = resource.UseFrequency;
-            foreach(var resourceDate in resourcesDate)
+            foreach (var resourceDate in resourcesDate)
             {
-                if(resourceDate.Resource.Id == resource.Id)
+                if (resourceDate.Resource.Id == resource.Id)
                 {
                     useFrequency += resourceDate.UseFrequency;
                 }
@@ -1028,10 +1024,10 @@ public static class Seeder
         {
             var start = new DateOnly(2020, 1, 1);
             var end = DateOnly.FromDateTime(DateTime.Now);
-            
+
             // Calcular la diferencia en días
             int daysBetween = end.DayNumber - start.DayNumber;
-            
+
             // Generar una fecha aleatoria dentro del rango
             return start.AddDays(random.Next(daysBetween + 1));
         }

@@ -14,6 +14,7 @@ using Playground.Infraestructure.Repositories;
 using Playground.Application.Commands.CleanUp;
 using Playground.Application.Queries.Auth.GetRecaptchaSiteKey;
 using Playground.Application.Queries.Auth.GetGoogleClientId;
+using Playground.Application.Queries.HomePage;
 
 namespace Playground.Infraestructure;
 
@@ -83,6 +84,7 @@ public static class Setup
                .AddScoped<CleanUpUnverifiedUsersCommandHandler>()
                .AddScoped<GetRecaptchaSiteKeyQueryHandler>()
                .AddScoped<GetGoogleClientIdQueryHandler>()
+               .AddScoped<GetHomePageInfoQueryHandler>()
                .AddScoped<UserManager<User>>();
 
         return builder;

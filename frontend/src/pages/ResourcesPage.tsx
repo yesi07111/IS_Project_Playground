@@ -1,5 +1,4 @@
-import { Key, useCallback, useEffect, useState } from "react";
-import { useTheme } from "styled-components";
+import { useCallback, useEffect, useState } from "react";
 import { ListResourceResponse, Resource } from "../interfaces/Resource";
 import { facilityService } from "../services/facilityService";
 import { cacheService } from "../services/cacheService";
@@ -7,7 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { SearchBar } from "../components/features/StyledSearchBar";
 import { FilterSelect } from "../components/features/StyledFiltersResource";
-import { Box, Checkbox, Collapse, FormControl, FormControlLabel, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
+import { Box, Collapse, FormControl, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { ResourceFilters } from "../interfaces/ResourceFilters";
@@ -64,11 +63,9 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const fetchAllResources = useCallback(async (filters: ResourceFilters[] = []) => {
         try {
             const response: ListResourceResponse = await resourceService.getAllResources(filters);
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!', response.result);
             const resourcesArray: Resource[] = Array.isArray(response.result)
                 ? response.result as Resource[]
                 : [];
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!', resourcesArray);
 
             setResources(resourcesArray);
             cacheService.saveResources(resourcesArray);
@@ -225,10 +222,7 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
         }
 
         try {
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-            console.table(filters);
             const response: ListResourceResponse = await resourceService.getAllResources(filters);
-            console.table(response.result);
             const resourcesArray: Resource[] = Array.isArray(response.result)
                 ? response.result as Resource[]
                 : Array.from(response.result);
@@ -243,6 +237,14 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
         }
     }
 
+    const menuItems = [
+        { label: "Tipo de Instalación", value: "Tipo de Instalación" },
+        { label: "Tipo de Recurso", value: "Tipo de Recurso" },
+        { label: "Nombre", value: "Nombre" },
+        { label: "Estado del Recurso", value: "Estado del Recurso" },
+        { label: "Frecuencia de Uso", value: "Frecuencia de Uso" },
+    ];
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box sx={{ width: '100vw', minHeight: '100vh', py: 4, px: 2, backgroundColor: '#f8f9fa' }}>
@@ -253,6 +255,7 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                         selectedFilters={selectedFilters}
                         handleFilterChange={handleFilterChange}
                         handleApplyFilters={handleApplyFilters}
+                        menuItems={menuItems}
                     />
                 </Box>
                 {/* Sección plegable de filtros */}

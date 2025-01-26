@@ -13,7 +13,7 @@ namespace Playground.Infraestructure.Services
         /// <inheritdoc />
         public async Task<IEnumerable<string>> GetCommentsAsync(Guid activityId, IRepository<Review> reviewRepository)
         {
-            var reviewSpecification = ReviewSpecification.ByActivity(activityId);
+            var reviewSpecification = ReviewSpecification.ByActivityDate(activityId);
             var reviews = await reviewRepository.GetBySpecificationAsync(reviewSpecification, r => r.Parent);
 
             return reviews.Select(r => $"{r.Parent.UserName}:{r.Score}:{r.Comments}").ToList();

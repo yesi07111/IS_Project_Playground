@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Rating } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { CommentsContainerProps } from '../../interfaces/User';
 
 const CommentBox = styled(Box)(({ theme }) => ({
     backgroundColor: '#f9f9f9',
@@ -13,30 +14,20 @@ const CommentBox = styled(Box)(({ theme }) => ({
     },
 }));
 
-const StyledCommentsContainer = styled(Box)({
+const StyledCommentsContainer = styled(Box)<{ invisible: boolean }>(({ invisible }) => ({
     maxHeight: '300px',
     overflowY: 'auto',
     padding: '0 16px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    boxShadow: invisible ? 'none' : '0 4px 8px rgba(0, 0, 0, 0.1)',
     transition: 'box-shadow 0.3s',
     '&:hover': {
-        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+        boxShadow: invisible ? 'none' : '0 8px 16px rgba(0, 0, 0, 0.2)',
     },
-});
+}));
 
-interface Comment {
-    username: string;
-    rating: number;
-    comment: string;
-}
-
-interface CommentsContainerProps {
-    comments: Comment[];
-}
-
-const CommentsContainer: React.FC<CommentsContainerProps> = ({ comments }) => {
+const CommentsContainer: React.FC<CommentsContainerProps> = ({ comments, invisible = false }) => {
     return (
-        <StyledCommentsContainer>
+        <StyledCommentsContainer invisible={invisible}>
             {comments.map((comment, index) => (
                 <CommentBox key={index}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#ff6347' }}>

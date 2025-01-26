@@ -125,7 +125,7 @@ const ReviewsPage: React.FC<DataPagesProps> = ({ reload }) => {
             });
             cacheService.saveActivities(activitiesArray);
         } catch (error) {
-            console.error('Error fetching activities:', error);
+            console.error('Error obteniendo actividades:', error);
             const cachedActivities = cacheService.loadActivities();
             const cachedImages = cacheService.loadImages();
             setActivityImages(cachedImages);
@@ -341,6 +341,20 @@ const ReviewsPage: React.FC<DataPagesProps> = ({ reload }) => {
         }
     };
 
+    const menuItems = [
+        { label: "De Esta Semana", value: "De Esta Semana" },
+        { label: "Calificación", value: "Calificación" },
+        { label: "Rango de Fecha", value: "Rango de Fecha" },
+        { label: "Rango de Hora", value: "Rango de Hora" },
+        { label: "Por Educadores", value: "Educadores" },
+        { label: "Tipos de Instalaciones", value: "Tipos de Instalaciones" },
+        { label: "Tipos de Actividades", value: "Tipos de Actividades" },
+        { label: "Edad Recomendada", value: "Edad Recomendada" },
+        { label: "Pública o Privada", value: "Disponibilidad" },
+        { label: "Nueva o No", value: "Nueva" },
+        { label: "Capacidad Disponible", value: "Capacidad Disponible" },
+    ];
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box sx={{ width: '100vw', minHeight: '100vh', py: 4, px: 2, backgroundColor: '#f8f9fa' }}>
@@ -351,6 +365,7 @@ const ReviewsPage: React.FC<DataPagesProps> = ({ reload }) => {
                         selectedFilters={selectedFilters}
                         handleFilterChange={handleFilterChange}
                         handleApplyFilters={handleApplyFilters}
+                        menuItems={menuItems}
                     />
                 </Box>
 

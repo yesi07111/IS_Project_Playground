@@ -69,6 +69,7 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
             if (id && useCase) {
                 let activityDetail = cacheService.loadActivityDetail(id);
 
+
                 if (!activityDetail) {
                     const response = await activityService.getActivity(id, useCase);
                     activityDetail = response.result;
@@ -76,6 +77,8 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                 }
 
                 setActivity(activityDetail);
+
+                // Log activity comments and rating
             }
         } catch {
             setError('Error al cargar los detalles de la actividad');
@@ -120,7 +123,6 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                 return parsedValue;
             }
         });
-        console.log("Amount: ", amount)
         if (!amount) {
             return; // Si el usuario cancela o no ingresa un valor válido
         }
@@ -132,18 +134,22 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
             input: 'text',
             showCancelButton: true,
             confirmButtonText: 'Reservar',
-            cancelButtonText: 'Cancelar'
+            cancelButtonText: 'Cancelar',
+            preConfirm: (value) => {
+                if (value.length > 150) {
+                    Swal.showValidationMessage('Los comentarios adicionales no pueden exceder los 150 caracteres.');
+                    return "";
+                }
+                return value;
+            }
         });
 
         const formData: ReservationFormData = {
             amount: parseInt(amount), // Asegúrate de que amount es un número
-            comments: comments || "Sin comentarios adicionales",
+            comments: comments || "Sin comentarios adicionales.",
             userId: localStorage.getItem('authId') ?? "",
             activityId: id ?? "",
         };
-
-        console.log("Datos a enviar de reserva");
-        console.table(formData);
 
         try {
             const result = await activityService.reserveActivityDate(formData);
@@ -156,6 +162,7 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
             console.error("Ha ocurrido un error al intentar reservar la actividad: ", error);
         }
     };
+
     if (error) {
         return (
             <Box sx={{
@@ -199,7 +206,7 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
     const availableSpots = activity.maximumCapacity - activity.currentCapacity;
     const comments = activity.comments.map((commentStr) => {
         const [username, ratingStr, comment] = commentStr.split(':');
-        return { username, rating: parseFloat(ratingStr), comment };
+        return { username, rating: parseInt(ratingStr), comment };
     });
 
     return (
@@ -296,6 +303,15 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                 </SectionBox>
 
                 <SectionBox>
+                    <Typography variant="h6" sx={{ color: '#32cd32' }}>
+                        📚 Recursos
+                    </Typography>
+                    <Typography variant="body1">
+                        {activity.resources.length > 0 ? activity.resources.join(', ') + '.' : 'No hay recursos disponibles.'}
+                    </Typography>
+                </SectionBox>
+
+                <SectionBox>
                     <Typography variant="h6" sx={{ color: '#ff4500' }}>
                         📅 Detalles de la Actividad
                     </Typography>
@@ -309,7 +325,7 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                         <Typography variant="h6" sx={{ color: '#ff6347' }}>
                             💬 Comentarios
                         </Typography>
-                        <CommentsContainer comments={comments} />
+                        <CommentsContainer comments={comments} invisible={true} />
                     </SectionBox>
                 )}
             </Container>

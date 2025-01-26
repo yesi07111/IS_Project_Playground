@@ -79,6 +79,9 @@ function buildFilterQuery(filters: ActivitiesFilters[]) {
         if (filter.type === 'Casos de Uso') {
             params.append('UseCase', filter.useCase || '')
         }
+        if (filter.type === 'UserId') {
+            params.append('UserId', filter.value || '')
+        }
         if (filter.type === 'Nueva') {
             params.append('IsNew', filter.value || '')
         }

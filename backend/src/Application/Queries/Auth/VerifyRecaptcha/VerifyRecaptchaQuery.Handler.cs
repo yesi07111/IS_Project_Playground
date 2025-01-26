@@ -2,13 +2,7 @@ using FastEndpoints;
 using Playground.Application.Responses;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Configuration;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Newtonsoft.Json;
-using System.Text.Json;
 using System.Text;
 
 namespace Playground.Application.Queries.Auth.VerifyRecaptcha
@@ -28,11 +22,6 @@ namespace Playground.Application.Queries.Auth.VerifyRecaptcha
         public override async Task<RecaptchaVerificationResponse> ExecuteAsync(VerifyRecaptchaQuery query, CancellationToken ct = default)
         {
             var client = _httpClientFactory.CreateClient();
-
-            // Log de inicio de la verificación
-            Console.WriteLine("Iniciando verificación de reCAPTCHA...");
-            Console.WriteLine($"Token recibido: {query.Token}");
-            Console.WriteLine($"Secret Key: {_secretKey}");
 
             // Crear el objeto con el token y siteKey
             var objeto = new
@@ -63,15 +52,10 @@ namespace Playground.Application.Queries.Auth.VerifyRecaptcha
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"Error HTTP al verificar reCAPTCHA: {response.StatusCode}");
                     return new RecaptchaVerificationResponse(false, response.Content.ToString()!);
                 }
 
                 var jsonString = await response.Content.ReadAsStringAsync(ct);
-
-                // Log de respuesta de Google
-                Console.WriteLine("Respuesta de Google reCAPTCHA:");
-                Console.WriteLine(jsonString);
 
                 var jsonData = JObject.Parse(jsonString);
 
@@ -87,40 +71,33 @@ namespace Playground.Application.Queries.Auth.VerifyRecaptcha
                     {
                         // Verificar puntuación en riskAnalysis
                         var score = jsonData["riskAnalysis"]?["score"]?.Value<double>() ?? 0.0;
-                        Console.WriteLine($"Puntuación de reCAPTCHA: {score}");
 
                         if (score >= 0.6) // Ajusta el umbral según tus necesidades
                         {
-                            Console.WriteLine("CAPTCHA verificado con éxito.");
                             return new RecaptchaVerificationResponse(true, "CAPTCHA verificado con éxito.");
                         }
                         else
                         {
-                            Console.WriteLine("La puntuación de CAPTCHA es demasiado baja.");
                             return new RecaptchaVerificationResponse(false, "La puntuación de CAPTCHA es demasiado baja.");
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"Hostname o acción no válidos: {hostname}, {action}");
                         return new RecaptchaVerificationResponse(false, "Hostname o acción no válidos.");
                     }
                 }
                 else
                 {
                     var invalidReason = tokenProperties?["invalidReason"]?.ToString() ?? "Sin razón de invalidez.";
-                    Console.WriteLine($"Verificación de CAPTCHA fallida. Razón de invalidez: {invalidReason}");
                     return new RecaptchaVerificationResponse(false, "Verificación de CAPTCHA fallida.");
                 }
             }
             catch (HttpRequestException httpEx)
             {
-                Console.WriteLine($"Error HTTP al verificar CAPTCHA: {httpEx.Message}");
                 return new RecaptchaVerificationResponse(false, $"Error HTTP: {httpEx.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error inesperado al verificar CAPTCHA: {ex.Message}");
                 return new RecaptchaVerificationResponse(false, $"Error inesperado: {ex.Message}");
             }
         }

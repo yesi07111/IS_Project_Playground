@@ -248,6 +248,18 @@ font-size: 1.5rem;
                                 }}
                             >
                                 Mis Reservas
+                            </Button>)}
+                        {isAuthenticated && (
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to={`/my-reviews/${userId}`}
+                                sx={{
+                                    fontWeight: 500,
+                                    py: 0.5,
+                                }}
+                            >
+                                Mis Reseñas
                             </Button>
                         )}
                         {isAuthenticated ? (

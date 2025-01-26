@@ -54,5 +54,7 @@ namespace Playground.Application.Dtos
         /// Obtiene o establece si la actividad es nueva o no.
         /// </summary>
         public string IsNew { get; set; } = string.Empty;
+
+        public bool Pending { get; set; }
     }
 }

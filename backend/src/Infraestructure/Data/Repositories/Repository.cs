@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Playground.Application.Repositories;
+using Playground.Domain.Entities;
 using Playground.Domain.Entities.Auth;
 using Playground.Domain.Specifications.BaseSpecifications;
 using Playground.Infraestructure.Data.DbContexts;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 
 namespace Playground.Infraestructure.Repositories
 {
@@ -206,20 +208,29 @@ namespace Playground.Infraestructure.Repositories
         /// Marca una entidad de usuario como eliminada, actualizando sus propiedades.
         /// </summary>
         /// <param name="entity">La entidad de usuario a marcar como eliminada.</param>
-        public void MarkDeleted(User entity)
+        public void MarkDeleted(T entity)
         {
-            string dateSuffix = "_deleted_" + DateTime.UtcNow.ToString("dd_MM_yyyy_HH_mm_ss_fff");
+            if (entity is User user)
+            {
+                string dateSuffix = "_deleted_" + DateTime.UtcNow.ToString("dd_MM_yyyy_HH_mm_ss_fff");
 
-            entity.DeletedAt = DateTime.UtcNow;
+                user.DeletedAt = DateTime.UtcNow;
+                user.UserName += dateSuffix;
+                user.FirstName += dateSuffix;
+                user.LastName += dateSuffix;
+                user.Email += dateSuffix;
+                user.NormalizedUserName += dateSuffix;
+                user.NormalizedEmail += dateSuffix;
 
-            entity.UserName += dateSuffix;
-            entity.FirstName += dateSuffix;
-            entity.LastName += dateSuffix;
-            entity.Email += dateSuffix;
-            entity.NormalizedUserName += dateSuffix;
-            entity.NormalizedEmail += dateSuffix;
+                _context.Set<User>().Update(user);
 
-            _context.Set<User>().Update(entity);
+            }
+            else if (entity is Review review)
+            {
+                review.DeletedAt = DateTime.UtcNow;
+                _context.Set<Review>().Update(review);
+            }
+
         }
     }
 }

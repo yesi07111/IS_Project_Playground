@@ -24,7 +24,7 @@ public class PostActivityCommandHandler : CommandHandler<PostActivityCommand, Ge
     {
         var activityDateRepository = repositoryFactory.CreateRepository<ActivityDate>();
         var activityRepository = repositoryFactory.CreateRepository<Domain.Entities.Activity>();
-        var userRepository = repositoryFactory.CreateRepository<User>();
+        var userRepository = repositoryFactory.CreateRepository<Domain.Entities.Auth.User>();
         var facilityRepository = repositoryFactory.CreateRepository<Facility>();
 
         ISpecification<Domain.Entities.Activity> activitySpecification = new ActivitySpecification(activity => true);
@@ -65,7 +65,7 @@ public class PostActivityCommandHandler : CommandHandler<PostActivityCommand, Ge
         activitySpecification = activitySpecification.And(ActivitySpecification.ByItsPrivate(command.Private));
 
         var searchActivity = await activityRepository.GetBySpecificationAsync(activitySpecification);
-        foreach(var x in searchActivity )
+        foreach (var x in searchActivity)
         {
             Console.WriteLine("!!!!!!!!!!!!!!!!!!" + x.Name + "!");
         }
