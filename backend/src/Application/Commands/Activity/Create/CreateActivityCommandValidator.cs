@@ -2,11 +2,11 @@ using System.Data;
 using FastEndpoints;
 using FluentValidation;
 
-namespace Playground.Application.Commands.Activity.Post;
+namespace Playground.Application.Commands.Activity.Create;
 
-public class PostActivityCommandValidator : Validator<PostActivityCommand>
+public class CreateActivityCommandValidator : Validator<CreateActivityCommand>
 {
-    public PostActivityCommandValidator()
+    public CreateActivityCommandValidator()
     {
         RuleFor(x => x.RecommendedAge)
             .GreaterThan(1)
