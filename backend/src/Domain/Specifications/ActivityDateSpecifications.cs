@@ -105,7 +105,6 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por hora mayor o igual.</returns>
         public static ActivityDateSpecification ByTimeMoreOrEqual(TimeSpan time)
         {
-            System.Console.WriteLine("DateTime.UtcNow.TimeOfDay >= time: {0} y DateTime.UtcNow.TimeOfDay: {1}", DateTime.UtcNow.TimeOfDay >= time, DateTime.UtcNow.TimeOfDay);
             return new ActivityDateSpecification(activityDate => activityDate.DateTime.TimeOfDay >= time);
         }
 
@@ -188,5 +187,9 @@ namespace Playground.Domain.Specifications
             return new ActivityDateSpecification(activityDate => (activityDate.Activity.Facility.MaximumCapacity - activityDate.ReservedPlaces) >= capacity);
         }
 
+        public static ActivityDateSpecification ByPending(bool IsPending)
+        {
+            return new ActivityDateSpecification(activityDate => activityDate.Pending == IsPending);
+        }
     }
 }
