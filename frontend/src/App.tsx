@@ -18,12 +18,13 @@ import UserProfilePage from './pages/UserProfilePage';
 import EditUserProfilePage from './pages/EditUserProfilePage';
 import { authService } from './services/authService';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
-import ReservationsPage from './pages/ReservationPage';
+import ReservationsPage from './pages/MyReservationPage';
 import UserManagementPage from './pages/UserManagementPage';
 import AdminPage from './pages/AdminPage';
 import DefineUsageFrequencyPage from './pages/UsageFrequencyPage';
 import ActivityFormPage from './pages/ActivityFormPage';
 import ResourcesPage from './pages/ResourcesPage';
+import MyReviewPage from './pages/MyReviewPage';
 // import EducatorPage from './pages/EducatorPage';
 // import ActivityManagerPage from './pages/ActivityManagerPage';
 
@@ -88,6 +89,7 @@ const App: React.FC = () => {
       try {
         const response = await authService.getReCaptchaSiteKey();
         setSiteKey(response.siteKey);
+        console.log("ReCaptcha sitekey: ", siteKey)
       } catch (error) {
         console.error('Error al obtener el siteKey de Captcha:', error);
       }
@@ -109,13 +111,13 @@ const App: React.FC = () => {
     // setOnlineState(false); //Descomentar esta línea fuerza al inicio en modo offline
     // setUseCaptcha(false); //Esta solo fuerza a que no se use captcha
 
-  }, [clientId, siteKey]);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <GoogleOAuthProvider clientId={clientId}>
-        <GoogleReCaptchaProvider reCaptchaKey="6LeJmLoqAAAAALMk4lMeGU-9JYWmUuwbDVjt4nsp">
+        <GoogleReCaptchaProvider reCaptchaKey={siteKey}>
           <AuthProvider>
             <Router>
               <Navbar />
@@ -129,6 +131,7 @@ const App: React.FC = () => {
                 <Route path="/edit-profile/:id" element={<EditUserProfilePage />} />
                 <Route path="/activities/:id/:imagePath/:useCase" element={<ActivityInfoPage reload={false} />} />
                 <Route path="/my-reservations/:id" element={<ReservationsPage />}></Route>
+                <Route path="/my-reviews/:id" element={<MyReviewPage />} />
                 <Route path="/resources" element={<ResourcesPage reload={false} />} />
                 <Route path="/define-usage-frequency/:resourceId" element={<DefineUsageFrequencyPage />} />
                 <Route path="/activity-form" element={<ActivityFormPage />} />
