@@ -10,3 +10,12 @@ export interface Facility {
 export interface ListFacilityResponse {
     result: Facility[] | string[];
 }
+
+export interface FacilityResponse {
+    id: string,
+    name: string,
+    location: string,
+    type: string,
+    usagePolicy: string,
+    maximumCapacity: number,
+}
