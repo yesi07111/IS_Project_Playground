@@ -18,6 +18,7 @@ namespace Playground.Domain.SmartEnum
         public static readonly UseCaseSmartEnum MyReviewView = new("MyReviewView", 9);
         public static readonly UseCaseSmartEnum SoftDelete = new("SoftDelete", 10);
         public static readonly UseCaseSmartEnum Delete = new("Delete", 11);
+        public static readonly UseCaseSmartEnum AllLocations = new("AllLocations", 11); 
 
         private UseCaseSmartEnum(string name, int value) : base(name, value)
         {
