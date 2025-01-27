@@ -1,7 +1,7 @@
 import axios from "axios";
-import { ResourceFilters } from "../interfaces/ResourceFilters";
-import { ListResourceResponse } from "../interfaces/Resource";
-import { UsageFrequencyDate } from "../interfaces/UsageFrequencyDate";
+import { ListResourceDateResponse, ListResourceResponse } from "../interfaces/Resource";
+import { ResourceFilters } from "../interfaces/Filters";
+import { ResourceDate } from "../interfaces/ResourceDate";
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -25,9 +25,23 @@ export const resourceService = {
         }
     },
 
-    saveUsageFrequency: async (data: UsageFrequencyDate) => {
+    getAllResourceDates: async (): Promise<ListResourceDateResponse> => {
         try {
-            const response = await axios.post(`${API_URL}/resource/post-useFrequency`, data, {
+            const response = await axios.get(`${API_URL}/resourceDate/get-all`);
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al obtener las frecuencias de uso.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al obtener las frecuencias de uso.';
+            }
+        }
+    },
+
+    saveUsageFrequency: async (data: ResourceDate) => {
+        try {
+            const response = await axios.post(`${API_URL}/resourceDate/create`, data, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
