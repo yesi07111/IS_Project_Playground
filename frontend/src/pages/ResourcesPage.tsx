@@ -11,7 +11,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { ResourceFilters } from "../interfaces/ResourceFilters";
 import { resourceService } from "../services/resourceService";
-import ResourceCard from "../components/features/ResourceCard";
+import GenericCard from "../components/features/GenericCard";
+import { useAuth } from "../components/auth/authContext";
+import { useNavigate } from "react-router-dom";
 
 const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [searchTerm, setSearchTerm] = useState(''); //termino de busqueda ingresado por el usuario
@@ -29,6 +31,10 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [maxUseFrequencyError, setMaxUseFrequencyError] = useState<string>(''); //error para frecuencia de uso maxima invalida
     const [facilityTypes, setFacilityTypes] = useState<string[]>([]); //lista de tipos de instalaciones disponibles
     const [resourceTypes, setResourceTypes] = useState<string[]>([]); //lista de tipos de recurso disponibles
+
+    const { isAuthenticated } = useAuth();
+    const role = localStorage.getItem('authUserRole');
+    const navigate = useNavigate();
 
     const resourcesPerPage = 6;
 
@@ -236,6 +242,10 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
             setResources(catchedResources);
         }
     }
+
+    const handleDefineUsageFrequency = (id: string) => {
+        navigate(`/define-usage-frequency/${id}`);
+      };
 
     const menuItems = [
         { label: "Tipo de Instalación", value: "Tipo de Instalación" },
@@ -476,7 +486,33 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                 justifyContent: 'center',
                             }}
                         >
-                            <ResourceCard resource={resource} />
+                            {/* <ResourceCard resource={resource} /> */}
+                            <GenericCard
+                                title={resource.name}
+                                fields={[
+                                    { label: 'Tipo', value: resource.type },
+                                    { label: 'Frecuencia de Uso', value: resource.useFrequency },
+                                    { label: 'Ubicación', value: resource.facilityLocation },
+                                    { label: 'Instalación', value: `${resource.facilityName} (${resource.facilityType})` },
+                                ]}
+                                badge={{
+                                    text: resource.condition,
+                                    color:
+                                        resource.condition === 'Bueno'
+                                            ? '#1976d2'
+                                            : resource.condition === 'Deteriorado'
+                                                ? '#ffa726'
+                                                : '#d32f2f',
+                                }}
+                                actions={role !== 'Parent' && isAuthenticated
+                                    ? [
+                                        {
+                                            label: 'Definir frecuencia de uso',
+                                            onClick:  () => handleDefineUsageFrequency(resource.id),
+                                        },
+                                    ]
+                                    : []}
+                            />
                         </Grid2>
                     ))}
                 </Grid2>
