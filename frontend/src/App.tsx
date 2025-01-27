@@ -19,12 +19,13 @@ import EditUserProfilePage from './pages/EditUserProfilePage';
 import { authService } from './services/authService';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import ReservationsPage from './pages/MyReservationPage';
-import UserManagementPage from './pages/UserManagementPage';
-import AdminPage from './pages/AdminPage';
 import DefineUsageFrequencyPage from './pages/UsageFrequencyPage';
 import ActivityFormPage from './pages/ActivityFormPage';
 import ResourcesPage from './pages/ResourcesPage';
 import MyReviewPage from './pages/MyReviewPage';
+import UsersPage from './pages/UsersPage';
+import FacilityPage from './pages/FacilitiesPage';
+import FacilitiesPage from './pages/FacilitiesPage';
 // import EducatorPage from './pages/EducatorPage';
 // import ActivityManagerPage from './pages/ActivityManagerPage';
 
@@ -135,8 +136,8 @@ const App: React.FC = () => {
                 <Route path="/resources" element={<ResourcesPage reload={false} />} />
                 <Route path="/define-usage-frequency/:resourceId" element={<DefineUsageFrequencyPage />} />
                 <Route path="/activity-form" element={<ActivityFormPage />} />
-                <Route path="/admin" element={<AdminPage />} />
-                <Route path="/user-manager" element={<UserManagementPage />} />
+                <Route path="/users" element={<UsersPage reload={false} />} />
+                <Route path="/facilities" element={<FacilitiesPage reload={false} />} />
                 <Route
                   path="/verify-email"
                   element={
