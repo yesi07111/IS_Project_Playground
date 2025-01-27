@@ -51,6 +51,7 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
     const [capacity, setCapacity] = useState<number | null>(null);
     const [isNew, setIsNew] = React.useState(false);
     const { isAuthenticated } = useAuth();
+    const [pending, setPending] = React.useState(false);
 
     const rol = localStorage.getItem('authUserRole');
 
@@ -114,11 +115,11 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
     const fetchAllActivities = useCallback(async (filters: ActivitiesFilters[] = [{ type: 'Casos de Uso', useCase: 'ActivityView' }]) => {
         try {
             const response: ListActivityResponse = await activityService.getAllActivities(filters);
-            const activitiesArrayR: Activity[] = Array.isArray(response.result)
+            const activitiesArray: Activity[] = Array.isArray(response.result)
                 ? response.result as Activity[]
                 : [];
-            //asegurarme de que las actividades mostradas del filtrado no sean pendientes
-            const activitiesArray: Activity[] = activitiesArrayR.filter(activity => !activity.pending)
+            // //asegurarme de que las actividades mostradas del filtrado no sean pendientes
+            // const activitiesArray: Activity[] = activitiesArrayR.filter(activity => !activity.pending)
 
             cacheActivityImages(activitiesArray);
             setActivities(activitiesArray.map(activity => ({
@@ -254,6 +255,8 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
                     setThisWeek(null!);
                     setDaysOfWeek(null!);
                     break;
+                case "Pendiente":
+                    setPending(false);
                 default:
                     break;
             }
@@ -352,14 +355,23 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
                 filters.push({ type: 'Nueva', value: 'false' })
             }
         }
+        if (selectedFilters.includes("Pendiente")) {
+            console.log(pending);
+            if (pending) {
+                filters.push({ type: 'Pendiente', value: 'true' })
+            }
+            else {
+                filters.push({ type: 'Pendiente', value: 'false' })
+            }
+        }
 
         try {
             const response: ListActivityResponse = await activityService.getAllActivities(filters);
-            const activitiesArrayR: Activity[] = Array.isArray(response.result)
+            const activitiesArray: Activity[] = Array.isArray(response.result)
                 ? response.result as Activity[]
                 : Array.from(response.result);
-            //asegurarme de que las actividades mostradas del filtrado no sean pendientes
-            const activitiesArray: Activity[] = activitiesArrayR.filter(activity => !activity.pending)
+            // //asegurarme de que las actividades mostradas del filtrado no sean pendientes
+            // const activitiesArray: Activity[] = activitiesArrayR.filter(activity => !activity.pending)
 
             cacheActivityImages(activitiesArray);
             setActivities(activitiesArray);
@@ -386,6 +398,7 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
         { label: "Pública o Privada", value: "Disponibilidad" },
         { label: "Nueva o No", value: "Nueva" },
         { label: "Capacidad Disponible", value: "Capacidad Disponible" },
+        ...(isAuthenticated && rol === 'Educator' ? [{ label: "Pendiente o no Pendiente", value: "Pendiente" }] : []),
     ];
 
     return (
@@ -736,18 +749,32 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
                                             <Typography sx={{ ml: 1 }}>niños.</Typography>
                                         </Box>
                                     )}
+                                    {filter === "Pendiente" && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                                            <Typography>✨ Está Pendiente:</Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+                                                <FormControlLabel
+                                                    control={<Checkbox checked={pending} onChange={(e) => setPending(e.target.checked)} />}
+                                                    label=""
+                                                />
+                                            </Box>
+                                        </Box>
+                                    )}
                                 </Box>
                             ))}
                         </Collapse>
                     </Box>
-                )}
+                )
+                }
 
                 {/* Botón de "Crear Nueva Actividad" visible para Educadores */}
-                {rol === 'Educator' && isAuthenticated && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-                        <CreateActivityButton />
-                    </Box>
-                )}
+                {
+                    rol === 'Educator' && isAuthenticated && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+                            <CreateActivityButton />
+                        </Box>
+                    )
+                }
 
                 {/* Grid de actividades */}
                 <Grid2 container spacing={4}>
@@ -772,8 +799,8 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
                         color="primary"
                     />
                 </Box>
-            </Box>
-        </LocalizationProvider>
+            </Box >
+        </LocalizationProvider >
     );
 }
 
