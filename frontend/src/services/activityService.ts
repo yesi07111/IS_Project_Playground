@@ -10,6 +10,7 @@ export const activityService = {
         try {
             if (filters.some(filter => filter.type === 'Casos de Uso' && filter.useCase === 'ActivityView')) {
                 const query = buildFilterQuery(filters);
+                console.table(query);
                 const response = await axios.get(`${API_URL}/activity/get-all?${query}`);
                 return response.data;
             }
@@ -55,7 +56,7 @@ export const activityService = {
     createActivity: async (activityData: ActivityData) => {
         try {
             console.table(activityData);
-            const response = await axios.post(`${API_URL}/activity/post`, activityData);
+            const response = await axios.post(`${API_URL}/activity/create`, activityData);
             console.log(response);
         }
         catch (error) {
@@ -76,6 +77,9 @@ function buildFilterQuery(filters: ActivitiesFilters[]) {
     let endTime = '';
 
     filters.forEach(filter => {
+        if (filter.type === 'Pendiente') {
+            params.append('Pending', filter.value || 'false')
+        }
         if (filter.type === 'Casos de Uso') {
             params.append('UseCase', filter.useCase || '')
         }
