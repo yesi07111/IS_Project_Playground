@@ -4,9 +4,9 @@ import { Card, CardContent, Typography, Box, Theme, Button, TextField } from '@m
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useParams } from 'react-router-dom';
-import { UsageFrequencyDate } from '../interfaces/UsageFrequencyDate';
 import { resourceService } from '../services/resourceService';
 import { Message } from '@mui/icons-material';
+import { ResourceDate } from '../interfaces/ResourceDate';
 
 const DefineUsageFrequencyPage = () => {
     const { resourceId } = useParams(); // Extrae el parámetro de la URL
@@ -22,7 +22,7 @@ const DefineUsageFrequencyPage = () => {
                 console.log('Selected date:', selectedDate);
                 console.log('Usage frequency:', selectedUsageFrequency);
 
-                const data: UsageFrequencyDate = {
+                const data: ResourceDate = {
                     resourceId: resourceId,
                     date: selectedDate,
                     usageFrequency: selectedUsageFrequency
