@@ -5,7 +5,7 @@ using Playground.Application.Repositories;
 using Playground.Application.Responses;
 using Playground.Domain.SmartEnum;
 
-namespace Playground.Application.Commands.Activity.Reservation;
+namespace Playground.Application.Commands.Reservation.Create;
 
 public class ReserveActivityCommandHandler(UserManager<Domain.Entities.Auth.User> userManager, IRepositoryFactory repositoryFactory, IUnitOfWork unitOfWork) : CommandHandler<ReserveActivityCommand, ReservationCreationResponse>
 {

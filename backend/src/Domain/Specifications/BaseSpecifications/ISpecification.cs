@@ -33,6 +33,12 @@ namespace Playground.Domain.Specifications.BaseSpecifications
         /// Invierte la especificación actual utilizando una operación lógica NOT.
         /// </summary>
         /// <returns>Una nueva especificación que representa la inversión.</returns>
-        ISpecification<T> Not();
+        ISpecification<T> AndNot(ISpecification<T> other);
+
+        /// <summary>
+        /// Invierte la especificación actual utilizando una operación lógica NOT.
+        /// </summary>
+        /// <returns>Una nueva especificación que representa la inversión.</returns>
+        ISpecification<T> OrNot(ISpecification<T> other);
     }
 }
