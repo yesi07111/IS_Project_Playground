@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using Playground.Application.Repositories;
 using Playground.Domain.Entities;
 using Playground.Domain.Entities.Auth;
+using Playground.Domain.Entities.Common;
 using Playground.Domain.Specifications.BaseSpecifications;
 using Playground.Infraestructure.Data.DbContexts;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 
 namespace Playground.Infraestructure.Repositories
 {
@@ -223,14 +223,17 @@ namespace Playground.Infraestructure.Repositories
                 user.NormalizedEmail += dateSuffix;
 
                 _context.Set<User>().Update(user);
-
             }
             else if (entity is Review review)
             {
                 review.DeletedAt = DateTime.UtcNow;
                 _context.Set<Review>().Update(review);
             }
-
+            else if (entity is IBaseEntity baseEntity)
+            {
+                baseEntity.DeletedAt = DateTime.UtcNow;
+                _context.Set<T>().Update(entity);
+            }
         }
     }
 }
