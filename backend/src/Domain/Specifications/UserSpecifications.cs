@@ -60,6 +60,27 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<User> AndNot(ISpecification<User> other)
+        {
+            return new AndSpecification<User>(this, new NotSpecification<User>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<User> OrNot(ISpecification<User> other)
+        {
+            return new OrSpecification<User>(this, new NotSpecification<User>(other));
+        }
+
+
+        /// <summary>
         /// Crea una especificación para filtrar usuarios por su primer nombre.
         /// </summary>
         /// <param name="firstName">El primer nombre del usuario.</param>
@@ -136,6 +157,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por rol de usuario.</returns>
         public static UserSpecification ByRol(string rolName)
         {
+            if (rolName is null) return new UserSpecification(r => r.Rol == null);
             return new UserSpecification(user => user.Rol.Name == rolName);
         }
 

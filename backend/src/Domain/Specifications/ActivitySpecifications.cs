@@ -52,6 +52,26 @@ namespace Playground.Domain.Specifications
             return new OrSpecification<Activity>(this, other);
         }
 
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Activity> AndNot(ISpecification<Activity> other)
+        {
+            return new AndSpecification<Activity>(this, new NotSpecification<Activity>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Activity> OrNot(ISpecification<Activity> other)
+        {
+            return new OrSpecification<Activity>(this, new NotSpecification<Activity>(other));
+        }
+
         /// Convierte la especificación en una expresión lambda.
         /// </summary>
         /// <returns>Una expresión lambda que representa la especificación.</returns>
@@ -87,6 +107,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por educador.</returns>
         public static ActivitySpecification ByEducator(string educatorId)
         {
+            if (educatorId is null) return new ActivitySpecification(r => r.Educator == null);
             return new ActivitySpecification(activity => activity.Educator.Id == educatorId);
         }
 
@@ -145,8 +166,9 @@ namespace Playground.Domain.Specifications
         /// </summary>
         /// <param name="facility">La instalación asociada a la actividad.</param>
         /// <returns>Una especificación que filtra por instalación.</returns>
-        public static ActivitySpecification ByFacility(Guid facility)
+        public static ActivitySpecification ByFacility(Guid? facility)
         {
+            if (facility is null) return new ActivitySpecification(r => r.Facility == null);
             return new ActivitySpecification(activity => activity.Facility.Id == facility);
         }
 

@@ -28,6 +28,26 @@ namespace Playground.Domain.Specifications
             return new OrSpecification<ResourceDate>(this, other);
         }
 
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<ResourceDate> AndNot(ISpecification<ResourceDate> other)
+        {
+            return new AndSpecification<ResourceDate>(this, new NotSpecification<ResourceDate>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<ResourceDate> OrNot(ISpecification<ResourceDate> other)
+        {
+            return new OrSpecification<ResourceDate>(this, new NotSpecification<ResourceDate>(other));
+        }
+
         public Expression<Func<ResourceDate, bool>> ToExpression()
         {
             return _expression;
@@ -35,6 +55,7 @@ namespace Playground.Domain.Specifications
 
         public static ResourceDateSpecification ByResource(string resourceId)
         {
+            if (resourceId is null) return new ResourceDateSpecification(resourceDate => resourceDate.Resource == null);
             return new ResourceDateSpecification(resourceDate => resourceDate.Resource.Id.ToString() == resourceId);
         }
 

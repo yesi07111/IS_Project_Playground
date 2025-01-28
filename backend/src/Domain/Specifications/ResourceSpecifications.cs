@@ -51,6 +51,27 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Resource> AndNot(ISpecification<Resource> other)
+        {
+            return new AndSpecification<Resource>(this, new NotSpecification<Resource>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Resource> OrNot(ISpecification<Resource> other)
+        {
+            return new OrSpecification<Resource>(this, new NotSpecification<Resource>(other));
+        }
+
+
+        /// <summary>
         /// Convierte la especificación en una expresión lambda.
         /// </summary>
         /// <returns>Una expresión lambda que representa la especificación.</returns>
@@ -129,8 +150,9 @@ namespace Playground.Domain.Specifications
         /// </summary>
         /// <param name="facility">La instalación asociada al recurso.</param>
         /// <returns>Una especificación que filtra por instalación.</returns>
-        public static ResourceSpecification ByFacility(Guid facility)
+        public static ResourceSpecification ByFacility(Guid? facility)
         {
+            if (facility is null) return new ResourceSpecification(resource => resource.Facility == null);
             return new ResourceSpecification(resource => resource.Facility.Id == facility);
         }
 

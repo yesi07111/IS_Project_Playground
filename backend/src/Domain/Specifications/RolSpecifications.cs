@@ -66,6 +66,27 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Rol> AndNot(ISpecification<Rol> other)
+        {
+            return new AndSpecification<Rol>(this, new NotSpecification<Rol>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Rol> OrNot(ISpecification<Rol> other)
+        {
+            return new OrSpecification<Rol>(this, new NotSpecification<Rol>(other));
+        }
+
+
+        /// <summary>
         /// Crea una especificación para filtrar roles por su nombre.
         /// </summary>
         /// <param name="name">El nombre del rol.</param>

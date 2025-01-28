@@ -51,6 +51,26 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Facility> AndNot(ISpecification<Facility> other)
+        {
+            return new AndSpecification<Facility>(this, new NotSpecification<Facility>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Facility> OrNot(ISpecification<Facility> other)
+        {
+            return new OrSpecification<Facility>(this, new NotSpecification<Facility>(other));
+        }
+
+        /// <summary>
         /// Convierte la especificación en una expresión lambda.
         /// </summary>
         /// <returns>Una expresión lambda que representa la especificación.</returns>
