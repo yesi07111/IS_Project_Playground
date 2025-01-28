@@ -18,6 +18,16 @@ public class CodeGenerator : ICodeGenerator
     /// <returns>Un código reducido como una cadena de texto.</returns>
     public string GenerateReducedCode(string input, int length = 6)
     {
+        if (string.IsNullOrEmpty(input))
+        {
+            throw new ArgumentNullException(nameof(input), "La entrada no puede ser nula o vacía.");
+        }
+
+        if (length <= 0 || length > 64)
+        {
+            throw new ArgumentOutOfRangeException(nameof(length), "La longitud debe ser mayor que 0 y menor o igual a 64.");
+        }
+
         using var sha256 = SHA256.Create();
         byte[] hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
 
