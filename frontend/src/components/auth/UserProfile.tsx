@@ -17,6 +17,7 @@ const UserProfile: React.FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const userId = localStorage.getItem('authId');
     const navigate = useNavigate();
+    const role = localStorage.getItem('authUserRole');
 
 
     /**
@@ -75,8 +76,12 @@ const UserProfile: React.FC = () => {
                 onClose={handleClose}
             >
                 <MenuItem onClick={handleClose} component={Link} to={`/profile/${userId}`}>Ver Perfil</MenuItem>
-                <MenuItem onClick={handleClose} component={Link} to={`/my-reservations/${userId}`}>Ver Mis Reservas</MenuItem>
-                <MenuItem onClick={handleClose} component={Link} to={`/my-reviews/${userId}`}>Ver Mis Reseñas</MenuItem>
+                {role === 'Parent' && (
+                    <>
+                        <MenuItem onClick={handleClose} component={Link} to={`/my-reservations/${userId}`}>Ver Mis Reservas</MenuItem>
+                        <MenuItem onClick={handleClose} component={Link} to={`/my-reviews/${userId}`}>Ver Mis Reseñas</MenuItem>
+                    </>
+                )}
                 <MenuItem onClick={() => { handleClose(); logout(); }}>Cerrar Sesión</MenuItem>
             </Menu>
         </>

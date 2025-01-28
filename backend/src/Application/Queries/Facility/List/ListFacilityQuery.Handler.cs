@@ -24,6 +24,7 @@ public class ListFacilityQueryHandler : CommandHandler<ListFacilityQuery, ListFa
         var facilityRepository = _repositoryFactory.CreateRepository<Domain.Entities.Facility>();
         IEnumerable<Domain.Entities.Facility> facilities = [];
         IEnumerable<string> allTypes = [];
+        IEnumerable<string> allLocations = [];
 
         var isUseCase = SmartEnum<UseCaseSmartEnum>.TryFromName(query.UseCase, out UseCaseSmartEnum useCase);
         if (isUseCase)
@@ -32,6 +33,11 @@ public class ListFacilityQueryHandler : CommandHandler<ListFacilityQuery, ListFa
             {
                 allTypes = await GetAllFacilityTypesAsync(facilityRepository);
                 return new ListFacilityResponse(allTypes);
+            }
+            else if(useCase == UseCaseSmartEnum.AllLocations)
+            {
+                allLocations = await GetAllFacilityLocationsAsync(facilityRepository);
+                return new ListFacilityResponse(allLocations);
             }
             else if (useCase == UseCaseSmartEnum.AdminEducatorView)
             {
@@ -112,6 +118,15 @@ public class ListFacilityQueryHandler : CommandHandler<ListFacilityQuery, ListFa
         // Usar LINQ para obtener los tipos distintos de instalaciones
         var facilities = await facilityRepository.GetAllAsync();
         return facilities.Select(facility => facility.Type)
+                         .Distinct()
+                         .ToList();
+    }
+
+    private async Task<IEnumerable<string>> GetAllFacilityLocationsAsync(IRepository<Domain.Entities.Facility> facilityRepository)
+    {
+        // Usar LINQ para obtener los tipos distintos de instalaciones
+        var facilities = await facilityRepository.GetAllAsync();
+        return facilities.Select(facility => facility.Location)
                          .Distinct()
                          .ToList();
     }

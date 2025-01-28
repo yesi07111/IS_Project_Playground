@@ -1,5 +1,7 @@
 import { Activity, ActivityDetail } from "../interfaces/Activity";
+import { Facility } from "../interfaces/Facility";
 import { Resource } from "../interfaces/Resource";
+import { UserResponse } from "../interfaces/User";
 
 const CACHE_KEY_ACTIVITIES = 'cachedActivities';
 const CACHE_KEY_RESOURCES = 'catchedResources';
@@ -12,6 +14,9 @@ const CACHE_KEY_TOP_ACTIVITIES = 'cachedTopActivities';
 const CACHE_KEY_PROFILE_IMAGES = 'cachedProfileImages'
 const CACHE_KEY_RESOURCE_TYPES = 'cachedResourceTypes';
 const CACHE_KEY_FACILITY_NAMES = 'cachedFacilityNames';
+const CACHE_KEY_FACILITY_LOCATIONS = 'cachedFacilityLocations';
+const CACHE_KEY_FACILITIES = 'cachedFacilities';
+const CACHE_KEY_USERS = 'cachedUsers';
 
 export const cacheService = {
   saveActivities: (activities: Activity[]) => {
@@ -30,6 +35,15 @@ export const cacheService = {
   loadResources: () => {
     const cachedResources = localStorage.getItem(CACHE_KEY_RESOURCES);
     return cachedResources ? JSON.parse(cachedResources) : [];
+  },
+
+  saveUsers: (users: UserResponse[]) => {
+    localStorage.setItem(CACHE_KEY_USERS, JSON.stringify(users));
+  },
+
+  loadUsers: () => {
+    const cachedUsers = localStorage.getItem(CACHE_KEY_USERS);
+    return cachedUsers ? JSON.parse(cachedUsers) : [];
   },
 
   saveActivityDetails: (activityDetails: ActivityDetail[]) => {
@@ -57,6 +71,24 @@ export const cacheService = {
   loadFacilityTypes: () => {
     const cachedFacilityTypes = localStorage.getItem(CACHE_KEY_FACILITY_TYPES);
     return cachedFacilityTypes ? JSON.parse(cachedFacilityTypes) : [];
+  },
+
+  saveFacilityLocations: (facilityLocations: string[]) => {
+    localStorage.setItem(CACHE_KEY_FACILITY_LOCATIONS, JSON.stringify(facilityLocations));
+  },
+
+  loadFacilityLocations: () => {
+    const cachedFacilityLocations = localStorage.getItem(CACHE_KEY_FACILITY_LOCATIONS);
+    return cachedFacilityLocations ? JSON.parse(cachedFacilityLocations) : [];
+  },
+
+  saveFacilities: (facility: Facility[]) => {
+    localStorage.setItem(CACHE_KEY_FACILITIES, JSON.stringify(facility));
+  },
+
+  loadFacilities: () => {
+    const cachedFacilities = localStorage.getItem(CACHE_KEY_FACILITIES);
+    return cachedFacilities ? JSON.parse(cachedFacilities) : [];
   },
 
   saveFacilityNames: (facilityNames: string[]) => {
