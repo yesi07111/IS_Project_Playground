@@ -3,6 +3,7 @@ using Playground.Application.Factories;
 using Playground.Application.Dtos;
 using Playground.Application.Responses;
 using Playground.Domain.Specifications;
+using Playground.Domain.SmartEnum;
 
 namespace Playground.Application.Queries.Reservation.List;
 
@@ -18,7 +19,7 @@ public class ListReservationQueryHandler : CommandHandler<ListReservationQuery, 
     public override async Task<ListReservationResponse> ExecuteAsync(ListReservationQuery query, CancellationToken ct = default)
     {
         var reservationRepository = _repositoryFactory.CreateRepository<Domain.Entities.Reservation>();
-        var reservationSpecification = ReservationSpecification.ByParent(query.Id);
+        var reservationSpecification = ReservationSpecification.ByParent(query.Id).AndNot(ReservationSpecification.ByReservationState(ReservationStateSmartEnum.Cancelada.Name));
         var reservations = await reservationRepository.GetBySpecificationAsync(reservationSpecification, r => r.ActivityDate, r => r.ActivityDate.Activity);
 
         var reservationsDtos = reservations.Select(r => new ReservationDto
