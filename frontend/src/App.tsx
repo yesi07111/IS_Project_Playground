@@ -138,8 +138,6 @@ const App: React.FC = () => {
                 <Route path="/resources" element={<ResourcesPage reload={false} />} />
                 <Route path="/define-usage-frequency/:resourceId" element={<DefineUsageFrequencyPage />} />
                 <Route path="/activity-form" element={<ActivityFormPage />} />
-                <Route path="/admin" element={<AdminPage />} />
-                <Route path="/user-manager" element={<UserManagementPage />} />
                 <Route path="/statistics" element={<StatisticsPage />} />
                 <Route path="/users" element={<UsersPage reload={false} />} />
                 <Route path="/facilities" element={<FacilitiesPage reload={false} />} />

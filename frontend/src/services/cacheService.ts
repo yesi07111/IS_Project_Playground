@@ -45,6 +45,8 @@ export const cacheService = {
   loadResourceDates: () => {
     const cachedResources = localStorage.getItem(CACHE_KEY_RESOURCEDATES);
     return cachedResources ? JSON.parse(cachedResources) : [];
+  },
+
   saveUsers: (users: UserResponse[]) => {
     localStorage.setItem(CACHE_KEY_USERS, JSON.stringify(users));
   },
