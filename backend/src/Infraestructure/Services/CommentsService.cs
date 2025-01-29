@@ -13,15 +13,20 @@ namespace Playground.Infraestructure.Services
         /// <inheritdoc />
         public async Task<IEnumerable<string>> GetCommentsAsync(Guid activityId, IRepository<Review> reviewRepository)
         {
-            var reviewSpecification = ReviewSpecification.ByActivityDate(activityId)
-                .And(ReviewSpecification.ByDeletedAt(null!))
-                .AndNot(ReviewSpecification.ByParent(null!));
+            // Obtén las reseñas relacionadas con la actividad
+            var reviews = await reviewRepository.GetBySpecificationAsync(
+                ReviewSpecification.ByActivityDate(activityId),
+                r => r.Parent
+            );
 
-            var reviews = await reviewRepository.GetBySpecificationAsync(reviewSpecification, r => r.Parent);
-            
             if (reviews is null) return [];
 
-            return [.. reviews.Select(r => $"{r.Parent.UserName}:{r.Score}:{r.Comments}")];
+            // Filtra y transforma los datos en memoria
+            var filteredReviews = reviews
+                .Where(r => r.DeletedAt == null && r.Parent != null)
+                .Select(r => $"{r.Parent.UserName}:{r.Score}:{r.Comments}");
+
+            return filteredReviews;
         }
     }
 }

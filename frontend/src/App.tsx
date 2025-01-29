@@ -82,6 +82,7 @@ const App: React.FC = () => {
       try {
         const response = await authService.getGoogleClientId();
         setClientId(response.clientId);
+        console.log("Google client id: ", response.clientId); // Usar el valor de response directamente
       } catch (error) {
         console.error('Error al obtener el clientId de Google:', error);
       }
@@ -91,7 +92,7 @@ const App: React.FC = () => {
       try {
         const response = await authService.getReCaptchaSiteKey();
         setSiteKey(response.siteKey);
-        console.log("ReCaptcha sitekey: ", siteKey)
+        console.log("ReCaptcha sitekey: ", response.siteKey); // Usar el valor de response directamente
       } catch (error) {
         console.error('Error al obtener el siteKey de Captcha:', error);
       }
@@ -100,20 +101,19 @@ const App: React.FC = () => {
     fetchClientId();
     fetchSiteKey();
 
+  }, []);
+
+  useEffect(() => {
     if (clientId.length !== 0) {
-      console.log("Iniciando online...")
+      console.log("Iniciando online...");
       setOnlineState(true);
     }
 
     if (siteKey.length !== 0) {
-      console.log("Usando verificación Captcha.")
+      console.log("Usando verificación Captcha.");
       setUseCaptcha(true);
     }
-
-    // setOnlineState(false); //Descomentar esta línea fuerza al inicio en modo offline
-    // setUseCaptcha(false); //Esta solo fuerza a que no se use captcha
-
-  }, []);
+  }, [clientId, siteKey]); // Añadir clientId y siteKey como dependencias
 
   return (
     <ThemeProvider theme={theme}>

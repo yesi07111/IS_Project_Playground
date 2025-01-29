@@ -14,7 +14,7 @@ public class DeleteReviewCommandHandler(IRepositoryFactory repositoryFactory, IU
         var reviewRepository = repositoryFactory.CreateRepository<Domain.Entities.Review>();
         var isUseCase = UseCaseSmartEnum.TryFromName(command.UseCase, out UseCaseSmartEnum useCase);
 
-        var review = await reviewRepository.GetByIdAsync(command.ReviewId) ?? throw new ArgumentException("La reseña no existe.");
+        var review = await reviewRepository.GetByIdAsync(Guid.Parse(command.ReviewId)) ?? throw new ArgumentException("La reseña no existe.");
 
         // Si se especifica un caso de uso
         if (isUseCase)

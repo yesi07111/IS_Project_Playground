@@ -24,27 +24,45 @@ public class GetActivityQueryHandler(IRepositoryFactory repositoryFactory, IRati
     /// <returns>Una respuesta con la Geta de actividades y tipos de actividades.</returns>
     public override async Task<GetActivityResponse> ExecuteAsync(GetActivityQuery query, CancellationToken ct = default)
     {
+        Console.WriteLine("!!!!!!!!!!!!!!!!!\n\n\n!!!!!!!!!!!!!!!!!");
+        Console.WriteLine("Inicio de ExecuteAsync en GetActivityQueryHandler");
+        Console.WriteLine("Query ID: " + query.Id);
+        Console.WriteLine("UseCase: " + query.UseCase);
+        Console.WriteLine("!!!!!!!!!!!!!!!!!\n\n\n!!!!!!!!!!!!!!!!!");
+
         // Crear repositorios usando el factory
         var activityDateRepository = repositoryFactory.CreateRepository<ActivityDate>();
         var resourceRepository = repositoryFactory.CreateRepository<Domain.Entities.Resource>();
 
+        Console.WriteLine("Repositorios creados.");
+
         var isUseCase = SmartEnum<UseCaseSmartEnum>.TryFromName(query.UseCase, out UseCaseSmartEnum useCase);
         var activityDetailDto = new ActivityDetailDto();
+
+        Console.WriteLine("UseCase encontrado: " + isUseCase);
 
         var activityDate = await activityDateRepository.GetByIdAsync(Guid.Parse(query.Id), ad => ad.Activity,
                                                                      ad => ad.Activity.Facility,
                                                                      ad => ad.Activity.Educator)
         ?? throw new KeyNotFoundException("La actividad no fue encontrada.");
+
+        Console.WriteLine("Actividad obtenida: " + activityDate.Activity.Name);
+
         var resourceSpecification = ResourceSpecification.ByFacility(activityDate.Activity.Facility.Id);
         var resources = await resourceRepository.GetBySpecificationAsync(resourceSpecification, r => r.Facility);
 
+        Console.WriteLine("Recursos obtenidos: " + resources.Count());
+
         // Filtrar recursos cuyo estado sea "Bueno"
         var filteredResources = resources.Where(r => r.ResourceCondition == ResourceStateSmartEnum.Bueno.Name);
+
+        Console.WriteLine("Recursos filtrados: " + filteredResources.Count());
 
         if (isUseCase)
         {
             if (useCase == UseCaseSmartEnum.ActivityView)
             {
+                Console.WriteLine("Caso de uso: ActivityView");
                 activityDetailDto = new ActivityDetailDto
                 {
                     Id = activityDate.Activity.Id,
@@ -72,6 +90,7 @@ public class GetActivityQueryHandler(IRepositoryFactory repositoryFactory, IRati
             }
             else if (useCase == UseCaseSmartEnum.ReviewView)
             {
+                Console.WriteLine("Caso de uso: ReviewView");
                 var _reviewRepository = repositoryFactory.CreateRepository<Domain.Entities.Review>();
                 activityDetailDto = new ActivityDetailDto
                 {
@@ -99,10 +118,11 @@ public class GetActivityQueryHandler(IRepositoryFactory repositoryFactory, IRati
                 };
             }
 
+            Console.WriteLine("Actividad detallada creada.");
             return new GetActivityResponse(activityDetailDto);
         }
 
+        Console.WriteLine("No se especificó un caso de uso válido.");
         throw new ArgumentException("No se especifico un caso de uso válido.");
     }
-
 }
