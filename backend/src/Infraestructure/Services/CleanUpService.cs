@@ -42,7 +42,7 @@ namespace Playground.Infraestructure.Services
         /// Realiza las tareas de limpieza, como eliminar usuarios no verificados.
         /// </summary>
         /// <param name="state">Estado del temporizador (no utilizado).</param>
-        private void DoWork(object? state)
+        public void DoWork(object? state)
         {
             _logger.LogInformation("CleanUp Service is working.");
 
@@ -71,6 +71,7 @@ namespace Playground.Infraestructure.Services
         public void Dispose()
         {
             _timer?.Dispose();
+            _timer = null;
         }
     }
 }

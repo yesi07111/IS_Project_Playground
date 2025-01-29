@@ -1,15 +1,15 @@
 using FastEndpoints;
-using Playground.Application.Commands.Activity.Reservation;
+using Playground.Application.Commands.Reservation.Create;
 using Playground.Application.Responses;
 
-namespace Playground.WebApi.Endpoints.Activity;
+namespace Playground.WebApi.Endpoints.Reservation;
 
 public class ReserveActivityEndpoint : Endpoint<ReserveActivityCommand, ReservationCreationResponse>
 {
     public override void Configure()
     {
         AllowAnonymous();
-        Post("/activity/reserve");
+        Post("/reserve/activity");
     }
 
     public override async Task<ReservationCreationResponse> ExecuteAsync(ReserveActivityCommand req, CancellationToken ct)

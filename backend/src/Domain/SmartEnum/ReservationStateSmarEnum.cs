@@ -10,6 +10,7 @@ namespace Playground.Domain.SmartEnum
         public static readonly ReservationStateSmartEnum Pendiente = new("Pendiente", 1);
         public static readonly ReservationStateSmartEnum Confirmada = new("Confirmada", 2);
         public static readonly ReservationStateSmartEnum Completada = new("Completada", 3);
+        public static readonly ReservationStateSmartEnum Cancelada = new("Cancelada", 4);
 
         private ReservationStateSmartEnum(string name, int value) : base(name, value)
         {

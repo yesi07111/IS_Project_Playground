@@ -1,3 +1,4 @@
+using System.Data;
 using Playground.Application.Services;
 
 namespace Playground.Infraestructure.Services;
@@ -12,7 +13,7 @@ public class ConverterService : IConverterService
     {
         if (string.IsNullOrWhiteSpace(input))
         {
-            return Enumerable.Empty<string>();
+            return [];
         }
 
         return input.Split(',')
@@ -47,6 +48,7 @@ public class ConverterService : IConverterService
     /// <returns>IEnumerable de DayOfWeek.</returns>
     public IEnumerable<DayOfWeek> ConvertIntToDayOfWeek(IEnumerable<int> days)
     {
+        if (days is null) return [];
         return days.Select(day => (DayOfWeek)day);
     }
 }

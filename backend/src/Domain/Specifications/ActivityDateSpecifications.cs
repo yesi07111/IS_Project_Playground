@@ -50,6 +50,26 @@ namespace Playground.Domain.Specifications
             return new OrSpecification<ActivityDate>(this, other);
         }
 
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<ActivityDate> AndNot(ISpecification<ActivityDate> other)
+        {
+            return new AndSpecification<ActivityDate>(this, new NotSpecification<ActivityDate>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<ActivityDate> OrNot(ISpecification<ActivityDate> other)
+        {
+            return new OrSpecification<ActivityDate>(this, new NotSpecification<ActivityDate>(other));
+        }
+
         /// Convierte la especificación en una expresión lambda.
         /// </summary>
         /// <returns>Una expresión lambda que representa la especificación.</returns>
@@ -190,6 +210,12 @@ namespace Playground.Domain.Specifications
         public static ActivityDateSpecification ByPending(bool IsPending)
         {
             return new ActivityDateSpecification(activityDate => activityDate.Pending == IsPending);
+        }
+
+        public static ActivityDateSpecification ByActivity(Guid? activityId)
+        {
+            if (activityId is null) return new ActivityDateSpecification(activityDate => activityDate.Activity == null);
+            return new ActivityDateSpecification(activityDate => activityDate.Activity.Id == activityId);
         }
     }
 }

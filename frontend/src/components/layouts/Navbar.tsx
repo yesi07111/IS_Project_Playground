@@ -217,7 +217,7 @@ font-size: 1.5rem;
                         >
                             Recursos
                         </Button>
-                        {isAuthenticated && role === 'Educator' &&
+                        {isAuthenticated && (role === 'Educator' || role === 'Admin') &&
                             <Button
                                 color="inherit"
                                 component={Link}
@@ -228,7 +228,56 @@ font-size: 1.5rem;
                                 }}
                             >
                                 Estadísticas
-                            </Button>}
+                            </Button>
+                        }
+                        {isAuthenticated && role === 'Admin' && (
+                            <>
+                                <Button
+                                    color="inherit"
+                                    component={Link}
+                                    to="/users"
+                                    sx={{
+                                        fontWeight: 500,
+                                        py: 0.5,
+                                    }}
+                                >
+                                    Usuarios
+                                </Button>
+                                <Button
+                                    color="inherit"
+                                    component={Link}
+                                    to="/facilities"
+                                    sx={{
+                                        fontWeight: 500,
+                                        py: 0.5,
+                                    }}
+                                >
+                                    Instalaciones
+                                </Button>
+                                <Button
+                                    color="inherit"
+                                    component={Link}
+                                    to="/pending-reservations"
+                                    sx={{
+                                        fontWeight: 500,
+                                        py: 0.5,
+                                    }}
+                                >
+                                    Solicitud de Reservas
+                                </Button>
+                                <Button
+                                    color="inherit"
+                                    component={Link}
+                                    to="/pending-activities"
+                                    sx={{
+                                        fontWeight: 500,
+                                        py: 0.5,
+                                    }}
+                                >
+                                    Solicitud de Actividades
+                                </Button>
+                            </>
+                        )}
                         <Button
                             color="inherit"
                             component={Link}
@@ -240,7 +289,7 @@ font-size: 1.5rem;
                         >
                             Reseñas
                         </Button>
-                        {isAuthenticated && role !== 'Educator' && (
+                        {isAuthenticated && role === 'Parent' && (
                             <Button
                                 color="inherit"
                                 component={Link}
@@ -252,7 +301,7 @@ font-size: 1.5rem;
                             >
                                 Mis Reservas
                             </Button>)}
-                        {isAuthenticated && (
+                        {isAuthenticated && role === 'Parent' && (
                             <Button
                                 color="inherit"
                                 component={Link}
