@@ -51,6 +51,8 @@ const RegisterPage: React.FC<OnlinePagesProps> = ({ online, useCaptcha }) => {
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [isHuman, setIsHuman] = useState(false);
     const { executeRecaptcha } = useGoogleReCaptcha();
+    const [captchaErrorCount, setCaptchaErrorCount] = useState(0);
+    const [turnOffCaptchaVerification, setTurnOffCaptchaVerification] = useState(false);
 
     useEffect(() => {
         const storedFormData = localStorage.getItem('formData');
@@ -118,13 +120,23 @@ const RegisterPage: React.FC<OnlinePagesProps> = ({ online, useCaptcha }) => {
             return;
         }
 
-        const action = 'register';
-        const token = await executeRecaptcha(action);
-        setCaptchaToken(token);
-        console.log("Token Recaptcha:")
-        console.log(token)
-        setIsHuman(true);
-        console.log('CAPTCHA completado con éxito');
+        try {
+            const action = 'register';
+            const token = await executeRecaptcha(action);
+            setCaptchaToken(token);
+            console.log("Token Recaptcha:")
+            console.log(token)
+            setIsHuman(true);
+            console.log('CAPTCHA completado con éxito');
+        } catch (error) {
+            console.error("Error llamando a reCaptcha: ", error);
+            setError("No se pudo conectar a reCaptcha");
+            setCaptchaErrorCount(prevCount => prevCount + 1);
+
+            if (captchaErrorCount + 1 >= 3) {
+                setTurnOffCaptchaVerification(true);
+            }
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -142,14 +154,14 @@ const RegisterPage: React.FC<OnlinePagesProps> = ({ online, useCaptcha }) => {
             return;
         }
 
-        if (useCaptcha && !isHuman) {
+        if (useCaptcha && !turnOffCaptchaVerification && !isHuman) {
             setError('Por favor, verifica que eres humano.');
             return;
         }
 
         try {
-            if (online) {
-                if (useCaptcha && captchaToken) {
+            if (online && !turnOffCaptchaVerification) {
+                if (useCaptcha && !turnOffCaptchaVerification && captchaToken) {
                     const response = await authService.verifyCaptcha(captchaToken);
                     if (!response.isValid) {
                         console.log("Response del verifyCaptcha")
@@ -504,7 +516,7 @@ const RegisterPage: React.FC<OnlinePagesProps> = ({ online, useCaptcha }) => {
                             </Typography>
                         )}
 
-                        {online && useCaptcha && (<FormControlLabel
+                        {online && useCaptcha && !turnOffCaptchaVerification && (<FormControlLabel
                             control={
                                 <Checkbox
                                     checked={isHuman}
@@ -529,7 +541,7 @@ const RegisterPage: React.FC<OnlinePagesProps> = ({ online, useCaptcha }) => {
                                     backgroundColor: 'primary.dark'
                                 }
                             }}
-                            disabled={formData.password !== formData.confirmPassword || (online && useCaptcha && !captchaToken)}
+                            disabled={formData.password !== formData.confirmPassword || (online && useCaptcha && !turnOffCaptchaVerification && !captchaToken)}
                         >
                             Registrarse
                         </Button>
