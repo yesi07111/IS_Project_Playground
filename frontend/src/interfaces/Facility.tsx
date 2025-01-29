@@ -19,3 +19,11 @@ export interface FacilityResponse {
     usagePolicy: string,
     maximumCapacity: number,
 }
+
+export interface FacilityFormData {
+    name: string,
+    location: string,
+    type: string,
+    usagePolicy: string,
+    maximumCapacity: number,
+}

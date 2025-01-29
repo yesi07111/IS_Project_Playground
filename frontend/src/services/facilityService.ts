@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { FacilityFilters } from '../interfaces/Filters';
+import { Facility, FacilityFormData } from '../interfaces/Facility';
+import { responsiveFontSizes } from '@mui/material';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -23,6 +25,66 @@ export const facilityService = {
         }
     },
 
+    getFacility: async (id: string) => {
+        try {
+            const query = new URLSearchParams({ Id: id }).toString();
+            const response = await axios.get(`${API_URL}/facility/get?${query}`);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al obtener los datos de la instalación.');
+            }
+        }
+    },
+
+    createFacility: async (data: FacilityFormData) => {
+        try {
+            const response = await axios.post(`${API_URL}/facility/create`, data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw 'Ha ocurrido un error inesperado al crear la instalación.';
+            }
+        }
+    },
+
+    updateFacility: async (data: Facility) => {
+        try {
+            const response = await axios.put(`${API_URL}/facility/update`, data);
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw 'Ha ocurrido un error inesperado al modificar la instalación.';
+            }
+        }
+    },
+
+    removeFacility: async (id: string) => {
+        try {
+            const params = new URLSearchParams({ id: id }).toString();
+            const response = await axios.delete(`${API_URL}/facility/delete?${params}`)
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw 'Ha ocurrido un error inesperado al eliminar la instalación.';
+            }
+        }
+    }
 };
 
 function buildFilterQuery(filters: FacilityFilters) {

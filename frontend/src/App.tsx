@@ -26,6 +26,8 @@ import MyReviewPage from './pages/MyReviewPage';
 import StatisticsPage from './pages/StatisticsPage';
 import UsersPage from './pages/UsersPage';
 import FacilitiesPage from './pages/FacilitiesPage';
+import FacilityFormPage from './pages/FacilityFormPage';
+import UpdateFacilityPage from './pages/UpdateFacilityPage';
 // import EducatorPage from './pages/EducatorPage';
 // import ActivityManagerPage from './pages/ActivityManagerPage';
 
@@ -141,6 +143,8 @@ const App: React.FC = () => {
                 <Route path="/statistics" element={<StatisticsPage />} />
                 <Route path="/users" element={<UsersPage reload={false} />} />
                 <Route path="/facilities" element={<FacilitiesPage reload={false} />} />
+                <Route path="/createFacility" element={<FacilityFormPage />} />
+                <Route path="/updateFacility" element={<UpdateFacilityPage />} />
                 <Route
                   path="/verify-email"
                   element={
