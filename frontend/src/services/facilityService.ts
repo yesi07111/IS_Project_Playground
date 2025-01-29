@@ -71,6 +71,20 @@ export const facilityService = {
         }
     },
 
+    removeFacility: async (id: string) => {
+        try {
+            const params = new URLSearchParams({ id: id }).toString();
+            const response = await axios.delete(`${API_URL}/facility/delete?${params}`)
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw 'Ha ocurrido un error inesperado al eliminar la instalación.';
+            }
+        }
+    }
 };
 
 function buildFilterQuery(filters: FacilityFilters) {
