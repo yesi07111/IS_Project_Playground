@@ -39,6 +39,23 @@ export const facilityService = {
         }
     },
 
+    createFacility: async (data: FacilityFormData) => {
+        try {
+            const response = await axios.post(`${API_URL}/facility/create`, data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw 'Ha ocurrido un error inesperado al crear la instalación.';
+            }
+        }
+    },
 
 
 };
