@@ -25,7 +25,7 @@ public class PostActivityCommandHandler : CommandHandler<PostActivityCommand, Ge
         var activityDateRepository = repositoryFactory.CreateRepository<ActivityDate>();
         var activityRepository = repositoryFactory.CreateRepository<Domain.Entities.Activity>();
         var userRepository = repositoryFactory.CreateRepository<Domain.Entities.Auth.User>();
-        var facilityRepository = repositoryFactory.CreateRepository<Facility>();
+        var facilityRepository = repositoryFactory.CreateRepository<Domain.Entities.Facility>();
 
         ISpecification<Domain.Entities.Activity> activitySpecification = new ActivitySpecification(activity => true);
 
