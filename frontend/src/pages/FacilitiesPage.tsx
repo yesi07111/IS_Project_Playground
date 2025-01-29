@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import { Facility, ListFacilityResponse } from "../interfaces/Facility";
 import { facilityService } from "../services/facilityService";
 import { cacheService } from "../services/cacheService";
-import { Box, Collapse, FormControl, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, Typography } from "@mui/material";
+import { Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, Typography } from "@mui/material";
 import { FacilityFilters } from "../interfaces/Filters";
 import { SearchBar } from "../components/features/StyledSearchBar";
 import { FilterSelect } from "../components/features/StyledFilters";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../components/auth/authContext";
 import GenericCard from "../components/features/GenericCard";
 
 const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
@@ -23,6 +25,11 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [facilities, setFacilities] = useState<Facility[]>([]); //lista de recursos cargados desd ela API
     const [facilityTypes, setFacilityTypes] = useState<string[]>([]); //lista de tipos de instalaciones disponibles
     const [facilityLocations, setFacilityLocations] = useState<string[]>([]);
+    const myRole = localStorage.getItem('authUserRole');
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
 
     const facilitiesPerPage = 9;
 
@@ -201,6 +208,24 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
         }
     }
 
+    const handleRemoveFacility = (id: string) => {
+        setSelectedFacility(id); // Guardar datos relevantes
+        setOpenDialog(true); // Abrir diálogo de confirmación
+    };
+
+    const confirmRemoveFacility = async () => {
+        if (selectedFacility) {
+            await facilityService.removeFacility(selectedFacility);
+            setOpenDialog(false); // Cerrar el diálogo
+            setSelectedFacility(null); // Limpiar selección
+        }
+    };
+
+    const cancelRemoveFacility = () => {
+        setOpenDialog(false); // Cerrar el diálogo sin hacer nada
+        setSelectedFacility(null); // Limpiar selección
+    };
+
     const menuItems = [
         { label: "Nombre", value: "Nombre" },
         { label: "Ubicación", value: "Ubicación" },
@@ -309,7 +334,7 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                                         },
                                                     },
                                                 }}
-                                            >   
+                                            >
                                                 {facilityTypes.map((typeOption) => (
                                                     <MenuItem key={typeOption} value={typeOption}>
                                                         {typeOption}
@@ -397,6 +422,22 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                 </Box>
             )}
 
+            {/* Botón de "Crear Nueva Instalación" visible para Admins */}
+            {myRole === 'Admin' && isAuthenticated && (
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => navigate('/createFacility')}
+                    >
+                        Crear Nueva Instalación
+                    </Button>
+                </Box>
+            )}
+
+            {/*  Separador entre el botón y el listado de instalaciones  */}
+            <Box sx={{ height: 16 }} />
+
             {/* Grid de instlaciones */}
             <Grid2 container spacing={4}>
                 {currentFacilities.map(facility => (
@@ -417,6 +458,19 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                 { label: 'Política de Uso', value: facility.usagePolicy },
                                 { label: 'Ubicación', value: facility.location },
                             ]}
+                            actions={myRole === 'Admin' && isAuthenticated ?
+                                [
+                                    {
+                                        label: 'Modificar Instalación',
+                                        onClick: () => navigate(
+                                            `/updateFacility?id=${facility.id}&name=${facility.name}&type=${facility.type}&location=${facility.location}&maximumCapacity=${facility.maximumCapacity}&usagePolicy=${facility.usagePolicy}`
+                                        ),
+                                    },
+                                    {
+                                        label: 'Eliminar Instalación Permanentemente',
+                                        onClick: () => handleRemoveFacility(facility.id),
+                                    },
+                                ] : []}
                         />
                     </Grid2>
                 ))}
@@ -431,6 +485,25 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                     color="primary"
                 />
             </Box>
+
+            {/* Diálogo de confirmación */}
+            <Dialog open={openDialog} onClose={cancelRemoveFacility}>
+                <DialogTitle>Confirmación</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        ¿Estás seguro de que quieres eliminar esta instalación PERMANENTEMENTE?
+                        Todas las actividades, reservas, reseñas y recursos asociados a esta también serán borrados.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={cancelRemoveFacility} color="primary">
+                        No
+                    </Button>
+                    <Button onClick={confirmRemoveFacility} color="primary" autoFocus>
+                        Sí
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     )
 }
