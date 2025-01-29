@@ -55,4 +55,5 @@ export interface CreateUserData {
     userName: string;
     password: string;
     role: string;
+    email: string;
 }
