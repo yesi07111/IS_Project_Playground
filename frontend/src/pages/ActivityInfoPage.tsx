@@ -13,6 +13,7 @@ import { dateService } from '../services/dateService';
 import UserLink from '../components/auth/UserLink';
 import Swal from 'sweetalert2';
 import { ReservationFormData } from '../interfaces/Reservation';
+import { reservationService } from '../services/reservationService';
 
 const BackgroundImage = styled(Box)({
     position: 'absolute',
@@ -152,7 +153,7 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
         };
 
         try {
-            const result = await activityService.reserveActivityDate(formData);
+            const result = await reservationService.reserveActivityDate(formData);
             if (result.success) {
                 Swal.fire("Éxito", "Reserva realizada con éxito, está pendiente a revisión por parte de un administrador.", "success");
             } else {
