@@ -23,8 +23,8 @@ import DefineUsageFrequencyPage from './pages/UsageFrequencyPage';
 import ActivityFormPage from './pages/ActivityFormPage';
 import ResourcesPage from './pages/ResourcesPage';
 import MyReviewPage from './pages/MyReviewPage';
+import StatisticsPage from './pages/StatisticsPage';
 import UsersPage from './pages/UsersPage';
-import FacilityPage from './pages/FacilitiesPage';
 import FacilitiesPage from './pages/FacilitiesPage';
 // import EducatorPage from './pages/EducatorPage';
 // import ActivityManagerPage from './pages/ActivityManagerPage';
@@ -136,6 +136,9 @@ const App: React.FC = () => {
                 <Route path="/resources" element={<ResourcesPage reload={false} />} />
                 <Route path="/define-usage-frequency/:resourceId" element={<DefineUsageFrequencyPage />} />
                 <Route path="/activity-form" element={<ActivityFormPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/user-manager" element={<UserManagementPage />} />
+                <Route path="/statistics" element={<StatisticsPage />} />
                 <Route path="/users" element={<UsersPage reload={false} />} />
                 <Route path="/facilities" element={<FacilitiesPage reload={false} />} />
                 <Route

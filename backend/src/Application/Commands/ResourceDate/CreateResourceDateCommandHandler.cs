@@ -6,20 +6,20 @@ using Playground.Domain.Entities;
 using Playground.Domain.Specifications;
 using Playground.Domain.Specifications.BaseSpecifications;
 
-namespace Playground.Application.Commands.UsageFrequency;
+namespace Playground.Application.Commands.ResourceDate;
 
-public class PostUsageFrequencyCommandHandler : CommandHandler<PostUsageFrequencyCommand, GenericResponse>
+public class CreateResourceDateCommandHandler : CommandHandler<CreateResourceDateCommand, GenericResponse>
 {
     private readonly IRepositoryFactory repositoryFactory;
     private readonly IUnitOfWork unitOfWork;
 
-    public PostUsageFrequencyCommandHandler(IRepositoryFactory _repositoryFactory, IUnitOfWork _unitOfWork)
+    public CreateResourceDateCommandHandler(IRepositoryFactory _repositoryFactory, IUnitOfWork _unitOfWork)
     {
         repositoryFactory = _repositoryFactory;
         unitOfWork = _unitOfWork;
     }
 
-    public override async Task<GenericResponse> ExecuteAsync(PostUsageFrequencyCommand command, CancellationToken ct)
+    public override async Task<GenericResponse> ExecuteAsync(CreateResourceDateCommand command, CancellationToken ct)
     {
         var isNew = true;
 
@@ -28,7 +28,7 @@ public class PostUsageFrequencyCommandHandler : CommandHandler<PostUsageFrequenc
             throw new ArgumentException("El ID del recurso no es un GUID válido.");
         }
 
-        var resourceDateRepository = repositoryFactory.CreateRepository<ResourceDate>();
+        var resourceDateRepository = repositoryFactory.CreateRepository<Domain.Entities.ResourceDate>();
         var resourceRepository = repositoryFactory.CreateRepository<Resource>();
 
         //nuscar recurso actual
@@ -38,7 +38,7 @@ public class PostUsageFrequencyCommandHandler : CommandHandler<PostUsageFrequenc
             return new GenericResponse("Recurso no encontrado.");
         }
 
-        ISpecification<ResourceDate> resourceDateSpecification = new ResourceDateSpecification(resourceDate => true);
+        ISpecification<Domain.Entities.ResourceDate> resourceDateSpecification = new ResourceDateSpecification(resourceDate => true);
 
         //buscar todas las frecuencias de uso en fechas del recuro actual
         resourceDateSpecification = resourceDateSpecification.And(ResourceDateSpecification.ByResource(command.ResourceId));
@@ -54,7 +54,7 @@ public class PostUsageFrequencyCommandHandler : CommandHandler<PostUsageFrequenc
             if (resourceDateList.Count() == 0)
             {
                 //crear entidad nueva
-                var resourceDate = new ResourceDate
+                var resourceDate = new Domain.Entities.ResourceDate
                 {
                     Resource = resource!,
                     Date = DateOnly.FromDateTime(parsedDate),

@@ -19,9 +19,9 @@ import {
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { facilityService } from '../services/facilityService';
-import { FacilityResponse } from '../interfaces/FacilityResponse';
 import { cacheService } from '../services/cacheService';
 import { activityService } from '../services/activityService';
+import { FacilityResponse } from '../interfaces/Facility';
 
 const ActivityFormPage: React.FC = () => {
     const educatorId = localStorage.getItem('authId');
@@ -141,12 +141,17 @@ const ActivityFormPage: React.FC = () => {
     return (
         <Box
             sx={{
-                width: '100vw',
-                height: '120vh',
+                minHeight: '100vh',
+                minWidth: '100vw',
+                width: '100%',
+                height: '100%',
                 display: 'flex',
-                flexDirection: 'column',
                 backgroundColor: '#f8f9fa',
-                padding: 3
+                position: 'relative',
+                overflow: 'auto',
+                margin: 0,
+                padding: 0,
+                boxSizing: 'border-box',
             }}
         >
             <Paper

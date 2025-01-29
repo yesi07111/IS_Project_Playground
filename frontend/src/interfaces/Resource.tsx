@@ -12,3 +12,18 @@ export interface Resource {
 export interface ListResourceResponse{
     result: object[];
 }
+
+export interface ResourceCardProps{
+    resource: Resource;
+}
+
+export interface ResourceDate {
+    id: string;
+    name: string;
+    date: Date;
+    useFrequency: number;
+}
+
+export interface ListResourceDateResponse{
+    result: ResourceDate[];
+}

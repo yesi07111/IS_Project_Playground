@@ -97,14 +97,17 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
                 // Si no hay filtros
                 if (AreAllFiltersNull(query))
                 {
+                    var pending = bool.Parse(query.Pending);
 
                     // Obtener todas las actividades activas si no hay filtros
                     ISpecification<ActivityDate> activityDateSpecification =
                         useCase == UseCaseSmartEnum.ActivityView
                         ? new ActivityDateSpecification(activityDate => true)
-                            .And(ActivityDateSpecification.ByDateMoreOrEqual(DateTime.UtcNow))
+                            .And(ActivityDateSpecification.ByDateMoreOrEqual(DateTime.UtcNow)
+                            .And(ActivityDateSpecification.ByPending(pending)))
                         : new ActivityDateSpecification(activityDate => true)
-                            .And(ActivityDateSpecification.ByDateLessOrEqual(DateTime.UtcNow.AddDays(-1)));
+                            .And(ActivityDateSpecification.ByDateLessOrEqual(DateTime.UtcNow.AddDays(-1))
+                            .And(ActivityDateSpecification.ByPending(pending)));
 
                     Result = await activityDateRepository.GetBySpecificationAsync(activityDateSpecification, ad => ad.Activity, ad => ad.Activity.Facility);
                 }
@@ -174,6 +177,11 @@ public class ListActivityQueryHandler : CommandHandler<ListActivityQuery, ListAc
             useCase == UseCaseSmartEnum.ActivityView
             ? new ActivityDateSpecification(ad => ad.DateTime > DateTime.UtcNow)
             : new ActivityDateSpecification(ad => ad.DateTime <= DateTime.UtcNow.AddDays(-1));
+
+        if(bool.TryParse(query.Pending, out bool pending))
+        {
+            specification = specification.And(ActivityDateSpecification.ByPending(pending));
+        }
 
         if (DateTime.TryParse(query.StartDateTime, out DateTime _parsedStartDateTime)
             && DateTime.TryParse(query.EndDateTime, out DateTime _parsedEndDateTime)
