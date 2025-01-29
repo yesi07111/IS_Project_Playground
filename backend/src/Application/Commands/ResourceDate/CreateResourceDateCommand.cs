@@ -1,9 +1,9 @@
 using FastEndpoints;
 using Playground.Application.Commands.Responses;
 
-namespace Playground.Application.Commands.UsageFrequency;
+namespace Playground.Application.Commands.ResourceDate;
 
-public record PostUsageFrequencyCommand : ICommand<GenericResponse>
+public record CreateResourceDateCommand : ICommand<GenericResponse>
 {
     public string ResourceId { get; init; } = string.Empty;
     public string? Date { get; init; }

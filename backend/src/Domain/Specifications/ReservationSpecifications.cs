@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.Linq.Expressions;
 using Playground.Domain.Entities;
 using Playground.Domain.Entities.Auth;
@@ -50,6 +51,27 @@ namespace Playground.Domain.Specifications
         {
             return new AndSpecification<Reservation>(this, other);
         }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Reservation> AndNot(ISpecification<Reservation> other)
+        {
+            return new AndSpecification<Reservation>(this, new NotSpecification<Reservation>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Reservation> OrNot(ISpecification<Reservation> other)
+        {
+            return new OrSpecification<Reservation>(this, new NotSpecification<Reservation>(other));
+        }
+
 
         /// <summary>
         /// Convierte la especificación en una expresión lambda.
@@ -107,6 +129,7 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por usuario padre.</returns>
         public static ReservationSpecification ByParent(string parent)
         {
+            if (parent is null) return new ReservationSpecification(r => r.Parent == null);
             return new ReservationSpecification(reservation => reservation.Parent.Id == parent);
         }
 
@@ -128,6 +151,12 @@ namespace Playground.Domain.Specifications
         public static ReservationSpecification ByReservationState(string reservationState)
         {
             return new ReservationSpecification(reservation => reservation.ReservationState == reservationState);
+        }
+
+        public static ReservationSpecification ByActivityDate(Guid? activityId)
+        {
+            if (activityId is null) return new ReservationSpecification(r => r.ActivityDate == null);
+            return new ReservationSpecification(reservation => reservation.ActivityDate.Id == activityId);
         }
 
         /// <summary>

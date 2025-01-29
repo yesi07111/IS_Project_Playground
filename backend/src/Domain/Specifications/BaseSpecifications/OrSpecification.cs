@@ -43,5 +43,17 @@ namespace Playground.Domain.Specifications.BaseSpecifications
         public ISpecification<T> And(ISpecification<T> other) => new AndSpecification<T>(this, other);
         public ISpecification<T> Or(ISpecification<T> other) => new OrSpecification<T>(this, other);
         public ISpecification<T> Not() => new NotSpecification<T>(this);
+        public ISpecification<T> AndNot(ISpecification<T> other) => new AndSpecification<T>(this, new NotSpecification<T>(other));
+        public ISpecification<T> OrNot(ISpecification<T> other) => new OrSpecification<T>(this, new NotSpecification<T>(other));
+
+        public ISpecification<T> AndNot()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISpecification<T> OrNot()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

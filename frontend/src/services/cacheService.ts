@@ -1,6 +1,6 @@
 import { Activity, ActivityDetail } from "../interfaces/Activity";
+import { Resource, ResourceDate } from "../interfaces/Resource";
 import { Facility } from "../interfaces/Facility";
-import { Resource } from "../interfaces/Resource";
 import { UserResponse } from "../interfaces/User";
 
 const CACHE_KEY_ACTIVITIES = 'cachedActivities';
@@ -14,6 +14,7 @@ const CACHE_KEY_TOP_ACTIVITIES = 'cachedTopActivities';
 const CACHE_KEY_PROFILE_IMAGES = 'cachedProfileImages'
 const CACHE_KEY_RESOURCE_TYPES = 'cachedResourceTypes';
 const CACHE_KEY_FACILITY_NAMES = 'cachedFacilityNames';
+const CACHE_KEY_RESOURCEDATES = 'cachedResourceDates';
 const CACHE_KEY_FACILITY_LOCATIONS = 'cachedFacilityLocations';
 const CACHE_KEY_FACILITIES = 'cachedFacilities';
 const CACHE_KEY_USERS = 'cachedUsers';
@@ -37,6 +38,13 @@ export const cacheService = {
     return cachedResources ? JSON.parse(cachedResources) : [];
   },
 
+  saveResourceDates: (resources: ResourceDate[]) => {
+    localStorage.setItem(CACHE_KEY_RESOURCEDATES, JSON.stringify(resources));
+  },
+
+  loadResourceDates: () => {
+    const cachedResources = localStorage.getItem(CACHE_KEY_RESOURCEDATES);
+    return cachedResources ? JSON.parse(cachedResources) : [];
   saveUsers: (users: UserResponse[]) => {
     localStorage.setItem(CACHE_KEY_USERS, JSON.stringify(users));
   },

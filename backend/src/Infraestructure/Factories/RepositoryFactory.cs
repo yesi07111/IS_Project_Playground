@@ -19,7 +19,7 @@ namespace Playground.Infraestructure.Factories
         /// <param name="context">El contexto de base de datos utilizado para los repositorios.</param>
         public RepositoryFactory(DefaultDbContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context), "Context cannot be null.");
         }
 
         /// <summary>

@@ -24,4 +24,5 @@ public record ListActivityQuery : ICommand<ListActivityResponse>
     public string? IsNew { get; init; }
     public string? UserId { get; init; }
     public string UseCase { get; init; } = string.Empty;
+    public string Pending { get; init; } = "false";
 }

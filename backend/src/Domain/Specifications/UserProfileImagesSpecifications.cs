@@ -65,6 +65,27 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<UserProfileImages> AndNot(ISpecification<UserProfileImages> other)
+        {
+            return new AndSpecification<UserProfileImages>(this, new NotSpecification<UserProfileImages>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<UserProfileImages> OrNot(ISpecification<UserProfileImages> other)
+        {
+            return new OrSpecification<UserProfileImages>(this, new NotSpecification<UserProfileImages>(other));
+        }
+
+
+        /// <summary>
         /// Crea una especificación para filtrar UserProfileImages por el userId.
         /// </summary>
         /// <param name="userId">El identificador del usuario.</param>

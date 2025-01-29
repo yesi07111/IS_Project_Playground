@@ -52,6 +52,27 @@ namespace Playground.Domain.Specifications
         }
 
         /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica AND.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Review> AndNot(ISpecification<Review> other)
+        {
+            return new AndSpecification<Review>(this, new NotSpecification<Review>(other));
+        }
+
+        /// <summary>
+        /// Combina la especificación actual con la negación de otra especificación utilizando una operación lógica OR.
+        /// </summary>
+        /// <param name="other">La otra especificación a combinar.</param>
+        /// <returns>Una nueva especificación que representa la combinación.</returns>
+        public ISpecification<Review> OrNot(ISpecification<Review> other)
+        {
+            return new OrSpecification<Review>(this, new NotSpecification<Review>(other));
+        }
+
+
+        /// <summary>
         /// Convierte la especificación en una expresión lambda.
         /// </summary>
         /// <returns>Una expresión lambda que representa la especificación.</returns>
@@ -107,6 +128,8 @@ namespace Playground.Domain.Specifications
         /// <returns>Una especificación que filtra por usuario padre.</returns>
         public static ReviewSpecification ByParent(string parent)
         {
+            if (parent is null) return new ReviewSpecification(r => r.Parent == null);
+
             return new ReviewSpecification(review => review.Parent.Id == parent);
         }
 
@@ -115,8 +138,9 @@ namespace Playground.Domain.Specifications
         /// </summary>
         /// <param name="activity">La actividad asociada a la reseña.</param>
         /// <returns>Una especificación que filtra por actividad.</returns>
-        public static ReviewSpecification ByActivityDate(Guid activity)
+        public static ReviewSpecification ByActivityDate(Guid? activity)
         {
+            if (activity is null) return new ReviewSpecification(r => r.ActivityDate == null);
             return new ReviewSpecification(review => review.ActivityDate.Id == activity);
         }
 

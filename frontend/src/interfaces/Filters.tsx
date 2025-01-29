@@ -39,6 +39,13 @@ export interface UserFilters {
     useCase: string;
 }
 
+export interface ResourceFilters {
+    type: string;
+    value?: string;
+    minUseFrequency?: number;
+    maxUseFrequency?: number;
+}
+
 export interface DaySelectorProps {
     daysOfWeek: string[];
     setDaysOfWeek: React.Dispatch<React.SetStateAction<string[]>>;

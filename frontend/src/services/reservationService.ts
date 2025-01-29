@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { ListReservationResponse } from '../interfaces/Reservation';
+import { ListReservationResponse, ReservationCreationResponse, ReservationFormData } from '../interfaces/Reservation';
+import { UserActionResponse } from '../interfaces/Auth';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -18,5 +19,29 @@ export const reservationService = {
             }
         }
     },
+    reserveActivityDate: async (data: ReservationFormData): Promise<ReservationCreationResponse> => {
+        try {
+            const response = await axios.post(`${API_URL}/reserve/activity`, data);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al reservar para esta actividad.');
+            }
+        }
+    },
+    cancelReservation: async (activityId: string, userId: string): Promise<UserActionResponse> => {
+        try {
+            const response = await axios.put(`${API_URL}/reservation/cancel`, { activityId, userId });
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al cancelar la reserva.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al cancelar la reserva.';
+            }
+        }
+    }
 
 };

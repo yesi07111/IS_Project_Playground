@@ -7,20 +7,20 @@ using Playground.Domain.Entities.Auth;
 using Playground.Domain.Specifications;
 using Playground.Domain.Specifications.BaseSpecifications;
 
-namespace Playground.Application.Commands.Activity.Post;
+namespace Playground.Application.Commands.Activity.Create;
 
-public class PostActivityCommandHandler : CommandHandler<PostActivityCommand, GenericResponse>
+public class CreateActivityCommandHandler : CommandHandler<CreateActivityCommand, GenericResponse>
 {
     private readonly IRepositoryFactory repositoryFactory;
     private readonly IUnitOfWork unitOfWork;
 
-    public PostActivityCommandHandler(IRepositoryFactory _repositoryFactory, IUnitOfWork _unitOfWork)
+    public CreateActivityCommandHandler(IRepositoryFactory _repositoryFactory, IUnitOfWork _unitOfWork)
     {
         repositoryFactory = _repositoryFactory;
         unitOfWork = _unitOfWork;
     }
 
-    public override async Task<GenericResponse> ExecuteAsync(PostActivityCommand command, CancellationToken ct)
+    public override async Task<GenericResponse> ExecuteAsync(CreateActivityCommand command, CancellationToken ct)
     {
         var activityDateRepository = repositoryFactory.CreateRepository<ActivityDate>();
         var activityRepository = repositoryFactory.CreateRepository<Domain.Entities.Activity>();

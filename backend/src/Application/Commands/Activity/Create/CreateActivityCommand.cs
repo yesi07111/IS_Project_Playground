@@ -1,9 +1,9 @@
 using FastEndpoints;
 using Playground.Application.Commands.Responses;
 
-namespace Playground.Application.Commands.Activity.Post;
+namespace Playground.Application.Commands.Activity.Create;
 
-public record PostActivityCommand : ICommand<GenericResponse>
+public record CreateActivityCommand : ICommand<GenericResponse>
 {
     public string Name { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;

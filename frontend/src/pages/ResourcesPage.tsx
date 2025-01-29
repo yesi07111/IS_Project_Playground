@@ -5,12 +5,12 @@ import { cacheService } from "../services/cacheService";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { SearchBar } from "../components/features/StyledSearchBar";
-import { FilterSelect } from "../components/features/StyledFiltersResource";
 import { Box, Collapse, FormControl, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { ResourceFilters } from "../interfaces/ResourceFilters";
 import { resourceService } from "../services/resourceService";
+import { ResourceFilters } from "../interfaces/Filters";
+import { FilterSelect } from "../components/features/StyledFilters";
 import GenericCard from "../components/features/GenericCard";
 import { useAuth } from "../components/auth/authContext";
 import { useNavigate } from "react-router-dom";
@@ -32,11 +32,10 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [facilityTypes, setFacilityTypes] = useState<string[]>([]); //lista de tipos de instalaciones disponibles
     const [resourceTypes, setResourceTypes] = useState<string[]>([]); //lista de tipos de recurso disponibles
 
+    const resourcesPerPage = 9;
     const { isAuthenticated } = useAuth();
     const role = localStorage.getItem('authUserRole');
     const navigate = useNavigate();
-
-    const resourcesPerPage = 6;
 
     const fetchAllFacilityTypes = useCallback(async () => {
         try {
