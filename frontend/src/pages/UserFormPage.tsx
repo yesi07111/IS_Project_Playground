@@ -22,7 +22,8 @@ const UserFormPage: React.FC = () => {
         lastName: '',
         userName: '',
         password: '',
-        role: ''
+        role: '',
+        email: '',
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,10 +47,11 @@ const UserFormPage: React.FC = () => {
                 lastName: formData.lastName,
                 userName: formData.userName,
                 password: formData.password,
-                role: formData.role
+                role: formData.role,
+                email: formData.email,
             });
             setSuccess('Usuario creado exitosamente.');
-            setFormData({ firstName: '', lastName: '', userName: '', password: '', role: '' });
+            setFormData({ firstName: '', lastName: '', userName: '', password: '', role: '', email: '' });
         }
         catch (error) {
             setError('Error al crear el usuario. Por favor, inténtalo nuevamente.');
@@ -137,6 +139,15 @@ const UserFormPage: React.FC = () => {
                             label="Rol"
                             name="role"
                             value={formData.role}
+                            onChange={handleChange}
+                            fullWidth
+                            margin="normal"
+                            required
+                        />
+                        <TextField
+                            label="Email"
+                            name="email"
+                            value={formData.email}
                             onChange={handleChange}
                             fullWidth
                             margin="normal"
