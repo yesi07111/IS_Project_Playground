@@ -57,6 +57,19 @@ export const facilityService = {
         }
     },
 
+    updateFacility: async (data: Facility) => {
+        try {
+            const response = await axios.put(`${API_URL}/facility/update`, data);
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw 'Ha ocurrido un error inesperado al modificar la instalación.';
+            }
+        }
+    },
 
 };
 
