@@ -48,3 +48,11 @@ export interface CommentsContainerProps {
     comments: Comment[];
     invisible: boolean;
 }
+
+export interface CreateUserData {
+    firstName: string;
+    lastName: string;
+    userName: string;
+    password: string;
+    role: string;
+}
