@@ -28,8 +28,7 @@ import UsersPage from './pages/UsersPage';
 import FacilitiesPage from './pages/FacilitiesPage';
 import FacilityFormPage from './pages/FacilityFormPage';
 import UpdateFacilityPage from './pages/UpdateFacilityPage';
-// import EducatorPage from './pages/EducatorPage';
-// import ActivityManagerPage from './pages/ActivityManagerPage';
+import UserFormPage from './pages/UserFormPage';
 
 
 const theme = createTheme({
@@ -143,6 +142,7 @@ const App: React.FC = () => {
                 <Route path="/facilities" element={<FacilitiesPage reload={false} />} />
                 <Route path="/createFacility" element={<FacilityFormPage />} />
                 <Route path="/updateFacility" element={<UpdateFacilityPage />} />
+                <Route path="/createUser" element={<UserFormPage />} />
                 <Route
                   path="/verify-email"
                   element={

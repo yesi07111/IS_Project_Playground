@@ -3,12 +3,14 @@ import { ListUserResponse, UserResponse } from "../interfaces/User";
 import { UserFilters } from "../interfaces/Filters";
 import { userService } from "../services/userService";
 import { cacheService } from "../services/cacheService";
-import { Box, Collapse, FormControl, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, Typography } from "@mui/material";
+import { Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { SearchBar } from "../components/features/StyledSearchBar";
 import { FilterSelect } from "../components/features/StyledFilters";
 import GenericCard from "../components/features/GenericCard";
+import { useAuth } from "../components/auth/authContext";
+import { useNavigate } from "react-router-dom";
 
 const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [searchTerm, setSearchTerm] = useState(''); //termino de busqueda ingresado por el admin
@@ -20,7 +22,12 @@ const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [username, setUserName] = useState(''); //nombre de usuario elegido
     const [email, setEmail] = useState(''); //email del usuario elegido
     const [role, setRole] = useState(''); //rol elegido
+    const [selectedUser, setSelectedUser] = useState<string | null>(null);
+    const [openDialog, setOpenDialog] = useState(false);
     const [users, setUsers] = useState<UserResponse[]>([]); //lista de recursos cargados desd ela API
+    const { isAuthenticated } = useAuth();
+    const myRole = localStorage.getItem('authUserRole');
+    const navigate = useNavigate();
 
     const usersPerPage = 9;
 
@@ -161,6 +168,24 @@ const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
             setUsers(cachedResources || []);
         }
     }
+
+    const handleRemoveUser = (id: string) => {
+        setSelectedUser(id); // Guardar datos relevantes
+        setOpenDialog(true); // Abrir diálogo de confirmación
+    };
+
+    const cancelRemoveUser = () => {
+        setOpenDialog(false); // Cerrar el diálogo sin hacer nada
+        setSelectedUser(null); // Limpiar selección
+    };
+
+    const confirmRemoveUser = async () => {
+        if (selectedUser) {
+            await userService.deleteUser(selectedUser);
+            setOpenDialog(false); // Cerrar el diálogo
+            setSelectedUser(null); // Limpiar selección
+        }
+    };
 
     const menuItems = [
         { label: "Nombre", value: "Nombre" },
@@ -311,6 +336,22 @@ const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                 </Box>
             )}
 
+            {/* Botón de "Crear Nuevo Usuario" visible para Admins */}
+            {myRole === 'Admin' && isAuthenticated && (
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => navigate('/createUser')}
+                    >
+                        Crear Nuevo Usuario
+                    </Button>
+                </Box>
+            )}
+
+            {/*  Separador entre el botón y el listado de usuarios  */}
+            <Box sx={{ height: 16 }} />
+
             {/* Grid de usuaios */}
             <Grid2 container spacing={4}>
                 {currentUsers.map(user => (
@@ -330,6 +371,13 @@ const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                 { label: 'Email', value: user.email },
                                 { label: 'Rol', value: user.rol },
                             ]}
+                            actions={myRole === 'Admin' && isAuthenticated ?
+                                [
+                                    {
+                                        label: 'Eliminar Usuario Permanentemente',
+                                        onClick: () => handleRemoveUser(user.id),
+                                    },
+                                ] : []}
                         />
                         {/* <UserCard user={user} /> */}
                     </Grid2>
@@ -345,6 +393,24 @@ const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                     color="primary"
                 />
             </Box>
+
+            {/* Diálogo de confirmación */}
+            <Dialog open={openDialog} onClose={cancelRemoveUser}>
+                <DialogTitle>Confirmación</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        ¿Estás seguro de que quieres eliminar este usuario PERMANENTEMENTE?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={cancelRemoveUser} color="primary">
+                        No
+                    </Button>
+                    <Button onClick={confirmRemoveUser} color="primary" autoFocus>
+                        Sí
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     )
 }

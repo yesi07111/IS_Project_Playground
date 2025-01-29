@@ -63,7 +63,7 @@ const GenericCard: React.FC<GenericCardProps> = ({ title, fields, badge, actions
           ))}
         </Box>
         {actions && (
-          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+          <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, ml: 2 }}>
             {actions.map((action, index) => (
               <Button key={index} variant="contained" color="primary" onClick={action.onClick}>
                 {action.label}

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { UserFilters } from '../interfaces/Filters';
-import { EditUserData, GetUserResponse } from '../interfaces/User';
+import { CreateUserData, EditUserData, GetUserResponse } from '../interfaces/User';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -48,6 +48,34 @@ export const userService = {
             }
         }
     },
+    createUser: async (data: CreateUserData) => {
+        try {
+            console.table(data);
+            const response = await axios.post(`${API_URL}/user/create`, data);
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al crear usuario.');
+            }
+        }
+    },
+
+    deleteUser: async (id: string) => {
+        try {
+            const params = new URLSearchParams({ id: id }).toString();
+            const response = await axios.delete(`${API_URL}/user/delete?${params}`)
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al eliminar usuario.');
+            }
+        }
+    }
 };
 
 function buildFilterQuery(filters: UserFilters) {
