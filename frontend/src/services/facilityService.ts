@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { FacilityFilters } from '../interfaces/Filters';
+import { Facility, FacilityFormData } from '../interfaces/Facility';
+import { responsiveFontSizes } from '@mui/material';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -22,6 +24,22 @@ export const facilityService = {
             }
         }
     },
+
+    getFacility: async (id: string) => {
+        try {
+            const query = new URLSearchParams({ Id: id }).toString();
+            const response = await axios.get(`${API_URL}/facility/get?${query}`);
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado al obtener los datos de la instalación.');
+            }
+        }
+    },
+
+
 
 };
 
