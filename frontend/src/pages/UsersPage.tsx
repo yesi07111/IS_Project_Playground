@@ -364,9 +364,8 @@ const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                         }}
                     >
                         <GenericCard
-                            title="Información del Usuario"
+                            title={`${user.firstName} ${user.lastName}`}
                             fields={[
-                                { label: 'Nombre', value: `${user.firstName} ${user.lastName}` },
                                 { label: 'Nombre de Usuario', value: user.username },
                                 { label: 'Email', value: user.email },
                                 { label: 'Rol', value: user.rol },

@@ -6,7 +6,7 @@ using Playground.Domain.Entities;
 using Playground.Domain.Specifications;
 using Playground.Domain.Specifications.BaseSpecifications;
 
-namespace Playground.Application.Commands.ResourceDate;
+namespace Playground.Application.Commands.ResourceDate.Create;
 
 public class CreateResourceDateCommandHandler : CommandHandler<CreateResourceDateCommand, GenericResponse>
 {
@@ -29,7 +29,7 @@ public class CreateResourceDateCommandHandler : CommandHandler<CreateResourceDat
         }
 
         var resourceDateRepository = repositoryFactory.CreateRepository<Domain.Entities.ResourceDate>();
-        var resourceRepository = repositoryFactory.CreateRepository<Resource>();
+        var resourceRepository = repositoryFactory.CreateRepository<Domain.Entities.Resource>();
 
         //nuscar recurso actual
         var resource = await resourceRepository.GetByIdAsync(resourceId);

@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Playground.Application.Commands.Responses;
 
-namespace Playground.Application.Commands.ResourceDate;
+namespace Playground.Application.Commands.ResourceDate.Create;
 
 public record CreateResourceDateCommand : ICommand<GenericResponse>
 {

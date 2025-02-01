@@ -1,7 +1,7 @@
 using FastEndpoints;
 using FluentValidation;
 
-namespace Playground.Application.Commands.ResourceDate;
+namespace Playground.Application.Commands.ResourceDate.Create;
 
 public class CreateResourceDateCommandValidator : Validator<CreateResourceDateCommand>
 {

@@ -450,9 +450,8 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                         }}
                     >
                         <GenericCard
-                            title="Información de la Instalación"
+                            title={facility.name}
                             fields={[
-                                { label: 'Nombre', value: facility.name },
                                 { label: 'Tipo', value: facility.type },
                                 { label: 'Capacidad Máxima', value: facility.maximumCapacity },
                                 { label: 'Política de Uso', value: facility.usagePolicy },

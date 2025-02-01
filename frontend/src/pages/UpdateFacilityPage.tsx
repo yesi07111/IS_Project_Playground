@@ -11,9 +11,15 @@ import {
 import { facilityService } from '../services/facilityService';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Facility } from '../interfaces/Facility';
+import { FieldErrors } from '../interfaces/Error';
 
 const UpdateFacilityPage: React.FC = () => {
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+        statusCode: 0,
+        message: '',
+        errors: {}
+    });
     const [success, setSuccess] = useState(false);
     const [searchParams] = useSearchParams();
 
@@ -24,8 +30,8 @@ const UpdateFacilityPage: React.FC = () => {
     const location = searchParams.get('location');
     const maximumCapacity = searchParams.get('maximumCapacity');
     const usagePolicy = searchParams.get('usagePolicy');
-    
-    const [formData, setFormData] = useState<Facility | null>({
+
+    const [formData, setFormData] = useState<Facility>({
         id: id || '',
         name: name || '',
         location: location || '',
@@ -44,32 +50,15 @@ const UpdateFacilityPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
+        setFieldErrors({
+            statusCode: 0,
+            message: '',
+            errors: {}
+        });
         setSuccess(false);
 
-        if (!formData) {
+        if (formData.name === name && formData.type === type && formData.location === location && formData.usagePolicy === usagePolicy && formData.maximumCapacity === Number(maximumCapacity)) {
             setError('No hay datos para modificar.');
-            return;
-        }
-
-        // Validaciones (puedes ajustarlas según tus necesidades)
-        if (formData.name.length < 3) {
-            setError('El nombre debe tener entre 3 y 15 caracteres.');
-            return;
-        }
-        if (formData.location.length < 3) {
-            setError('La ubicación debe tener entre 3 y 15 caracteres.');
-            return;
-        }
-        if (formData.type.length < 3) {
-            setError('El tipo debe tener entre 3 y 15 caracteres.');
-            return;
-        }
-        if (formData.usagePolicy.length < 5) {
-            setError('Las políticas de uso deben tener entre 5 y 15 caracteres.');
-            return;
-        }
-        if (formData.maximumCapacity <= 0) {
-            setError('La capacidad máxima debe ser mayor a cero.');
             return;
         }
 
@@ -85,8 +74,21 @@ const UpdateFacilityPage: React.FC = () => {
                 }); // Método para actualizar la instalación
                 setSuccess(true);
             }
-        } catch (error) {
-            setError('Error al actualizar la instalación. Inténtalo nuevamente.');
+        } catch (err: any) {
+            const apiError = err as FieldErrors;
+
+            if (apiError && apiError.errors) {
+                const errorData = apiError.errors;
+
+                setFieldErrors({
+                    statusCode: apiError.statusCode || 400,
+                    message: apiError.message || 'Ocurrieron errores de validación.',
+                    errors: errorData
+                });
+            }
+            else {
+                setError('Error al actualizar la instalación. Inténtalo nuevamente.');
+            }
         }
     };
 
@@ -121,8 +123,19 @@ const UpdateFacilityPage: React.FC = () => {
                     <Typography variant="h4" component="h1" gutterBottom>
                         Modificar Instalación
                     </Typography>
-                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+                    {/* Mensaje de éxito */}
                     {success && <Alert severity="success" sx={{ mb: 2 }}>Instalación actualizada con éxito.</Alert>}
+
+                    {/* Mensaje de error general */}
+                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+                    {/* Errores de validación específicos de la API */}
+                    {Object.keys(fieldErrors.errors).map((field) => (
+                        <Alert severity="error" key={field} sx={{ mb: 2 }}>
+                            {`${fieldErrors.errors[field].join(', ')}`}
+                        </Alert>
+                    ))}
 
                     <Box component="form" onSubmit={handleSubmit}>
                         <TextField

@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Playground.Application.Commands.Responses;
-using Playground.Application.Commands.ResourceDate;
+using Playground.Application.Commands.ResourceDate.Create;
 
 namespace Playground.WebApi.Endpoints.ResourceDate;
 

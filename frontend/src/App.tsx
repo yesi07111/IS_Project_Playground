@@ -29,6 +29,9 @@ import FacilitiesPage from './pages/FacilitiesPage';
 import FacilityFormPage from './pages/FacilityFormPage';
 import UpdateFacilityPage from './pages/UpdateFacilityPage';
 import UserFormPage from './pages/UserFormPage';
+import ResourceFormPage from './pages/ResourceFormPage';
+import UpdateResourcePage from './pages/UpdateResourceFormPage';
+import DefineDatePage from './pages/DefineDatePage';
 
 
 const theme = createTheme({
@@ -135,13 +138,16 @@ const App: React.FC = () => {
                 <Route path="/my-reservations/:id" element={<ReservationsPage />}></Route>
                 <Route path="/my-reviews/:id" element={<MyReviewPage />} />
                 <Route path="/resources" element={<ResourcesPage reload={false} />} />
+                <Route path="/createResource" element={<ResourceFormPage />} />
                 <Route path="/define-usage-frequency/:resourceId" element={<DefineUsageFrequencyPage />} />
+                <Route path="/delete-usage-frequency/:resourceId" element={<DefineDatePage />} />
                 <Route path="/activity-form" element={<ActivityFormPage />} />
                 <Route path="/statistics" element={<StatisticsPage />} />
                 <Route path="/users" element={<UsersPage reload={false} />} />
                 <Route path="/facilities" element={<FacilitiesPage reload={false} />} />
                 <Route path="/createFacility" element={<FacilityFormPage />} />
                 <Route path="/updateFacility" element={<UpdateFacilityPage />} />
+                <Route path="/updateResource" element={<UpdateResourcePage />} />
                 <Route path="/createUser" element={<UserFormPage />} />
                 <Route
                   path="/verify-email"

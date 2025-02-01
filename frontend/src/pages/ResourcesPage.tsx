@@ -5,7 +5,7 @@ import { cacheService } from "../services/cacheService";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { SearchBar } from "../components/features/StyledSearchBar";
-import { Box, Collapse, FormControl, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
+import { Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid2, IconButton, Input, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { resourceService } from "../services/resourceService";
@@ -31,6 +31,9 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [maxUseFrequencyError, setMaxUseFrequencyError] = useState<string>(''); //error para frecuencia de uso maxima invalida
     const [facilityTypes, setFacilityTypes] = useState<string[]>([]); //lista de tipos de instalaciones disponibles
     const [resourceTypes, setResourceTypes] = useState<string[]>([]); //lista de tipos de recurso disponibles
+    const [selectedResource, setSelectedResource] = useState<string | null>(null);
+    const [openDialogResource, setOpenDialogResource] = useState(false);
+    const [openDialogResourceDate, setOpenDialogResourceDate] = useState(false);
 
     const resourcesPerPage = 9;
     const { isAuthenticated } = useAuth();
@@ -244,7 +247,43 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
 
     const handleDefineUsageFrequency = (id: string) => {
         navigate(`/define-usage-frequency/${id}`);
-      };
+    };
+
+    const handleDeleteResourceDate = (id: string) => {
+        setSelectedResource(id); // Guardar datos relevantes
+        setOpenDialogResourceDate(true); // Abrir diálogo de confirmación  
+    }
+
+    const confirmRemoveResourceDate = async () => {
+        if (selectedResource) {
+            setOpenDialogResourceDate(false); // Cerrar el diálogo
+            navigate(`/delete-usage-frequency/${selectedResource}`)
+            setSelectedResource(null); // Limpiar selección
+        }
+    };
+
+    const cancelRemoveResourceDate = () => {
+        setOpenDialogResourceDate(false); // Cerrar el diálogo sin hacer nada
+        setSelectedResource(null); // Limpiar selección
+    };
+
+    const handleDeleteResource = (id: string) => {
+        setSelectedResource(id); // Guardar datos relevantes
+        setOpenDialogResource(true); // Abrir diálogo de confirmación
+    }
+
+    const confirmRemoveResource = async () => {
+        if (selectedResource) {
+            await resourceService.removeResource(selectedResource);
+            setOpenDialogResource(false); // Cerrar el diálogo
+            setSelectedResource(null); // Limpiar selección
+        }
+    };
+
+    const cancelRemoveResource = () => {
+        setOpenDialogResource(false); // Cerrar el diálogo sin hacer nada
+        setSelectedResource(null); // Limpiar selección
+    };
 
     const menuItems = [
         { label: "Tipo de Instalación", value: "Tipo de Instalación" },
@@ -474,6 +513,23 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                     </Box>
                 )}
 
+                {/* Botón de "Crear Nuevo Recurso" visible para Admins */}
+                {role === 'Admin' && isAuthenticated && (
+                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => navigate('/createResource')}
+                        >
+                            Crear Nuevo Recurso
+                        </Button>
+                    </Box>
+                )}
+
+                {/*  Separador entre el botón y el listado de recursos  */}
+                <Box sx={{ height: 16 }} />
+
+
                 {/* Grid de recursos */}
                 <Grid2 container spacing={4}>
                     {currentResources.map((resource: Resource) => (
@@ -503,14 +559,35 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                                 ? '#ffa726'
                                                 : '#d32f2f',
                                 }}
-                                actions={role !== 'Parent' && isAuthenticated
-                                    ? [
-                                        {
-                                            label: 'Definir frecuencia de uso',
-                                            onClick:  () => handleDefineUsageFrequency(resource.id),
-                                        },
-                                    ]
-                                    : []}
+                                actions={
+                                    role !== 'Parent' && isAuthenticated
+                                        ? [
+                                            {
+                                                label: 'Definir frecuencia de uso',
+                                                onClick: () => handleDefineUsageFrequency(resource.id),
+                                            },
+                                            ...(role === 'Admin'
+                                                ? [
+                                                    {
+                                                        label: 'Modificar recurso',
+                                                        onClick: () => navigate(
+                                                            `/updateResource?id=${resource.id}&name=${resource.name}&type=${resource.type}&resourceCondition=${resource.condition}&facilityName=${resource.facilityName}`
+                                                        ),
+                                                    },
+                                                    {
+                                                        label: 'Eliminar recurso permanentemente',
+                                                        onClick: () => handleDeleteResource(resource.id),
+                                                    },
+                                                    {
+                                                        label: 'Eliminar frecuencia de uso permanentemente',
+                                                        onClick: () => handleDeleteResourceDate(resource.id, ),
+                                                    },
+                                                ]
+                                                : []
+                                            ),
+                                        ]
+                                        : []
+                                }
                             />
                         </Grid2>
                     ))}
@@ -525,6 +602,42 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                         color="primary"
                     />
                 </Box>
+
+                {/* Diálogo de confirmación de eliminar recurso */}
+                <Dialog open={openDialogResource} onClose={cancelRemoveResource}>
+                    <DialogTitle>Confirmación</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            ¿Estás seguro de que quieres eliminar este recurso PERMANENTEMENTE?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={cancelRemoveResource} color="primary">
+                            No
+                        </Button>
+                        <Button onClick={confirmRemoveResource} color="primary" autoFocus>
+                            Sí
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* Diálogo de confirmación de eliminar frecuencia de uso */}
+                <Dialog open={openDialogResourceDate} onClose={cancelRemoveResourceDate}>
+                    <DialogTitle>Confirmación</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            ¿Estás seguro de que quieres eliminar esta frecuencia de uso PERMANENTEMENTE?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={cancelRemoveResourceDate} color="primary">
+                            No
+                        </Button>
+                        <Button onClick={confirmRemoveResourceDate} color="primary" autoFocus>
+                            Sí
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
         </LocalizationProvider>
     )

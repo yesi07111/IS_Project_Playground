@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Container,
@@ -10,12 +10,16 @@ import {
     Alert,
 } from '@mui/material';
 import { facilityService } from '../services/facilityService';
-import { useParams } from 'react-router-dom';
-import { Facility } from '../interfaces/Facility';
+import { FieldErrors } from '../interfaces/Error';
 
 const FacilityFormPage: React.FC = () => {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+        statusCode: 0,
+        message: '',
+        errors: {}
+    });
     const [formData, setFormData] = useState({
         name: '',
         location: '',
@@ -32,34 +36,31 @@ const FacilityFormPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
+        setFieldErrors({
+            statusCode: 0,
+            message: '',
+            errors: {}
+        });
         setSuccess(false);
-
-        if (formData.name.length < 3) {
-            setError('El nombre debe tener entre 3 y 15 caracteres.');
-            return;
-        }
-        if (formData.location.length < 3) {
-            setError('La ubicación debe tener entre 3 y 15 caracteres.');
-            return;
-        }
-        if (formData.type.length < 3) {
-            setError('El tipo debe tener entre 3 y 15 caracteres.');
-            return;
-        }
-        if (formData.usagePolicy.length < 5) {
-            setError('Las políticas de uso deben tener entre 5 y 15 caracteres.');
-            return;
-        }
-        if (formData.maximumCapacity <= 0) {
-            setError('La capacidad máxima debe ser mayor a cero.');
-            return;
-        }
 
         try {
             const response = await facilityService.createFacility(formData);
             setSuccess(true);
-        } catch (error) {
-            setError('Error al crear la instalación. Por favor, inténtalo nuevamente.');
+        } catch (err: any) {
+            const apiError = err as FieldErrors;
+
+            if (apiError && apiError.errors) {
+                const errorData = apiError.errors;
+
+                setFieldErrors({
+                    statusCode: apiError.statusCode || 400,
+                    message: apiError.message || 'Ocurrieron errores de validación.',
+                    errors: errorData
+                });
+            }
+            else {
+                setError('Error al crear la instalación. Por favor, inténtalo nuevamente.');
+            }
         }
     };
 
@@ -79,8 +80,19 @@ const FacilityFormPage: React.FC = () => {
                     <Typography variant="h4" component="h1" gutterBottom>
                         Crear Instalación
                     </Typography>
-                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+                    {/* Mensaje de éxito */}
                     {success && <Alert severity="success" sx={{ mb: 2 }}>Instalación creada con éxito.</Alert>}
+
+                    {/* Mensaje de error general */}
+                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+                    {/* Errores de validación específicos de la API */}
+                    {Object.keys(fieldErrors.errors).map((field) => (
+                        <Alert severity="error" key={field} sx={{ mb: 2 }}>
+                            {`${fieldErrors.errors[field].join(', ')}`}
+                        </Alert>
+                    ))}
 
                     <Box component="form" onSubmit={handleSubmit}>
                         <TextField
