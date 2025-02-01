@@ -13,6 +13,21 @@ export interface ListResourceResponse{
     result: object[];
 }
 
+export interface ResourceFormData{
+    name: string;
+    type: string;
+    resourceCondition: string;
+    facilityId: string;
+}
+
+export interface UpdateResourceFormData{
+    id: string;
+    name: string;
+    type: string;
+    resourceCondition: string;
+    facilityId: string;
+}
+
 export interface ResourceCardProps{
     resource: Resource;
 }
