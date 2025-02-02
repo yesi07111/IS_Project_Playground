@@ -105,6 +105,15 @@ font-size: 1.5rem;
                 case '/statistics':
                     setTitleText('Estadísticas');
                     break;
+                case '/reservations':
+                    setTitleText('Reservaciones');
+                    break;
+                case '/users': 
+                    setTitleText('Usuarios');
+                    break;
+                case '/facilities':
+                    setTitleText('Instalaciones');
+                    break;
                 default:
                     setTitleText('Parque Infantil');
             }
