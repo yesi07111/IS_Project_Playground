@@ -419,7 +419,7 @@ const StatisticsPage: React.FC = () => {
                         {/* Recursos Más Utilizados */}
                         <Typography variant="h5" sx={{ mb: 2 }}>🔥 Recursos Más Utilizados</Typography>
                         <Grid2 container spacing={3} justifyContent="center">
-                            {lessUsed.map((resource) => (
+                            {moreUsed.map((resource) => (
                                 <Grid2 container spacing={4} key={resource.name}>
                                     <Box sx={{ p: 2, bgcolor: "#e3f2fd", borderRadius: 2, textAlign: "center" }}>
                                         <Typography variant="h6">{resource.name}</Typography>
