@@ -32,6 +32,7 @@ import UserFormPage from './pages/UserFormPage';
 import ResourceFormPage from './pages/ResourceFormPage';
 import UpdateResourcePage from './pages/UpdateResourceFormPage';
 import DefineDatePage from './pages/DefineDatePage';
+import ReservationsManagementPage from './pages/ReservationsPage';
 
 
 const theme = createTheme({
@@ -149,6 +150,7 @@ const App: React.FC = () => {
                 <Route path="/updateFacility" element={<UpdateFacilityPage />} />
                 <Route path="/updateResource" element={<UpdateResourcePage />} />
                 <Route path="/createUser" element={<UserFormPage />} />
+                <Route path="/reservations" element={<ReservationsManagementPage />} />
                 <Route
                   path="/verify-email"
                   element={
