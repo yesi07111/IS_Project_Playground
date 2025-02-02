@@ -42,7 +42,8 @@ public class ListReservationQueryHandler : CommandHandler<ListReservationQuery, 
             ActivityDate = r.ActivityDate.DateTime.ToString(),
             Amount = r.AmmountOfChildren,
             Comments = r.AdditionalComments,
-            State = r.ReservationState
+            State = r.ReservationState,
+            ActivityRecommendedAge = r.ActivityDate.Activity.RecommendedAge,
         });
 
         return new ListReservationResponse(reservationsDtos);
