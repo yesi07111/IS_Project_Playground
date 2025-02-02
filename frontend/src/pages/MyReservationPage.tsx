@@ -18,8 +18,13 @@ const MyReservationPage = () => {
     const reservation: ListReservationResponse = {
         result: [
             {
+                reservationId: '',
+                firstName: '',
+                lastName: '',
+                userName: '',
                 activityId: '',
                 activityName: '',
+                activityDate: '',
                 comments: '',
                 amount: 0,
                 state: '' as ReservationState

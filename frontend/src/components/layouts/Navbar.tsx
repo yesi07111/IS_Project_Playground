@@ -257,13 +257,13 @@ font-size: 1.5rem;
                                 <Button
                                     color="inherit"
                                     component={Link}
-                                    to="/pending-reservations"
+                                    to="/reservations"
                                     sx={{
                                         fontWeight: 500,
                                         py: 0.5,
                                     }}
                                 >
-                                    Solicitud de Reservas
+                                    Reservas
                                 </Button>
                                 <Button
                                     color="inherit"
