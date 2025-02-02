@@ -24,7 +24,8 @@ const ReservationsManagementPage = () => {
                 activityDate: '',
                 comments: '',
                 amount: 0,
-                state: '' as ReservationState
+                state: '' as ReservationState,
+                activityRecommendedAge: 0,
             }
         ]
     }
@@ -90,6 +91,9 @@ const ReservationsManagementPage = () => {
                 reservationId: id,
                 state: state,
             })
+            // Refresh reservations 
+            const response = await reservationService.getAllReservations("");
+            setReservations(response);
         }
         catch (error) {
             console.error('Error confirmando la reservación:', error);
@@ -103,6 +107,9 @@ const ReservationsManagementPage = () => {
                 reservationId: id,
                 state: state,
             })
+            // Refresh reservations 
+            const response = await reservationService.getAllReservations("");
+            setReservations(response);
         }
         catch (error) {
             console.error('Error confirmando la reservación:', error);
@@ -112,6 +119,9 @@ const ReservationsManagementPage = () => {
     const handleDelete = async (id: string) => {
         try {
             await reservationService.deleteReservation(id)
+            // Refresh reservations 
+            const response = await reservationService.getAllReservations("");
+            setReservations(response);
         }
         catch (error) {
             console.error('Error borrando la reservación:', error);
