@@ -10,8 +10,13 @@ export interface ReservationCreationResponse {
 }
 
 export interface ReservationDto {
+    reservationId: string;
+    firstName: string;
+    lastName: string;
+    userName: string;
     activityId: string;
     activityName: string;
+    activityDate: string;
     comments: string;
     amount: number;
     state: string;
@@ -19,4 +24,9 @@ export interface ReservationDto {
 
 export interface ListReservationResponse {
     result: ReservationDto[];
+}
+
+export interface UpdateReservationData {
+    reservationId: string;
+    state: string;
 }
