@@ -14,5 +14,6 @@ namespace Playground.Application.Dtos
         public int Amount { get; set; }
         public string Comments { get; set; } = string.Empty;
         public string State { get; set; } = string.Empty;
+        public int ActivityRecommendedAge { get; set; } 
     }
 }
