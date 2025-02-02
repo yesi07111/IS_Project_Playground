@@ -277,6 +277,13 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
             await resourceService.removeResource(selectedResource);
             setOpenDialogResource(false); // Cerrar el diálogo
             setSelectedResource(null); // Limpiar selección
+            // Refresh resources 
+            const response: ListResourceResponse = await resourceService.getAllResources([]);
+            const resourcesArray: Resource[] = Array.isArray(response.result)
+                ? response.result as Resource[]
+                : [];
+
+            setResources(resourcesArray);
         }
     };
 
@@ -580,7 +587,7 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                                                     },
                                                     {
                                                         label: 'Eliminar frecuencia de uso permanentemente',
-                                                        onClick: () => handleDeleteResourceDate(resource.id, ),
+                                                        onClick: () => handleDeleteResourceDate(resource.id),
                                                     },
                                                 ]
                                                 : []
