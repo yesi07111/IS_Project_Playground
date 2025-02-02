@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ListReservationResponse, ReservationCreationResponse, ReservationFormData } from '../interfaces/Reservation';
+import { ListReservationResponse, ReservationCreationResponse, ReservationFormData, UpdateReservationData } from '../interfaces/Reservation';
 import { UserActionResponse } from '../interfaces/Auth';
 
 const API_URL = 'http://localhost:5117/api';
@@ -42,6 +42,34 @@ export const reservationService = {
                 throw 'Ha ocurrido un error inesperado al cancelar la reserva.';
             }
         }
-    }
+    },
+
+    updateReservation: async (data: UpdateReservationData) => {
+        try {
+            const response = await axios.put(`${API_URL}/reservation/update`, data);
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al modificar la reserva.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al modificar la reserva.';
+            }
+        }
+    },
+
+    deleteReservation: async (reservationId: string) => {
+        try {
+            const params = new URLSearchParams({ Id: reservationId }).toString();
+            const response = await axios.delete(`${API_URL}/reservation/delete?${params}`)
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al eliminar la reserva.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al eliminar la reserva.';
+            }
+        }
+    },
 
 };
