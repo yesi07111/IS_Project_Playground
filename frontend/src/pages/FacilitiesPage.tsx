@@ -218,6 +218,13 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
             await facilityService.removeFacility(selectedFacility);
             setOpenDialog(false); // Cerrar el diálogo
             setSelectedFacility(null); // Limpiar selección
+            // Refresh facilities 
+            const response = await facilityService.getAllFacilities({ useCase: 'AdminEducatorView' });
+            const facilitiesArray: Facility[] = Array.isArray(response.result)
+                ? response.result as Facility[]
+                : [];
+
+            setFacilities(facilitiesArray);
         }
     };
 

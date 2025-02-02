@@ -42,6 +42,7 @@ public static class Seeder
         context.Set<Activity>().RemoveRange(context.Set<Activity>());
         context.Set<Facility>().RemoveRange(context.Set<Facility>());
         context.Set<Resource>().RemoveRange(context.Set<Resource>());
+        context.Set<ResourceDate>().RemoveRange(context.Set<ResourceDate>());
         context.Set<UserProfileImages>().RemoveRange(context.Set<UserProfileImages>());
         context.Users.RemoveRange(context.Users);
 

@@ -27,7 +27,8 @@ const MyReservationPage = () => {
                 activityDate: '',
                 comments: '',
                 amount: 0,
-                state: '' as ReservationState
+                state: '' as ReservationState,
+                activityRecommendedAge: 0,
             }
         ]
     }

@@ -20,6 +20,7 @@ export interface ReservationDto {
     comments: string;
     amount: number;
     state: string;
+    activityRecommendedAge: number;
 }
 
 export interface ListReservationResponse {
