@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { usePDF } from 'react-to-pdf';
 import { ListReservationResponse, ReservationDto } from "../interfaces/Reservation";
 import { reservationService } from "../services/reservationService";
 import { Box, Grid, Pagination, Typography, Button, Grid2 } from "@mui/material";
@@ -33,6 +34,8 @@ const ReservationsManagementPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const itemsPerPage = 6;
+
+    const { toPDF, targetRef } = usePDF({ filename: 'Reservaciones.pdf' });
 
     const fetchReservations = async () => {
         try {
@@ -130,6 +133,19 @@ const ReservationsManagementPage = () => {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', minWidth: '100vw', bgcolor: 'background.default', p: 3 }}>
+
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => toPDF()}
+                >
+                    Exportar a PDF
+                </Button>
+            </Box>
+
+            <Box sx={{ height: 16 }} />
+
             <Box sx={{ display: 'flex', mb: 3 }}>
                 <SearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} labelText="Reservas" />
             </Box>
@@ -138,7 +154,7 @@ const ReservationsManagementPage = () => {
                     📅 No hay reservas actualmente.
                 </Typography>
             ) : (
-                <Grid2 container spacing={4} justifyContent="center">
+                <Grid2 ref={targetRef} container spacing={4} justifyContent="center">
                     {paginatedReservations.map((reservation: ReservationDto) => (
                         <Grid2
                             size={{ xs: 12, sm: 6, md: 4 }}

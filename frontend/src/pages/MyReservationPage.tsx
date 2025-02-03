@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Typography, Pagination, Grid2 } from '@mui/material';
+import { usePDF } from 'react-to-pdf';
+import { Box, Typography, Pagination, Grid2, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { reservationService } from '../services/reservationService';
 import { ListReservationResponse } from '../interfaces/Reservation';
@@ -37,6 +38,8 @@ const MyReservationPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [activityImages, setActivityImages] = useState<{ [id: string]: string }>({});
     const itemsPerPage = 6;
+
+    const { toPDF, targetRef } = usePDF({ filename: 'MisReservas.pdf' });
 
     const fetchActivityImages = useCallback(async (activityIds: string[]) => {
         const cachedImages = cacheService.loadImages();
@@ -192,6 +195,16 @@ const MyReservationPage = () => {
                 p: 3,
             }}
         >
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={() => toPDF()}
+            >
+                Exportar a PDF
+            </Button>
+
+            <Box sx={{ height: 16 }} />
+
             <Box sx={{ display: 'flex', mb: 3 }}>
                 <SearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} labelText="Reservas" />
             </Box>
@@ -200,7 +213,7 @@ const MyReservationPage = () => {
                     📅 No hay reservas actualmente.
                 </Typography>
             ) : (
-                <Grid2 container spacing={2} justifyContent="center">
+                <Grid2 ref={targetRef} container spacing={2} justifyContent="center">
                     {paginatedReservations.map((reservation, index) => {
                         const activityImage = activityImages[reservation.activityId] || ''; // Obtener la imagen de la actividad
                         const viewSuffix = (reservation.state === 'Pendiente' || reservation.state === 'Confirmada') ? 'ActivityView' : 'ReviewView';

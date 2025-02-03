@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { usePDF } from 'react-to-pdf';
 import { ListUserResponse, UserResponse } from "../interfaces/User";
 import { UserFilters } from "../interfaces/Filters";
 import { userService } from "../services/userService";
@@ -28,6 +29,8 @@ const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const { isAuthenticated } = useAuth();
     const myRole = localStorage.getItem('authUserRole');
     const navigate = useNavigate();
+
+    const { toPDF, targetRef } = usePDF({ filename: 'Usuarios.pdf' });
 
     const usersPerPage = 9;
 
@@ -349,11 +352,21 @@ const UsersPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                 </Box>
             )}
 
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => toPDF()}
+                >
+                    Exportar a PDF
+                </Button>
+            </Box>
+
             {/*  Separador entre el botón y el listado de usuarios  */}
             <Box sx={{ height: 16 }} />
 
             {/* Grid de usuaios */}
-            <Grid2 container spacing={4}>
+            <Grid2 ref={targetRef} container spacing={4}>
                 {currentUsers.map(user => (
                     <Grid2
                         size={{ xs: 12, sm: 6, md: 4 }}

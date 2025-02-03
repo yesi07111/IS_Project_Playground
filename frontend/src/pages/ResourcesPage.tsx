@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { usePDF } from 'react-to-pdf';
 import { ListResourceResponse, Resource } from "../interfaces/Resource";
 import { facilityService } from "../services/facilityService";
 import { cacheService } from "../services/cacheService";
@@ -34,6 +35,8 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const [selectedResource, setSelectedResource] = useState<string | null>(null);
     const [openDialogResource, setOpenDialogResource] = useState(false);
     const [openDialogResourceDate, setOpenDialogResourceDate] = useState(false);
+
+    const { toPDF, targetRef } = usePDF({ filename: 'Reservaciones.pdf' });
 
     const resourcesPerPage = 9;
     const { isAuthenticated } = useAuth();
@@ -533,12 +536,22 @@ const ResourcesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                     </Box>
                 )}
 
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => toPDF()}
+                    >
+                        Exportar a PDF
+                    </Button>
+                </Box>
+
                 {/*  Separador entre el botón y el listado de recursos  */}
                 <Box sx={{ height: 16 }} />
 
 
                 {/* Grid de recursos */}
-                <Grid2 container spacing={4}>
+                <Grid2 ref={targetRef} container spacing={4}>
                     {currentResources.map((resource: Resource) => (
                         <Grid2
                             size={{ xs: 12, sm: 6, md: 4 }}

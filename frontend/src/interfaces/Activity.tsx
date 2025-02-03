@@ -98,6 +98,8 @@ export interface ActivityCardProps {
 }
 
 export interface ActivityData {
+    useCase: string;
+    activityId: string;
     name: string;
     description: string;
     educator: string;
@@ -118,3 +120,19 @@ export interface ActivityLinkProps {
     textDisplayed: string;
 }
 
+export interface OnlyActivity {
+    id: string;
+    name: string;
+    description: string;
+    educatorFirstName: string;
+    educatorLastName: string;
+    educatorUserName: string;
+    type: string;
+    recommendedAge: string;
+    itsPrivate: string;
+    facilityName: string;
+}
+
+export interface ListOnlyActivityResponse{
+    result: OnlyActivity[];
+}

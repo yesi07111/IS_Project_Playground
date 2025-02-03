@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, TextField, Pagination, MenuItem, Select, Collapse, Typography, IconButton, FormControl, Rating, InputLabel, Input } from '@mui/material';
+import { usePDF } from 'react-to-pdf';
+import { Box, TextField, Pagination, MenuItem, Select, Collapse, Typography, IconButton, FormControl, Rating, InputLabel, Input, Button } from '@mui/material';
 import Grid2 from '@mui/material/Grid2';
 import ActivityCard from '../components/features/ActivityCard';
 import { Activity, ListActivityResponse } from '../interfaces/Activity';
@@ -44,6 +45,8 @@ const ReviewsPage: React.FC<DataPagesProps> = ({ reload }) => {
     const [capacity, setCapacity] = useState<number | null>(null);
     const [rating, setRating] = useState<number | null>(null);
     const activitiesPerPage = 6;
+
+    const { toPDF, targetRef } = usePDF({ filename: 'Reseñas.pdf' });
 
     const fetchAllFacilityTypes = useCallback(async () => {
         try {
@@ -692,8 +695,20 @@ const ReviewsPage: React.FC<DataPagesProps> = ({ reload }) => {
                     </Box>
                 )}
 
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => toPDF()}
+                    >
+                        Exportar a PDF
+                    </Button>
+                </Box>
+
+                <Box sx={{ height: 16 }} />
+
                 {/* Grid de actividades */}
-                <Grid2 container spacing={4}>
+                <Grid2 ref={targetRef} container spacing={4}>
                     {currentActivities.map(activity => (
                         <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={activity.id}
                             sx={{

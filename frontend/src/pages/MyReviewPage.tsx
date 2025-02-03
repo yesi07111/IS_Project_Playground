@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { usePDF } from 'react-to-pdf';
 import { Box, Typography, Button, Rating, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CommentsContainer from '../components/features/CommentsContainer';
@@ -39,6 +40,8 @@ const MyReviewPage: React.FC = () => {
     const [currentReview, setCurrentReview] = useState<Review>();
     const [action, setAction] = useState('');
     const viewSuffix = "ReviewView";
+
+    const { toPDF, targetRef } = usePDF({ filename: 'MisReseñas.pdf' });
 
     const filter = new BadWordsFilter.Filter();
     filter.addWords(...BadWords);
@@ -239,6 +242,7 @@ const MyReviewPage: React.FC = () => {
 
     return (
         <Box
+            ref={targetRef}
             sx={{
                 width: '100vw',
                 minHeight: '100vh',
@@ -248,6 +252,18 @@ const MyReviewPage: React.FC = () => {
                 justifyContent: 'center',
             }}
         >
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => toPDF()}
+                >
+                    Exportar a PDF
+                </Button>
+            </Box>
+
+            <Box sx={{ height: 16 }} />
+
             <SearchBar
                 searchTerm={searchTerm}
                 handleSearchChange={handleSearchChange}
