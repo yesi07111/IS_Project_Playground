@@ -277,13 +277,13 @@ font-size: 1.5rem;
                                 <Button
                                     color="inherit"
                                     component={Link}
-                                    to="/pending-activities"
+                                    to="/activitiesManagement"
                                     sx={{
                                         fontWeight: 500,
                                         py: 0.5,
                                     }}
                                 >
-                                    Solicitud de Actividades
+                                    G. Actividades
                                 </Button>
                             </>
                         )}
