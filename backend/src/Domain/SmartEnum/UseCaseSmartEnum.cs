@@ -22,6 +22,10 @@ namespace Playground.Domain.SmartEnum
         public static readonly UseCaseSmartEnum CreateBoth = new ("CreateBoth", 13);
         public static readonly UseCaseSmartEnum CreateActivity = new ("CreateActivity", 14);
         public static readonly UseCaseSmartEnum CreateActivityDate = new ("CreateActivityDate", 15);
+        public static readonly UseCaseSmartEnum UpdateActivity = new ("UpdateActivity", 16);
+        public static readonly UseCaseSmartEnum UpdateActivityDate = new ("UpdateActivityDate", 17);
+        public static readonly UseCaseSmartEnum DeleteActivity = new ("DeleteActivity", 18);
+        public static readonly UseCaseSmartEnum DeleteActivityDate = new ("DeleteActivityDate", 19);
 
         private UseCaseSmartEnum(string name, int value) : base(name, value)
         {

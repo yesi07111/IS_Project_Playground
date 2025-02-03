@@ -104,8 +104,24 @@ export interface ActivityData {
     description: string;
     educator: string;
     type: string;
-    date: Date;
-    time: Date;
+    date?: Date;
+    time?: Date;
+    recommendedAge: number;
+    facility: string
+    pending: boolean
+    private: boolean
+}
+
+export interface UpdateActivityData {
+    useCase: string;
+    activityId: string;
+    activityDateId: string
+    name: string;
+    description: string;
+    educator: string;
+    type: string;
+    date?: Date;
+    time?: Date;
     recommendedAge: number;
     facility: string
     pending: boolean
@@ -135,4 +151,14 @@ export interface OnlyActivity {
 
 export interface ListOnlyActivityResponse{
     result: OnlyActivity[];
+}
+
+export interface ActivityDate {
+    id: string;
+    dateTime: Date;
+    pending: boolean;
+}
+
+export interface ListActivityDateResponse{
+    result: ActivityDate[];
 }

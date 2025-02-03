@@ -1,27 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
-import { ListOnlyActivityResponse, OnlyActivity } from "../interfaces/Activity";
+import { ActivityDate } from "../interfaces/Activity";
 import { activityService } from "../services/activityService";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid2, Pagination, Typography } from "@mui/material";
-import { SearchBar } from "../components/features/StyledSearchBar";
 import GenericCard from "../components/features/GenericCard";
-import { useNavigate } from "react-router-dom";
-import { usePDF } from "react-to-pdf";
 
-const ActivitiesManagementPage = () => {
-    const [activities, setActivities] = useState<OnlyActivity[]>([]);
+const ActivityDates = () => {
+    const [activities, setActivities] = useState<ActivityDate[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState('');
+    const itemsPerPage = 6;
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get('activityId');
     const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
     const [openDialog, setOpenDialog] = useState(false);
     const navigate = useNavigate();
-    const itemsPerPage = 6;
-    const { toPDF, targetRef } = usePDF({ filename: 'Actividades.pdf' });
 
     const fetchActivities = async () => {
         try {
-            const response = await activityService.getAllOnlyActivities();
-            const activitiesArray: OnlyActivity[] = Array.isArray(response.result)
-                ? response.result as OnlyActivity[]
+            const response = await activityService.getAllActivityDates(id || '');
+            const activitiesArray: ActivityDate[] = Array.isArray(response.result)
+                ? response.result as ActivityDate[]
                 : [];
 
             console.table(activitiesArray);
@@ -39,56 +37,31 @@ const ActivitiesManagementPage = () => {
         fetchInitialData();
     }, []);
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value);
-        setCurrentPage(1);
-    };
-
-    const filteredActivities = activities.filter(activity => (
-        activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.educatorFirstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.educatorLastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.educatorUserName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.type.toString().includes(searchTerm) ||
-        activity.recommendedAge.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.itsPrivate.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.facilityName.toLowerCase().includes(searchTerm.toLowerCase())
-    ));
-
-    const paginatedActivities = filteredActivities.slice(
+    const paginatedActivities = activities.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
 
-    const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+    const totalPages = Math.ceil(activities.length / itemsPerPage);
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setCurrentPage(value);
     };
 
-    const handleCreateActivity = () => {
-        navigate(`/activity-form?useCase=${'CreateActivity'}`);
-    };
-
-    const handleUpdateActivity = (id: string) => {
-        navigate(`/updateActivity?useCase=${'UpdateActivity'}&activityId=${id}`);
-    };
-
     const handleDeleteActivity = (id: string) => {
         setSelectedActivity(id); // Guardar datos relevantes
         setOpenDialog(true); // Abrir diálogo de confirmación
-    };
+    }
 
     const confirmRemoveActivity = async () => {
         if (selectedActivity) {
-            await activityService.deleteActivity('DeleteActivity', selectedActivity, '');
+            await activityService.deleteActivity('DeleteActivityDate', '', selectedActivity);
             setOpenDialog(false); // Cerrar el diálogo
             setSelectedActivity(null); // Limpiar selección
             // Refresh act 
-            const response = await activityService.getAllOnlyActivities();
-            const activitiesArray: OnlyActivity[] = Array.isArray(response.result)
-                ? response.result as OnlyActivity[]
+            const response = await activityService.getAllActivityDates(id || '');
+            const activitiesArray: ActivityDate[] = Array.isArray(response.result)
+                ? response.result as ActivityDate[]
                 : [];
 
             console.table(activitiesArray);
@@ -101,16 +74,15 @@ const ActivitiesManagementPage = () => {
         setSelectedActivity(null); // Limpiar selección
     };
 
-    const handleSeeActivityDate = (id: string) => {
-        navigate(`/activityDates?activityId=${id}`)
-    };
+    const handleCreateActivity = (id: string) => {
+        console.log(id);
+        navigate(`/activity-form?useCase=${'CreateActivityDate'}&activityId=${id}`);
+    }
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', minWidth: '100vw', bgcolor: 'background.default', p: 3 }}>
-            <Box sx={{ display: 'flex', mb: 3 }}>
-                <SearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} labelText="Actividades" />
-            </Box>
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+
+            {/* <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
                 <Button
                     variant="contained"
                     color="primary"
@@ -118,12 +90,13 @@ const ActivitiesManagementPage = () => {
                 >
                     Exportar a PDF
                 </Button>
-            </Box>
+            </Box> */}
+
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleCreateActivity()}
+                    onClick={() => handleCreateActivity(id || '')}
                 >
                     Crear Actividad
                 </Button>
@@ -134,8 +107,8 @@ const ActivitiesManagementPage = () => {
                     📅 No hay actividades actualmente.
                 </Typography>
             ) : (
-                <Grid2 ref={targetRef} container spacing={4} justifyContent="center">
-                    {paginatedActivities.map((activity: OnlyActivity) => (
+                <Grid2 container spacing={4} justifyContent="center">
+                    {paginatedActivities.map((activity: ActivityDate) => (
                         <Grid2
                             size={{ xs: 12, sm: 6, md: 4 }}
                             key={activity.id}
@@ -146,27 +119,14 @@ const ActivitiesManagementPage = () => {
                         >
                             {/* <ResourceCard resource={resource} /> */}
                             <GenericCard
-                                title={activity.name}
+                                title={activity.dateTime.toString()}
                                 fields={[
-                                    { label: 'Descripción', value: activity.description },
-                                    { label: 'Educador Encargado', value: `${activity.educatorFirstName} ${activity.educatorLastName} (${activity.educatorUserName})` },
-                                    { label: 'Tipo', value: activity.type },
-                                    { label: 'Edad Recomendada', value: activity.recommendedAge },
-                                    { label: 'Privada', value: activity.itsPrivate },
-                                    { label: 'Instalación', value: activity.facilityName }
+                                    { label: 'Pendiente', value: activity.pending ? 'Sí' : 'No' }
                                 ]}
                                 actions={[
                                     {
-                                        label: 'Modificar actividad',
-                                        onClick: () => handleUpdateActivity(activity.id),
-                                    },
-                                    {
                                         label: 'Eliminar actividad permanentemente',
                                         onClick: () => handleDeleteActivity(activity.id),
-                                    },
-                                    {
-                                        label: 'Ver Fechas',
-                                        onClick: () => handleSeeActivityDate(activity.id),
                                     },
                                 ]}
                             />
@@ -199,4 +159,4 @@ const ActivitiesManagementPage = () => {
     );
 }
 
-export default ActivitiesManagementPage;
+export default ActivityDates;
