@@ -4,6 +4,7 @@ using Playground.Application.Factories;
 using Playground.Application.Repositories;
 using Playground.Domain.Entities;
 using Playground.Domain.Entities.Auth;
+using Playground.Domain.SmartEnum;
 using Playground.Domain.Specifications;
 using Playground.Domain.Specifications.BaseSpecifications;
 
@@ -27,56 +28,70 @@ public class CreateActivityCommandHandler : CommandHandler<CreateActivityCommand
         var userRepository = repositoryFactory.CreateRepository<Domain.Entities.Auth.User>();
         var facilityRepository = repositoryFactory.CreateRepository<Domain.Entities.Facility>();
 
-        ISpecification<Domain.Entities.Activity> activitySpecification = new ActivitySpecification(activity => true);
-
-        if (!Guid.TryParse(command.Educator, out var educatorId))
+        if (command.UseCase == UseCaseSmartEnum.CreateBoth.Name)
         {
-            throw new ArgumentException("El ID del educador no es un GUID válido.");
+            if (!DateTime.TryParse(command.Date, out DateTime parsedDate))
+            {
+                throw new ArgumentException("La fecha no es válida.");
+            }
+
+            if (!DateTime.TryParse(command.Time, out DateTime parsedTime))
+            {
+                throw new ArgumentException("La hora no es válida.");
+            }
+
+            DateTime dateTime = parsedDate.Date + parsedTime.TimeOfDay;
+
+            //buscar educadir e instalaion correspondientes
+            var educator = await userRepository.GetByIdAsync(command.Educator);
+            if(educator is null)
+            {
+                ThrowError("Educador no encontrado");
+            }
+            var facility = await facilityRepository.GetByIdAsync(Guid.Parse(command.Facility));
+            if(facility is null)
+            {
+                ThrowError("Instalación no encontrada");
+            }
+
+            //crear la actividad nueva
+            var activity = new Domain.Entities.Activity
+            {
+                Name = command.Name,
+                Description = command.Description,
+                Educator = educator!,
+                Type = command.Type,
+                RecommendedAge = command.RecommendedAge,
+                ItsPrivate = command.Private,
+                Facility = facility!
+            };
+
+            await activityRepository.AddAsync(activity);
+
+            var activityDate = new ActivityDate
+            {
+                Activity = activity,
+                DateTime = dateTime.ToUniversalTime(),
+                Pending = command.Pending,
+            };
+
+            await activityDateRepository.AddAsync(activityDate);
         }
-
-        if (!Guid.TryParse(command.Facility, out var facilityId))
+        else if (command.UseCase == UseCaseSmartEnum.CreateActivity.Name)
         {
-            throw new ArgumentException("El ID de la instalación no es un GUID válido.");
-        }
+            //buscar educadir e instalaion correspondientes
+            var educator = await userRepository.GetByIdAsync(command.Educator);
+            if(educator is null)
+            {
+                ThrowError("Educador no encontrado");
+            }
+            var facility = await facilityRepository.GetByIdAsync(Guid.Parse(command.Facility));
+            if(facility is null)
+            {
+                ThrowError("Instalación no encontrada");
+            }
 
-        if (!DateTime.TryParse(command.Date, out DateTime parsedDate))
-        {
-            throw new ArgumentException("La fecha no es válida.");
-        }
-
-        if (!DateTime.TryParse(command.Time, out DateTime parsedTime))
-        {
-            throw new ArgumentException("La hora no es válida.");
-        }
-
-        DateTime dateTime = parsedDate.Date + parsedTime.TimeOfDay;
-
-        //buscar educadir e instalaion correspondientes
-        var educator = await userRepository.GetByIdAsync(command.Educator);
-        var facility = await facilityRepository.GetByIdAsync(facilityId);
-
-        //verificar si la actividad ya existe 
-        activitySpecification = activitySpecification.And(ActivitySpecification.ByName(command.Name));
-        activitySpecification = activitySpecification.And(ActivitySpecification.ByEducator(command.Educator));
-        activitySpecification = activitySpecification.And(ActivitySpecification.ByType(command.Type));
-        activitySpecification = activitySpecification.And(ActivitySpecification.ByRecommendedAgeEqual(command.RecommendedAge));
-        activitySpecification = activitySpecification.And(ActivitySpecification.ByFacility(facilityId));
-        activitySpecification = activitySpecification.And(ActivitySpecification.ByDescription(command.Description));
-        activitySpecification = activitySpecification.And(ActivitySpecification.ByItsPrivate(command.Private));
-
-        var searchActivity = await activityRepository.GetBySpecificationAsync(activitySpecification);
-        foreach (var x in searchActivity)
-        {
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!" + x.Name + "!");
-        }
-
-        Domain.Entities.Activity activity;
-        ActivityDate activityDate;
-
-        //si no existe crear actividad nueva y nueva instancia de activity date
-        if (!searchActivity.Any())
-        {
-            activity = new Domain.Entities.Activity
+            var activity = new Domain.Entities.Activity
             {
                 Name = command.Name,
                 Description = command.Description,
@@ -89,22 +104,40 @@ public class CreateActivityCommandHandler : CommandHandler<CreateActivityCommand
 
             await activityRepository.AddAsync(activity);
         }
-        //si existe crear una nueva instancia de activity date con esa actividad
+        else if (command.UseCase == UseCaseSmartEnum.CreateActivityDate.Name)
+        {
+            var activity = await activityRepository.GetByIdAsync(Guid.Parse(command.ActivityId));
+            if(activity is null)
+            {
+                ThrowError("Actividad no encontrada");
+            }
+
+            if (!DateTime.TryParse(command.Date, out DateTime parsedDate))
+            {
+                throw new ArgumentException("La fecha no es válida.");
+            }
+
+            if (!DateTime.TryParse(command.Time, out DateTime parsedTime))
+            {
+                throw new ArgumentException("La hora no es válida.");
+            }
+
+            DateTime dateTime = parsedDate.Date + parsedTime.TimeOfDay;
+
+            var activityDate = new ActivityDate
+            {
+                Activity = activity,
+                DateTime = dateTime.ToUniversalTime(),
+                Pending = command.Pending,
+            };
+
+            await activityDateRepository.AddAsync(activityDate);
+        }
         else
         {
-            activity = searchActivity.FirstOrDefault()!;
+            ThrowError("Caso de uso no válido.");
         }
 
-        activityDate = new ActivityDate
-        {
-            Activity = activity,
-            DateTime = dateTime.ToUniversalTime(),
-            Pending = command.Pending,
-        };
-
-        await activityDateRepository.AddAsync(activityDate);
-
-        //commit 
         await unitOfWork.CommitAsync();
 
         return new GenericResponse("Actividad Creada");
