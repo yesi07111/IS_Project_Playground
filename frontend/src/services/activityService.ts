@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ActivitiesFilters } from '../interfaces/Filters';
-import { ActivityData, GetActivityResponse, ListActivityResponse } from '../interfaces/Activity';
+import { ActivityData, GetActivityResponse, ListActivityResponse, ListOnlyActivityResponse } from '../interfaces/Activity';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -36,6 +36,20 @@ export const activityService = {
                 throw error.response.data || 'Error al obtener los detalles de la actividad.';
             } else {
                 throw 'Ha ocurrido un error inesperado al obtener los detalles de la actividad.';
+            }
+        }
+    },
+
+    getAllOnlyActivities: async (): Promise<ListOnlyActivityResponse> => {
+        try {
+            const response = await axios.get(`${API_URL}/onlyActivity/get-all`);
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al obtener las actividades.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al obtener las actividades.';
             }
         }
     },
