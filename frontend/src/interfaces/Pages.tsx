@@ -12,3 +12,9 @@ export interface StatsSummaryProps {
     activeActivities: number;
     rating: number;
 }
+
+export interface GetHomePageInfoResponse {
+    visitors: number
+    activeActivities: number
+    score: number
+}

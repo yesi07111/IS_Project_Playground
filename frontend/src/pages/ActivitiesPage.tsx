@@ -257,8 +257,6 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
                     break;
                 case "Pendiente":
                     setPending(false);
-                default:
-                    break;
             }
         });
 

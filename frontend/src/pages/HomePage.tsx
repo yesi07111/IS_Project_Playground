@@ -9,13 +9,13 @@ import pattern1 from '/images/decorative/hand-print.png';
 import pattern2 from '/images/decorative/kindergarten.png';
 import pattern3 from '/images/decorative/bumper-car.png';
 import pattern4 from '/images/decorative/soccer.png';
-
 import { Activity } from '../interfaces/Activity';
 import { activityService } from '../services/activityService';
 import { ActivitiesFilters } from '../interfaces/Filters';
 import { cacheService } from '../services/cacheService';
 import { DataPagesProps } from '../interfaces/Pages';
 import { useAuth } from '../components/auth/authContext';
+import { authService } from '../services/authService';
 
 const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     const [activities, setActivities] = useState<Activity[]>([]);
@@ -24,6 +24,9 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     const [activityImages, setActivityImages] = useState<{ [key: string]: string }>(() => cacheService.loadImages() || {});
     const { isAuthenticated } = useAuth();
     const [reserveRoute, setReserveRoute] = useState<string>("/");
+    const [visitors, setVisitors] = useState<number>(0)
+    const [rating, setRating] = useState<number>(0)
+    const [activeActivities, setActiveActivities] = useState<number>(0)
 
 
     const cacheActivityImages = useCallback((activitiesArray: Activity[]) => {
@@ -75,6 +78,20 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     }, [cacheActivityImages, activityImages]);
 
     useEffect(() => {
+        const fetchHomePageData = async () => {
+            try {
+                const response = await authService.homePageDataRetrieve();
+                console.log("HomePage Data Response:");
+                console.table(response)
+                setVisitors(response.visitors);
+                setActiveActivities(response.activeActivities);
+                setRating(response.score);
+            } catch (error) {
+                console.error("No se pudieron cargar los valores: ", error);
+            }
+        };
+
+        fetchHomePageData();
         fetchActivities();
     }, []);
 
@@ -236,7 +253,7 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
                     }}
                 />
                 <Container maxWidth={false}>
-                    <StatsSummary />
+                    <StatsSummary visitants={visitors} activeActivities={activeActivities} rating={rating} />
                 </Container>
             </Box>
 

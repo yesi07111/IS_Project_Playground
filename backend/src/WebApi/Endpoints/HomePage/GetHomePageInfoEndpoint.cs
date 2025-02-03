@@ -9,11 +9,12 @@ public class GetHomePageInfoEndpoint(GetHomePageInfoQueryHandler queryHandler) :
     public override void Configure()
     {
         AllowAnonymous();
-        Get("/get");
+        Get("/get/homepage");
     }
 
-    public override async Task<GetHomePageInfoResponse> HandleAsync(CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
-        return await queryHandler.ExecuteAsync(ct);
+        var response = await queryHandler.ExecuteAsync(ct);
+        await SendAsync(response, cancellation: ct);
     }
 }

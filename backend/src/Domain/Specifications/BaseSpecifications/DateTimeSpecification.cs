@@ -18,29 +18,24 @@ namespace Playground.Domain.Specifications.BaseSpecifications
         public static Expression<Func<T, bool>> CreateDateComparisonExpression(
             Expression<Func<T, DateTime>> dateSelector, DateTime date, string comparison)
         {
-            switch (comparison)
+            return comparison switch
             {
-                case "greater":
-                    return Expression.Lambda<Func<T, bool>>(
-                        Expression.GreaterThan(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-                case "greater-or-equal":
-                    return Expression.Lambda<Func<T, bool>>(
-                        Expression.GreaterThanOrEqual(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-                case "less":
-                    return Expression.Lambda<Func<T, bool>>(
-                        Expression.LessThan(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-                case "less-or-equal":
-                    return Expression.Lambda<Func<T, bool>>(
-                        Expression.LessThanOrEqual(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-                default:
-                    return Expression.Lambda<Func<T, bool>>(
-                        Expression.Equal(dateSelector.Body, Expression.Constant(date)),
-                        dateSelector.Parameters);
-            }
+                "greater" => Expression.Lambda<Func<T, bool>>(
+                                        Expression.GreaterThan(dateSelector.Body, Expression.Constant(date)),
+                                        dateSelector.Parameters),
+                "greater-or-equal" => Expression.Lambda<Func<T, bool>>(
+                                        Expression.GreaterThanOrEqual(dateSelector.Body, Expression.Constant(date)),
+                                        dateSelector.Parameters),
+                "less" => Expression.Lambda<Func<T, bool>>(
+                                        Expression.LessThan(dateSelector.Body, Expression.Constant(date)),
+                                        dateSelector.Parameters),
+                "less-or-equal" => Expression.Lambda<Func<T, bool>>(
+                                        Expression.LessThanOrEqual(dateSelector.Body, Expression.Constant(date)),
+                                        dateSelector.Parameters),
+                _ => Expression.Lambda<Func<T, bool>>(
+                                        Expression.Equal(dateSelector.Body, Expression.Constant(date)),
+                                        dateSelector.Parameters),
+            };
         }
 
         /// <summary>
@@ -58,19 +53,14 @@ namespace Playground.Domain.Specifications.BaseSpecifications
                 return entity => !dateSelector.Compile()(entity).HasValue;
             }
 
-            switch (comparison)
+            return comparison switch
             {
-                case "greater":
-                    return entity => dateSelector.Compile()(entity) > date;
-                case "greater-or-equal":
-                    return entity => dateSelector.Compile()(entity) >= date;
-                case "less":
-                    return entity => dateSelector.Compile()(entity) < date;
-                case "less-or-equal":
-                    return entity => dateSelector.Compile()(entity) <= date;
-                default:
-                    return entity => dateSelector.Compile()(entity) == date;
-            }
+                "greater" => entity => dateSelector.Compile()(entity) > date,
+                "greater-or-equal" => entity => dateSelector.Compile()(entity) >= date,
+                "less" => entity => dateSelector.Compile()(entity) < date,
+                "less-or-equal" => entity => dateSelector.Compile()(entity) <= date,
+                _ => entity => dateSelector.Compile()(entity) == date,
+            };
         }
     }
 }

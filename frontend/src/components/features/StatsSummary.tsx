@@ -2,6 +2,7 @@ import React from 'react';
 import { Paper, Typography, Grid2 as Grid } from '@mui/material';
 import { People, Event, Star } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { StatsSummaryProps } from '../../interfaces/Pages';
 
 /**
  * Componente estilizado de Paper que representa un resumen de estadísticas.

@@ -4,6 +4,7 @@ import {
     CheckEmailResponse, ReCaptchaVerificationResponse, ReCaptchaSiteKeyResponse, GoogleClientIdResponse,
 } from '../interfaces/Auth';
 import { UserCreationResponse } from '../interfaces/Auth';
+import { GetHomePageInfoResponse } from '../interfaces/Pages';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -281,6 +282,20 @@ export const authService = {
                 throw error.response.data || 'Error al chequear la validez del token con Google.';
             } else {
                 throw 'Ha ocurrido un error inesperado al chequear la validez del token con Google.';
+            }
+        }
+    },
+    homePageDataRetrieve: async (): Promise<GetHomePageInfoResponse> => {
+        try {
+            const response = await axios.get(`${API_URL}/get/homepage`)
+            console.log("response homepage")
+            console.table(response)
+            return response.data;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al obtener los datos de la página de inicio.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al obtener los datos de la página de inicio.';
             }
         }
     }
