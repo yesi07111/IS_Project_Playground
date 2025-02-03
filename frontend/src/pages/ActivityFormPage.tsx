@@ -120,6 +120,8 @@ const ActivityFormPage: React.FC = () => {
 
         try {
             const result = await activityService.createActivity({
+                useCase: 'CreateBoth',
+                activityId: '',
                 name: formData.name,
                 description: formData.description,
                 educator: formData.educator,
