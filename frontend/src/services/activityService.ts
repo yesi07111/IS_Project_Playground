@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ActivitiesFilters } from '../interfaces/Filters';
-import { ActivityData, GetActivityResponse, ListActivityResponse, ListOnlyActivityResponse } from '../interfaces/Activity';
+import { ActivityData, GetActivityResponse, ListActivityDateResponse, ListActivityResponse, ListOnlyActivityResponse, UpdateActivityData } from '../interfaces/Activity';
 
 const API_URL = 'http://localhost:5117/api';
 
@@ -54,10 +54,55 @@ export const activityService = {
         }
     },
 
+    getAllActivityDates: async (id: string): Promise<ListActivityDateResponse> => {
+        try {
+            const params = new URLSearchParams({ activityId: id}).toString();
+            const response = await axios.get(`${API_URL}/activityDate/get-all?${params}`);
+            return response.data;
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al obtener las actividades.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al obtener las actividades.';
+            }
+        }
+    },
+
     createActivity: async (activityData: ActivityData) => {
         try {
             console.table(activityData);
             const response = await axios.post(`${API_URL}/activity/create`, activityData);
+            console.log(response);
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado durante la creacion de actividad.');
+            }
+        }
+    },
+
+    updateActivity: async (activityData: UpdateActivityData) => {
+        try {
+            console.table(activityData);
+            const response = await axios.put(`${API_URL}/activity/update`, activityData);
+            console.log(response);
+        }
+        catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data;
+            } else {
+                throw new Error('Ha ocurrido un error inesperado durante la creacion de actividad.');
+            }
+        }
+    },
+
+    deleteActivity: async (useCase: string, activityId: string, activityDateId: string) => {
+        try {
+            const params = new URLSearchParams({ useCase: useCase, activityId: activityId, activityDateId: activityDateId}).toString();
+            const response = await axios.delete(`${API_URL}/activity/delete?${params}`);
             console.log(response);
         }
         catch (error) {

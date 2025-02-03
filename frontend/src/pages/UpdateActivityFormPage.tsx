@@ -25,7 +25,7 @@ import { FacilityResponse } from '../interfaces/Facility';
 import { userService } from '../services/userService';
 import { useSearchParams } from 'react-router-dom';
 
-const ActivityFormPage: React.FC = () => {
+const UpdateActivityFormPage: React.FC = () => {
     const educatorId = localStorage.getItem('authId');
     const role = localStorage.getItem('authUserRole');
     const [error, setError] = useState('');
@@ -46,8 +46,6 @@ const ActivityFormPage: React.FC = () => {
         private: false,
         facility: '',
         facilityId: '',
-        day: null as Date | null, // Aseguramos que sea de tipo Date o null
-        time: null as Date | null
     });
 
     const fetchAllFacilityNames = useCallback(async () => {
@@ -108,20 +106,6 @@ const ActivityFormPage: React.FC = () => {
         });
     };
 
-    const handleDateChange = (newValue: Date | null) => {
-        setFormData({
-            ...formData,
-            day: newValue,
-        });
-    };
-
-    const handleTimeChange = (newValue: Date | null) => {
-        setFormData({
-            ...formData,
-            time: newValue,
-        });
-    };
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         let selectedName = '';
         let facilityId = '';
@@ -135,8 +119,6 @@ const ActivityFormPage: React.FC = () => {
             !formData.description ||
             !formData.educator ||
             !formData.type ||
-            !formData.day ||
-            !formData.time ||
             !formData.recommendedAge ||
             !formData.facility) {
             setError('Por favor, completa todos los campos obligatorios.');
@@ -151,15 +133,14 @@ const ActivityFormPage: React.FC = () => {
         console.log('Datos enviados:', formData);
 
         try {
-            const result = await activityService.createActivity({
+            const result = await activityService.updateActivity({
                 useCase: useCase || '',
-                activityId: useCase === 'CreateActivityDate' && id? id : '',
+                activityId: id || '',
+                activityDateId: '',
                 name: formData.name,
                 description: formData.description,
                 educator: formData.educator,
                 type: formData.type,
-                date: formData.day,
-                time: formData.time,
                 recommendedAge: formData.recommendedAge,
                 facility: formData.facilityId,
                 pending: role === 'Educator',
@@ -168,7 +149,7 @@ const ActivityFormPage: React.FC = () => {
             setSuccess(true);
         }
         catch (error) {
-            setError('Hubo un error al crear la actividad');
+            setError('Hubo un error al modificar la actividad');
         }
     };
 
@@ -198,7 +179,7 @@ const ActivityFormPage: React.FC = () => {
                 }}
             >
                 <Typography variant="h4" component="h1" gutterBottom>
-                    Crear Actividad
+                    Modificar Actividad
                 </Typography>
 
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -324,33 +305,6 @@ const ActivityFormPage: React.FC = () => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Día de la actividad
-                                </Typography>
-                                <DatePicker
-                                    value={formData.day}
-                                    onChange={handleDateChange}
-                                    slotProps={{
-                                        textField: {
-                                            sx: { ml: 2 },
-                                        },
-                                    }}
-                                />
-                            </LocalizationProvider>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Hora de la actividad
-                                </Typography>
-                                <TimePicker
-                                    value={formData.time}
-                                    onChange={handleTimeChange}
-                                />
-                            </LocalizationProvider>
-                        </Grid>
-                        <Grid item xs={12}>
                             <Button
                                 type="submit"
                                 fullWidth
@@ -358,7 +312,7 @@ const ActivityFormPage: React.FC = () => {
                                 color="primary"
                                 sx={{ mt: 2 }}
                             >
-                                Crear Actividad
+                                Modificar Actividad
                             </Button>
                         </Grid>
                     </Grid>
@@ -368,4 +322,4 @@ const ActivityFormPage: React.FC = () => {
     );
 };
 
-export default ActivityFormPage;
+export default UpdateActivityFormPage;

@@ -38,7 +38,7 @@ const CreateActivityButton: React.FC = () => {
 
   const handleClick = () => {
     console.log('Solicitar crear nueva actividad');
-    navigate('/activity-form');
+    navigate(`/activity-form?useCase=${'CreateBoth'}`);
   };
 
   return (
