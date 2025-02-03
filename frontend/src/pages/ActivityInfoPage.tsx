@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { usePDF } from 'react-to-pdf';
 import { useParams } from 'react-router-dom';
 import { Box, Container, Typography, CardMedia, Rating, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -64,6 +65,8 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
     const [error, setError] = useState<string | null>(null);
 
     const decodedImagePath = imagePath ? decodeURIComponent(imagePath) : '';
+
+    const { toPDF, targetRef } = usePDF({ filename: 'Info.Actividad.pdf' });
 
     const fetchActivityDetail = useCallback(async () => {
         try {
@@ -221,9 +224,20 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
             overflow: 'hidden',
             backgroundColor: '#f0f8ff',
         }}>
+
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => toPDF()}
+                >
+                    Exportar a PDF
+                </Button>
+            </Box>
+
             <BackgroundImage sx={{ backgroundImage: pattern1 }} />
             <BackgroundImage sx={{ backgroundImage: pattern2, opacity: 0.15 }} />
-            <Container maxWidth="md" sx={{ zIndex: 1 }}>
+            <Container ref={targetRef} maxWidth="md" sx={{ zIndex: 1 }}>
                 <SectionBox>
                     <CardMedia
                         component="img"

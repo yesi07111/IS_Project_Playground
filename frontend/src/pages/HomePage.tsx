@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { usePDF } from 'react-to-pdf';
 import { Container, Typography, Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Link } from 'react-router-dom';
@@ -25,6 +26,7 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     const { isAuthenticated } = useAuth();
     const [reserveRoute, setReserveRoute] = useState<string>("/");
 
+    const { toPDF, targetRef } = usePDF({ filename: 'Home.pdf' });
 
     const cacheActivityImages = useCallback((activitiesArray: Activity[]) => {
         setActivityImages((prevImagesMap) => {
@@ -95,7 +97,7 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     }, [reload, fetchActivities]);
 
     return (
-        <Box sx={{
+        <Box ref={targetRef} sx={{
             width: '100vw',
             minHeight: '100vh',
             overflow: 'hidden',
@@ -197,6 +199,16 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
                                 </Button>
                             </>
                         )}
+
+                    <Box sx={{ height: 16 }} />
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => toPDF()}
+                    >
+                        Exportar a PDF
+                    </Button>
                 </Box>
 
                 {/* {role === 'Educator' && isAuthenticated ?

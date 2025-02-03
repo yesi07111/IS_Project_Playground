@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { usePDF } from 'react-to-pdf';
 import { Box, Button, Grid2, Typography, Grid2 as Grid } from '@mui/material';
 import {
     Chart as ChartJS,
@@ -35,6 +36,8 @@ ChartJS.register(
 
 
 const StatisticsPage: React.FC = () => {
+    const { toPDF, targetRef } = usePDF({ filename: 'Estádisticas.pdf' });
+
     //plots
     const [useFrequencyPlot, setUseFrequencyPlot] = useState(false);
     const [conditionPlot, setConditionPlot] = useState(false);
@@ -379,11 +382,19 @@ const StatisticsPage: React.FC = () => {
                     }}>
                     Frecuencia de Estado de Reservas por Rangos de Edad
                 </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => toPDF()}
+                >
+                    Exportar a PDF
+                </Button>
                 {/* Agrega más botones aquí */}
             </Box>
 
             {/* Contenido principal */}
-            <Box
+            <Box 
+                ref={targetRef}
                 sx={{
                     flex: 1,
                     display: "flex",

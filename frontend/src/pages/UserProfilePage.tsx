@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Avatar, IconButton } from '@mui/material';
+import { usePDF } from 'react-to-pdf';
+import { Box, Typography, Avatar, IconButton, Button } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import decoration1 from '/images/decorative/toy-train.png';
@@ -21,6 +22,8 @@ const UserProfilePage: React.FC = () => {
   const [userData, setUserData] = useState<UserResponse | null>(null);
   const [isCurrentUser, setIsCurrentUser] = useState<boolean>(false);
   const [rol, setRol] = useState<string>('');
+
+  const { toPDF, targetRef } = usePDF({ filename: 'MiPerfil.pdf' });
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -108,6 +111,7 @@ const UserProfilePage: React.FC = () => {
   return (
     <Box minWidth="100vw" sx={{ mt: 4, mb: 4, position: 'relative', overflow: 'hidden' }}>
       <Box
+        ref={targetRef}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -224,6 +228,15 @@ const UserProfilePage: React.FC = () => {
             <CustomButton variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleEditProfile}>
               Editar Perfil
             </CustomButton>
+
+            <Box sx={{ height: 16 }} />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => toPDF()}
+            >
+              Exportar a PDF
+            </Button>
           </>
         )}
       </Box>

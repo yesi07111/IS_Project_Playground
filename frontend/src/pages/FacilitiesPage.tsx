@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { usePDF } from 'react-to-pdf';
 import { Facility, ListFacilityResponse } from "../interfaces/Facility";
 import { facilityService } from "../services/facilityService";
 import { cacheService } from "../services/cacheService";
@@ -30,6 +31,8 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     const navigate = useNavigate();
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
+
+    const { toPDF, targetRef } = usePDF({ filename: 'Instalaciones.pdf' });
 
     const facilitiesPerPage = 9;
 
@@ -442,11 +445,21 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
                 </Box>
             )}
 
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => toPDF()}
+                >
+                    Exportar a PDF
+                </Button>
+            </Box>
+
             {/*  Separador entre el botón y el listado de instalaciones  */}
             <Box sx={{ height: 16 }} />
 
             {/* Grid de instlaciones */}
-            <Grid2 container spacing={4}>
+            <Grid2 ref={targetRef} container spacing={4}>
                 {currentFacilities.map(facility => (
                     <Grid2
                         size={{ xs: 12, sm: 6, md: 4 }}
