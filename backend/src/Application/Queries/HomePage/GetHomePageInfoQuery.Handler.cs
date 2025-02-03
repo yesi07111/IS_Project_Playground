@@ -2,6 +2,7 @@ using Playground.Application.Factories;
 using Playground.Application.Responses;
 using Playground.Domain.Entities;
 using Playground.Domain.Specifications;
+using System;
 
 namespace Playground.Application.Queries.HomePage;
 
@@ -14,13 +15,12 @@ public class GetHomePageInfoQueryHandler(IRepositoryFactory repositoryFactory)
         var activityDateRepository = repositoryFactory.CreateRepository<ActivityDate>();
         var reviewRepository = repositoryFactory.CreateRepository<Domain.Entities.Review>();
 
-        var firstDayOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+        var firstDayOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month - 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lastDayOfMonth = firstDayOfMonth.AddMonths(2).AddDays(15);
 
         var userSpecification = UserSpecification.ByCreatedAt(firstDayOfMonth, "greater-or-equal")
             .And(UserSpecification.ByCreatedAt(lastDayOfMonth, "less-or-equal"));
         var visitors = (await userRepository.GetBySpecificationAsync(userSpecification)).Count();
-
         var reservationSpecification = ReservationSpecification.ByCreatedAt(firstDayOfMonth, "greater-or-equal")
             .And(ReservationSpecification.ByCreatedAt(DateTime.UtcNow, "less-or-equal"));
         var reservations = await reservationRepository.GetBySpecificationAsync(reservationSpecification);
@@ -33,7 +33,7 @@ public class GetHomePageInfoQueryHandler(IRepositoryFactory repositoryFactory)
         var activityDateSpecification = ActivityDateSpecification.ByDateMoreOrEqual(DateTime.UtcNow).And(ActivityDateSpecification.ByPending(false));
         var activeActivities = (await activityDateRepository.GetBySpecificationAsync(activityDateSpecification)).Count();
 
-        var score = reviewRepository.GetAllAsync().Result.Average(r => r.Score);
+        var score = Math.Round(reviewRepository.GetAllAsync().Result.Average(r => r.Score), 2);
 
         return new GetHomePageInfoResponse(visitors, activeActivities, score);
     }

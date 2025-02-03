@@ -2,6 +2,7 @@ import React from 'react';
 import { Paper, Typography, Grid2 as Grid } from '@mui/material';
 import { People, Event, Star } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { StatsSummaryProps } from '../../interfaces/Pages';
 
 /**
  * Componente estilizado de Paper que representa un resumen de estadísticas.
@@ -51,7 +52,7 @@ const IconWrapper = styled('div')(({ theme }) => ({
  * 
  * @returns {JSX.Element} El componente de resumen de estadísticas.
  */
-const StatsSummary: React.FC = () => {
+const StatsSummary: React.FC<StatsSummaryProps> = ({ visitants, activeActivities, rating }) => {
     return (
         <Grid container spacing={3} sx={{ my: 3 }}>
             <Grid size={{ xs: 12, md: 4 }}>
@@ -60,7 +61,7 @@ const StatsSummary: React.FC = () => {
                         <People />
                     </IconWrapper>
                     <Typography variant="h6">Visitantes este mes</Typography>
-                    <Typography variant="h4">1,234</Typography>
+                    <Typography variant="h4">{visitants}</Typography>
                 </StyledPaper>
             </Grid>
             <Grid size={{ xs: 12, md: 4 }}>
@@ -69,7 +70,7 @@ const StatsSummary: React.FC = () => {
                         <Event />
                     </IconWrapper>
                     <Typography variant="h6">Actividades Activas</Typography>
-                    <Typography variant="h4">25</Typography>
+                    <Typography variant="h4">{activeActivities}</Typography>
                 </StyledPaper>
             </Grid>
             <Grid size={{ xs: 12, md: 4 }}>
@@ -78,7 +79,7 @@ const StatsSummary: React.FC = () => {
                         <Star />
                     </IconWrapper>
                     <Typography variant="h6">Calificación Promedio</Typography>
-                    <Typography variant="h4">4.8</Typography>
+                    <Typography variant="h4">{rating}</Typography>
                 </StyledPaper>
             </Grid>
         </Grid>

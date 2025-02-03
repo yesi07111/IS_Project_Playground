@@ -9,13 +9,13 @@ import pattern1 from '/images/decorative/hand-print.png';
 import pattern2 from '/images/decorative/kindergarten.png';
 import pattern3 from '/images/decorative/bumper-car.png';
 import pattern4 from '/images/decorative/soccer.png';
-
 import { Activity } from '../interfaces/Activity';
 import { activityService } from '../services/activityService';
 import { ActivitiesFilters } from '../interfaces/Filters';
 import { cacheService } from '../services/cacheService';
 import { DataPagesProps } from '../interfaces/Pages';
 import { useAuth } from '../components/auth/authContext';
+import { authService } from '../services/authService';
 
 const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     const [activities, setActivities] = useState<Activity[]>([]);
@@ -24,6 +24,9 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     const [activityImages, setActivityImages] = useState<{ [key: string]: string }>(() => cacheService.loadImages() || {});
     const { isAuthenticated } = useAuth();
     const [reserveRoute, setReserveRoute] = useState<string>("/");
+    const [visitors, setVisitors] = useState<number>(0)
+    const [rating, setRating] = useState<number>(0)
+    const [activeActivities, setActiveActivities] = useState<number>(0)
 
 
     const cacheActivityImages = useCallback((activitiesArray: Activity[]) => {
@@ -75,6 +78,20 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
     }, [cacheActivityImages, activityImages]);
 
     useEffect(() => {
+        const fetchHomePageData = async () => {
+            try {
+                const response = await authService.homePageDataRetrieve();
+                console.log("HomePage Data Response:");
+                console.table(response)
+                setVisitors(response.visitors);
+                setActiveActivities(response.activeActivities);
+                setRating(response.score);
+            } catch (error) {
+                console.error("No se pudieron cargar los valores: ", error);
+            }
+        };
+
+        fetchHomePageData();
         fetchActivities();
     }, []);
 
@@ -199,88 +216,6 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
                         )}
                 </Box>
 
-                {/* {role === 'Educator' && isAuthenticated ?
-                    (<Box
-                        sx={{
-                            position: 'absolute',
-                            width: '100%',
-                            height: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            color: 'white',
-                            textAlign: 'center',
-                            zIndex: 1
-                        }}
-                    >
-                        <Typography
-                            variant="h1"
-                            sx={{
-                                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
-                                fontWeight: 700,
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-                                mb: 2
-                            }}
-                        >
-                            Bienvenido Profesor {userName}
-                        </Typography>
-                    </Box>)
-                    :
-                    (<Box
-                        sx={{
-                            position: 'absolute',
-                            width: '100%',
-                            height: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            color: 'white',
-                            textAlign: 'center',
-                            zIndex: 1
-                        }}
-                    >
-                        <Typography
-                            variant="h1"
-                            sx={{
-                                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
-                                fontWeight: 700,
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-                                mb: 2
-                            }}
-                        >
-                            Bienvenido al Parque Infantil
-                        </Typography>
-                        <Typography
-                            variant="h4"
-                            sx={{
-                                fontSize: { xs: '1.2rem', sm: '1.5rem', md: '2rem' },
-                                maxWidth: '800px',
-                                mb: 4,
-                                px: 2
-                            }}
-                        >
-                            El mejor lugar para la diversión y el aprendizaje de tus hijos 🎊
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            size="large"
-                            component={Link}
-                            to={reserveRoute}
-                            sx={{
-                                backgroundColor: '#FF6B6B',
-                                fontSize: '1.2rem',
-                                py: 2,
-                                px: 4,
-                                '&:hover': {
-                                    backgroundColor: '#ff5252'
-                                }
-                            }}
-                        >
-                            ¡Reserva Ahora!
-                        </Button>
-                    </Box>)} */}
             </Box>
 
             {/* Stats Section */}
@@ -318,7 +253,7 @@ const HomePage: React.FC<DataPagesProps> = ({ reload }) => {
                     }}
                 />
                 <Container maxWidth={false}>
-                    <StatsSummary />
+                    <StatsSummary visitants={visitors} activeActivities={activeActivities} rating={rating} />
                 </Container>
             </Box>
 
