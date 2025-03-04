@@ -2,6 +2,8 @@ using FastEndpoints;
 using Playground.Application.Commands.Responses;
 using Playground.Application.Factories;
 using Playground.Application.Repositories;
+using Playground.Domain.Specifications;
+using Playground.Domain.Specifications.BaseSpecifications;
 
 namespace Playground.Application.Commands.Resource.Create;
 
@@ -28,6 +30,17 @@ public class CreateResourceCommandHandler : CommandHandler<CreateResourceCommand
         }
         else
         {
+            ISpecification<Domain.Entities.Resource> resourceSpecification = ResourceSpecification.ByName(command.Name)
+                .And(ResourceSpecification.ByType(command.Type))
+                .And(ResourceSpecification.ByResourceCondition(command.ResourceCondition))
+                .And(ResourceSpecification.ByFacility(new Guid(command.FacilityId)));
+
+            var resourceSearch = await resourceRepository.GetBySpecificationAsync(resourceSpecification);
+            if (resourceSearch.Any())
+            {
+                ThrowError("Recurso ya existente");
+            }
+
             var resource = new Domain.Entities.Resource
             {
                 Name = command.Name,
