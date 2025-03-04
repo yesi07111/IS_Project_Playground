@@ -106,7 +106,7 @@ const ActivitiesManagementPage = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', minWidth: '100vw', bgcolor: 'background.default', p: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', minWidth: '100vw', bgcolor: 'background.default', p: 3, overflowY: 'hidden', }}>
             <Box sx={{ display: 'flex', mb: 3 }}>
                 <SearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} labelText="Actividades" />
             </Box>

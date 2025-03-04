@@ -245,7 +245,7 @@ const FacilitiesPage: React.FC<{ reload: boolean }> = ({ reload }) => {
     ];
 
     return (
-        <Box sx={{ width: '100vw', minHeight: '100vh', py: 4, px: 2, backgroundColor: '#f8f9fa' }}>
+        <Box sx={{ width: '100vw', minHeight: '100vh', py: 4, px: 2, backgroundColor: '#f8f9fa', overflowY: 'auto', }}>
             {/* Buscador con filtros */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
                 <SearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} labelText='Instalaciones' />

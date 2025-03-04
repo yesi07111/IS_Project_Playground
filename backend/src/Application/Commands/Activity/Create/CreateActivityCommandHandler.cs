@@ -1,3 +1,4 @@
+using System.Net;
 using FastEndpoints;
 using Playground.Application.Commands.Responses;
 using Playground.Application.Factories;
@@ -54,6 +55,20 @@ public class CreateActivityCommandHandler : CommandHandler<CreateActivityCommand
                 ThrowError("Instalación no encontrada");
             }
 
+            ISpecification<Domain.Entities.Activity> activitySpecification = ActivitySpecification.ByName(command.Name)
+                .And(ActivitySpecification.ByDescription(command.Description))
+                .And(ActivitySpecification.ByEducator(command.Educator))
+                .And(ActivitySpecification.ByFacility(new Guid(command.Facility)))
+                .And(ActivitySpecification.ByType(command.Type))
+                .And(ActivitySpecification.ByRecommendedAgeEqual(command.RecommendedAge))
+                .And(ActivitySpecification.ByItsPrivate(command.Private));
+            
+            var activitySearch = await activityRepository.GetBySpecificationAsync(activitySpecification);
+            if(activitySearch.Any())
+            {
+                ThrowError("Actividad ya existente");
+            }
+
             //crear la actividad nueva
             var activity = new Domain.Entities.Activity
             {
@@ -91,6 +106,20 @@ public class CreateActivityCommandHandler : CommandHandler<CreateActivityCommand
                 ThrowError("Instalación no encontrada");
             }
 
+            ISpecification<Domain.Entities.Activity> activitySpecification = ActivitySpecification.ByName(command.Name)
+                .And(ActivitySpecification.ByDescription(command.Description))
+                .And(ActivitySpecification.ByEducator(command.Educator))
+                .And(ActivitySpecification.ByFacility(new Guid(command.Facility)))
+                .And(ActivitySpecification.ByType(command.Type))
+                .And(ActivitySpecification.ByRecommendedAgeEqual(command.RecommendedAge))
+                .And(ActivitySpecification.ByItsPrivate(command.Private));
+            
+            var activitySearch = await activityRepository.GetBySpecificationAsync(activitySpecification);
+            if(activitySearch.Any())
+            {
+                ThrowError("Actividad ya existente");
+            }
+
             var activity = new Domain.Entities.Activity
             {
                 Name = command.Name,
@@ -122,7 +151,18 @@ public class CreateActivityCommandHandler : CommandHandler<CreateActivityCommand
                 throw new ArgumentException("La hora no es válida.");
             }
 
-            DateTime dateTime = parsedDate.Date + parsedTime.TimeOfDay;
+            DateTime dateTime = (parsedDate.Date + parsedTime.TimeOfDay).ToUniversalTime();
+
+            ISpecification<Domain.Entities.ActivityDate> activityDateSpecification = ActivityDateSpecification
+                .ByActivity(new Guid(command.ActivityId))
+                .And(ActivityDateSpecification.ByDateEqual(dateTime.Date))
+                .And(ActivityDateSpecification.ByTimeEqual(dateTime.TimeOfDay));
+            
+            var activitySearch = await activityDateRepository.GetBySpecificationAsync(activityDateSpecification);
+            if(activitySearch.Any())
+            {
+                ThrowError("Fecha para esta actividad ya existente");
+            }
 
             var activityDate = new ActivityDate
             {

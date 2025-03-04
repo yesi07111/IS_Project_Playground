@@ -15,6 +15,7 @@ import UserLink from '../components/auth/UserLink';
 import { ReservationDto, ReservationFormData } from '../interfaces/Reservation';
 import { reservationService } from '../services/reservationService';
 import ReservationModal from '../components/features/ReservationModal';
+import { useAuth } from '../components/auth/authContext';
 
 const BackgroundImage = styled(Box)({
     position: 'absolute',
@@ -65,6 +66,7 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
     const [error, setError] = useState<string | null>(null);
     const [reservation, setReservation] = useState<ReservationDto | null>(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const { isAuthenticated } = useAuth();
 
     const decodedImagePath = imagePath ? decodeURIComponent(imagePath) : '';
 
@@ -299,7 +301,7 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                                         Su reserva fue cancelada por su propia discreción o por un administrador debido a falta de capacidad en la instalación, sea el último caso nos disculpamos por las molestias. 😔
                                     </Typography>
 
-                                    {!isPastActivity && availableSpots > 0 && (
+                                    {isAuthenticated && !isPastActivity && availableSpots > 0 && (
                                         <>
                                             <Typography variant="h6" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
                                                 Todavía quedan {availableSpots} plazas disponibles, puede intentar reservar nuevamente.
@@ -333,7 +335,7 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                         </>
                     ) : (
                         <>
-                            {!isPastActivity && availableSpots > 0 && (
+                            {isAuthenticated && !isPastActivity && availableSpots > 0 && (
                                 <>
                                     <Typography variant="h6" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
                                         ¡Quedan solo {availableSpots} plazas disponibles, reserva ahora!
