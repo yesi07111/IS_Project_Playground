@@ -196,7 +196,7 @@ public static class Seeder
             // Gimnasio
             new() { Name = "Clase de Gimnasia", Description = "Ejercicios y entrenamiento.", Educator = educador1!, Type = "Deporte", RecommendedAge = 15, ItsPrivate = false, Facility = gimnasio! },
             new() { Name = "Clase de Yoga", Description = "Ejercicios de yoga.", Educator = educador6!, Type = "Deporte", RecommendedAge = 16, ItsPrivate = false, Facility = gimnasio! },
-            new() { Name = "Clase de Zumba", Description = "Ejercicios de baile y fitness.", Educator = educador6!, Type = "Deporte", RecommendedAge = 18, ItsPrivate = false, Facility = gimnasio! },
+            new() { Name = "Clase de Zumba", Description = "Ejercicios de baile y fitness.", Educator = educador6!, Type = "Deporte", RecommendedAge = 17, ItsPrivate = false, Facility = gimnasio! },
 
             // Biblioteca
             new() { Name = "Club de Lectura", Description = "Discusión de libros.", Educator = educador2!, Type = "Educación", RecommendedAge = 12, ItsPrivate = false, Facility = biblioteca! },
@@ -638,6 +638,105 @@ public static class Seeder
         await unitOfWork.CommitAsync();
         #endregion
 
+        // #region Reservas Auto
+        // // Crear reservas ajustadas
+        // var allParents = await context.Users.Where(u => u.Rol == parentRole).ToListAsync();
+        // var reservations = new List<Reservation>();
+
+        // // Array de comentarios adicionales
+        // var additionalComments = new[]
+        // {
+        //     "¡Esperamos con ansias esta actividad!",
+        //     "Mis hijos están muy emocionados.",
+        //     "¡No podemos esperar para participar!",
+        //     "Espero que sea una gran experiencia.",
+        //     "Mis hijos han estado hablando de esto durante semanas.",
+        //     "¡Qué gran oportunidad para aprender!",
+        //     "Estamos muy emocionados por esta actividad.",
+        //     "Espero que sea tan divertido como parece.",
+        //     "Mis hijos están listos para la aventura.",
+        //     "¡Gracias por organizar esto!",
+
+        //     // Nuevos comentarios
+        //     "Esta actividad suena increíble.",
+        //     "Mis hijos no pueden dejar de hablar de esto.",
+        //     "¡Estamos contando los días!",
+        //     "Espero que sea una experiencia inolvidable.",
+        //     "Mis hijos están ansiosos por comenzar.",
+        //     "¡Qué oportunidad tan maravillosa!",
+        //     "Estamos muy entusiasmados con esta actividad.",
+        //     "Espero que sea tan educativo como parece.",
+        //     "Mis hijos están preparados para la diversión.",
+        //     "¡Gracias por hacer esto posible!",
+
+        //     // Más comentarios
+        //     "No podemos esperar para ver qué nos espera.",
+        //     "Mis hijos están llenos de energía para esto.",
+        //     "¡Estamos muy emocionados por participar!",
+        //     "Espero que sea una experiencia enriquecedora.",
+        //     "Mis hijos han estado esperando esto con ansias.",
+        //     "¡Qué excelente oportunidad para crecer!",
+        //     "Estamos muy emocionados por esta nueva aventura.",
+        //     "Espero que sea tan emocionante como parece.",
+        //     "Mis hijos están listos para aprender y divertirse.",
+        //     "¡Gracias por brindarnos esta oportunidad!",
+
+        //     // Comentarios adicionales
+        //     "Mis hijos están contando los días.",
+        //     "¡Estamos muy emocionados por esta experiencia!",
+        //     "Espero que sea tan increíble como parece.",
+        //     "Mis hijos están listos para la acción.",
+        //     "¡Gracias por organizar una actividad tan genial!",
+        //     "Estamos muy emocionados por lo que viene.",
+        //     "Espero que sea una experiencia memorable.",
+        //     "Mis hijos están ansiosos por participar.",
+        //     "¡Qué gran oportunidad para explorar!",
+        //     "Estamos muy emocionados por esta oportunidad.",
+        //     "Espero que sea tan divertido como lo imaginamos.",
+        //     "Mis hijos están listos para la aventura.",
+        //     "¡Gracias por hacer esto posible para nosotros!",
+        //     "Estamos muy emocionados por lo que nos espera.",
+        //     "Espero que sea una experiencia educativa.",
+        //     "Mis hijos están ansiosos por aprender.",
+        //     "¡Qué gran oportunidad para descubrir!",
+        //     "Estamos muy emocionados por esta nueva experiencia.",
+        //     "Espero que sea tan emocionante como lo parece.",
+        //     "Mis hijos están listos para disfrutar."
+        // };
+        // foreach (var activityDate in activityDates.Concat(newActivityDates).Concat(privateActivityDates))
+        // {
+        //     int totalReserved = reservations.Where(r => r.ActivityDate.Id == activityDate.Id).Sum(r => r.AmmountOfChildren);
+
+        //     while (totalReserved < activityDate.ReservedPlaces)
+        //     {
+        //         int children = random.Next(1, Math.Min(6, activityDate.ReservedPlaces - totalReserved) + 1);
+        //         var parent = allParents[random.Next(allParents.Count)];
+        //         var reservationState = activityDate.DateTime < today ? "Completada" : "Confirmada";
+        //         var comment = additionalComments[random.Next(additionalComments.Length)];
+
+        //         reservations.Add(new Reservation
+        //         {
+        //             Parent = parent,
+        //             ActivityDate = activityDate,
+        //             AdditionalComments = comment,
+        //             AmmountOfChildren = children,
+        //             ReservationState = reservationState
+        //         });
+
+        //         totalReserved += children;
+        //     }
+        // }
+
+        // foreach (var reservation in reservations)
+        // {
+        //     if (!await context.Reservation.AnyAsync(r => r.AdditionalComments == reservation.AdditionalComments && r.ActivityDate.Id == reservation.ActivityDate.Id))
+        //     {
+        //         await reservationRepository.AddAsync(reservation);
+        //     }
+        // }
+        // await unitOfWork.CommitAsync();
+        // #endregion
+
         #region Reservas Auto
         // Crear reservas ajustadas
         var allParents = await context.Users.Where(u => u.Rol == parentRole).ToListAsync();
@@ -646,63 +745,63 @@ public static class Seeder
         // Array de comentarios adicionales
         var additionalComments = new[]
         {
-            "¡Esperamos con ansias esta actividad!",
-            "Mis hijos están muy emocionados.",
-            "¡No podemos esperar para participar!",
-            "Espero que sea una gran experiencia.",
-            "Mis hijos han estado hablando de esto durante semanas.",
-            "¡Qué gran oportunidad para aprender!",
-            "Estamos muy emocionados por esta actividad.",
-            "Espero que sea tan divertido como parece.",
-            "Mis hijos están listos para la aventura.",
-            "¡Gracias por organizar esto!",
+    "¡Esperamos con ansias esta actividad!",
+    "Mis hijos están muy emocionados.",
+    "¡No podemos esperar para participar!",
+    "Espero que sea una gran experiencia.",
+    "Mis hijos han estado hablando de esto durante semanas.",
+    "¡Qué gran oportunidad para aprender!",
+    "Estamos muy emocionados por esta actividad.",
+    "Espero que sea tan divertido como parece.",
+    "Mis hijos están listos para la aventura.",
+    "¡Gracias por organizar esto!",
 
-            // Nuevos comentarios
-            "Esta actividad suena increíble.",
-            "Mis hijos no pueden dejar de hablar de esto.",
-            "¡Estamos contando los días!",
-            "Espero que sea una experiencia inolvidable.",
-            "Mis hijos están ansiosos por comenzar.",
-            "¡Qué oportunidad tan maravillosa!",
-            "Estamos muy entusiasmados con esta actividad.",
-            "Espero que sea tan educativo como parece.",
-            "Mis hijos están preparados para la diversión.",
-            "¡Gracias por hacer esto posible!",
+    // Nuevos comentarios
+    "Esta actividad suena increíble.",
+    "Mis hijos no pueden dejar de hablar de esto.",
+    "¡Estamos contando los días!",
+    "Espero que sea una experiencia inolvidable.",
+    "Mis hijos están ansiosos por comenzar.",
+    "¡Qué oportunidad tan maravillosa!",
+    "Estamos muy entusiasmados con esta actividad.",
+    "Espero que sea tan educativo como parece.",
+    "Mis hijos están preparados para la diversión.",
+    "¡Gracias por hacer esto posible!",
 
-            // Más comentarios
-            "No podemos esperar para ver qué nos espera.",
-            "Mis hijos están llenos de energía para esto.",
-            "¡Estamos muy emocionados por participar!",
-            "Espero que sea una experiencia enriquecedora.",
-            "Mis hijos han estado esperando esto con ansias.",
-            "¡Qué excelente oportunidad para crecer!",
-            "Estamos muy emocionados por esta nueva aventura.",
-            "Espero que sea tan emocionante como parece.",
-            "Mis hijos están listos para aprender y divertirse.",
-            "¡Gracias por brindarnos esta oportunidad!",
+    // Más comentarios
+    "No podemos esperar para ver qué nos espera.",
+    "Mis hijos están llenos de energía para esto.",
+    "¡Estamos muy emocionados por participar!",
+    "Espero que sea una experiencia enriquecedora.",
+    "Mis hijos han estado esperando esto con ansias.",
+    "¡Qué excelente oportunidad para crecer!",
+    "Estamos muy emocionados por esta nueva aventura.",
+    "Espero que sea tan emocionante como parece.",
+    "Mis hijos están listos para aprender y divertirse.",
+    "¡Gracias por brindarnos esta oportunidad!",
 
-            // Comentarios adicionales
-            "Mis hijos están contando los días.",
-            "¡Estamos muy emocionados por esta experiencia!",
-            "Espero que sea tan increíble como parece.",
-            "Mis hijos están listos para la acción.",
-            "¡Gracias por organizar una actividad tan genial!",
-            "Estamos muy emocionados por lo que viene.",
-            "Espero que sea una experiencia memorable.",
-            "Mis hijos están ansiosos por participar.",
-            "¡Qué gran oportunidad para explorar!",
-            "Estamos muy emocionados por esta oportunidad.",
-            "Espero que sea tan divertido como lo imaginamos.",
-            "Mis hijos están listos para la aventura.",
-            "¡Gracias por hacer esto posible para nosotros!",
-            "Estamos muy emocionados por lo que nos espera.",
-            "Espero que sea una experiencia educativa.",
-            "Mis hijos están ansiosos por aprender.",
-            "¡Qué gran oportunidad para descubrir!",
-            "Estamos muy emocionados por esta nueva experiencia.",
-            "Espero que sea tan emocionante como lo parece.",
-            "Mis hijos están listos para disfrutar."
-        };
+    // Comentarios adicionales
+    "Mis hijos están contando los días.",
+    "¡Estamos muy emocionados por esta experiencia!",
+    "Espero que sea tan increíble como parece.",
+    "Mis hijos están listos para la acción.",
+    "¡Gracias por organizar una actividad tan genial!",
+    "Estamos muy emocionados por lo que viene.",
+    "Espero que sea una experiencia memorable.",
+    "Mis hijos están ansiosos por participar.",
+    "¡Qué gran oportunidad para explorar!",
+    "Estamos muy emocionados por esta oportunidad.",
+    "Espero que sea tan divertido como lo imaginamos.",
+    "Mis hijos están listos para la aventura.",
+    "¡Gracias por hacer esto posible para nosotros!",
+    "Estamos muy emocionados por lo que nos espera.",
+    "Espero que sea una experiencia educativa.",
+    "Mis hijos están ansiosos por aprender.",
+    "¡Qué gran oportunidad para descubrir!",
+    "Estamos muy emocionados por esta nueva experiencia.",
+    "Espero que sea tan emocionante como lo parece.",
+    "Mis hijos están listos para disfrutar."
+};
         foreach (var activityDate in activityDates.Concat(newActivityDates).Concat(privateActivityDates))
         {
             int totalReserved = reservations.Where(r => r.ActivityDate.Id == activityDate.Id).Sum(r => r.AmmountOfChildren);
@@ -711,6 +810,13 @@ public static class Seeder
             {
                 int children = random.Next(1, Math.Min(6, activityDate.ReservedPlaces - totalReserved) + 1);
                 var parent = allParents[random.Next(allParents.Count)];
+
+                // Verificar si el padre ya tiene una reserva para la misma fecha de actividad
+                if (reservations.Any(r => r.Parent.Id == parent.Id && r.ActivityDate.Id == activityDate.Id))
+                {
+                    continue; // Saltar si ya existe una reserva para este padre en esta fecha
+                }
+
                 var reservationState = activityDate.DateTime < today ? "Completada" : "Confirmada";
                 var comment = additionalComments[random.Next(additionalComments.Length)];
 
@@ -725,8 +831,42 @@ public static class Seeder
 
                 totalReserved += children;
             }
-        }
 
+            // Agregar algunas reservas pendientes y canceladas
+            if (activityDate.DateTime > today && random.NextDouble() < 0.4) // 10% de probabilidad de agregar una reserva pendiente
+            {
+                int pendingChildren = random.Next(1, activityDate.ReservedPlaces);
+                var pendingParent = allParents[random.Next(allParents.Count)];
+
+                // Verificar si el padre ya tiene una reserva para la misma fecha de actividad
+                if (!reservations.Any(r => r.Parent.Id == pendingParent.Id && r.ActivityDate.Id == activityDate.Id))
+                {
+                    reservations.Add(new Reservation
+                    {
+                        Parent = pendingParent,
+                        ActivityDate = activityDate,
+                        AdditionalComments = "Reserva pendiente",
+                        AmmountOfChildren = pendingChildren,
+                        ReservationState = "Pendiente"
+                    });
+                }
+            }
+
+            if (random.NextDouble() < 0.2) // 5% de probabilidad de agregar una reserva cancelada
+            {
+                int canceledChildren = random.Next(1, 6);
+                var canceledParent = allParents[random.Next(allParents.Count)];
+
+                reservations.Add(new Reservation
+                {
+                    Parent = canceledParent,
+                    ActivityDate = activityDate,
+                    AdditionalComments = "Reserva cancelada",
+                    AmmountOfChildren = canceledChildren,
+                    ReservationState = "Cancelada"
+                });
+            }
+        }
         foreach (var reservation in reservations)
         {
             if (!await context.Reservation.AnyAsync(r => r.AdditionalComments == reservation.AdditionalComments && r.ActivityDate.Id == reservation.ActivityDate.Id))

@@ -21,7 +21,7 @@ public class UpdateReservationCommandHandler : CommandHandler<UpdateReservationC
     {
         var reservationRepository = repositoryFactory.CreateRepository<Domain.Entities.Reservation>();
 
-        var reservation = await reservationRepository.GetByIdAsync(Guid.Parse(command.ReservationId));
+        var reservation = await reservationRepository.GetByIdAsync(Guid.Parse(command.ReservationId), r => r.ActivityDate);
         if (reservation is null)
         {
             ThrowError("Reservación no encontrada.");
@@ -31,10 +31,30 @@ public class UpdateReservationCommandHandler : CommandHandler<UpdateReservationC
             if (command.State == ReservationStateSmartEnum.Cancelada.Name)
             {
                 reservation.ReservationState = ReservationStateSmartEnum.Cancelada.Name;
+                var activityDateRepository = repositoryFactory.CreateRepository<Domain.Entities.ActivityDate>();
+                var activityDate = await activityDateRepository.GetByIdAsync(reservation.ActivityDate.Id);
+
+                if (activityDate is null)
+                {
+                    ThrowError("La fecha de actividad asociada no fue encontrada");
+                }
+
+                activityDate.ReservedPlaces -= reservation.AmmountOfChildren;
+                activityDateRepository.Update(activityDate);
             }
             else if (command.State == ReservationStateSmartEnum.Confirmada.Name)
             {
                 reservation.ReservationState = ReservationStateSmartEnum.Confirmada.Name;
+                var activityDateRepository = repositoryFactory.CreateRepository<Domain.Entities.ActivityDate>();
+                var activityDate = await activityDateRepository.GetByIdAsync(reservation.ActivityDate.Id);
+
+                if (activityDate is null)
+                {
+                    ThrowError("La fecha de actividad asociada no fue encontrada");
+                }
+
+                activityDate.ReservedPlaces += reservation.AmmountOfChildren;
+                activityDateRepository.Update(activityDate);
             }
             else if (command.State == ReservationStateSmartEnum.Completada.Name)
             {
@@ -46,7 +66,7 @@ public class UpdateReservationCommandHandler : CommandHandler<UpdateReservationC
             }
 
             reservationRepository.Update(reservation);
-            await unitOfWork.CommitAsync();
+            unitOfWork.Commit();
         }
 
         return new GenericResponse("Reservación modificada");

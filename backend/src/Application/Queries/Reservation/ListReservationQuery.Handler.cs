@@ -4,6 +4,7 @@ using Playground.Application.Dtos;
 using Playground.Application.Responses;
 using Playground.Domain.Specifications;
 using Playground.Domain.SmartEnum;
+using Playground.Domain.Specifications.BaseSpecifications;
 
 namespace Playground.Application.Queries.Reservation.List;
 
@@ -19,6 +20,7 @@ public class ListReservationQueryHandler : CommandHandler<ListReservationQuery, 
     public override async Task<ListReservationResponse> ExecuteAsync(ListReservationQuery query, CancellationToken ct = default)
     {
         var reservationRepository = _repositoryFactory.CreateRepository<Domain.Entities.Reservation>();
+        var activityDateRepository = _repositoryFactory.CreateRepository<Domain.Entities.ActivityDate>();
         IEnumerable<Domain.Entities.Reservation> reservations;
 
         if (string.IsNullOrEmpty(query.Id))
@@ -27,9 +29,17 @@ public class ListReservationQueryHandler : CommandHandler<ListReservationQuery, 
         }
         else
         {
-            var reservationSpecification = ReservationSpecification.ByParent(query.Id).AndNot(ReservationSpecification.ByReservationState(ReservationStateSmartEnum.Cancelada.Name));
+            var reservationSpecification = ReservationSpecification.ByParent(query.Id);
             reservations = await reservationRepository.GetBySpecificationAsync(reservationSpecification, r => r.ActivityDate, r => r.ActivityDate.Activity, r => r.Parent);
         }
+
+        ISpecification<Domain.Entities.ActivityDate> activityDateSpecification = new ActivityDateSpecification(r => true);
+        foreach (var reservation in reservations)
+        {
+            activityDateSpecification = activityDateSpecification.Or(ActivityDateSpecification.ById(reservation.ActivityDate.Id));
+        }
+
+        var activityDates = await activityDateRepository.GetBySpecificationAsync(activityDateSpecification, r => r.Activity, r => r.Activity.Facility);
 
         var reservationsDtos = reservations.Select(r => new ReservationDto
         {
@@ -44,6 +54,8 @@ public class ListReservationQueryHandler : CommandHandler<ListReservationQuery, 
             Comments = r.AdditionalComments,
             State = r.ReservationState,
             ActivityRecommendedAge = r.ActivityDate.Activity.RecommendedAge,
+            UsedCapacity = r.ActivityDate.ReservedPlaces,
+            Capacity = activityDates.First(ad => ad.Id == r.ActivityDate.Id).Activity.Facility.MaximumCapacity,
         });
 
         return new ListReservationResponse(reservationsDtos);
