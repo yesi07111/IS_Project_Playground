@@ -28,6 +28,7 @@ const UserFormPage: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+        console.log(formData)
         setFormData({
             ...formData,
             [name]: value
@@ -148,6 +149,7 @@ const UserFormPage: React.FC = () => {
                                 native: true,
                             }}
                         >
+                            <option value=""></option>
                             <option value="Admin">Admin</option>
                             <option value="Educator">Educator</option>
                             <option value="Parent">Parent</option>
