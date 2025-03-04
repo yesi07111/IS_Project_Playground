@@ -42,7 +42,7 @@ const UserFormPage: React.FC = () => {
         console.table(formData);
 
         try {
-            const result = await userService.createUser({
+            await userService.createUser({
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 userName: formData.userName,
@@ -53,7 +53,7 @@ const UserFormPage: React.FC = () => {
             setSuccess('Usuario creado exitosamente.');
             setFormData({ firstName: '', lastName: '', userName: '', password: '', role: '', email: '' });
         }
-        catch (error) {
+        catch {
             setError('Error al crear el usuario. Por favor, inténtalo nuevamente.');
         }
     };
@@ -143,7 +143,15 @@ const UserFormPage: React.FC = () => {
                             fullWidth
                             margin="normal"
                             required
-                        />
+                            select
+                            SelectProps={{
+                                native: true,
+                            }}
+                        >
+                            <option value="Admin">Admin</option>
+                            <option value="Educator">Educator</option>
+                            <option value="Parent">Parent</option>
+                        </TextField>
                         <TextField
                             label="Email"
                             name="email"

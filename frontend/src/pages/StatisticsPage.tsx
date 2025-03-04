@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { usePDF } from 'react-to-pdf';
-import { Box, Button, Grid2, Typography, Grid2 as Grid } from '@mui/material';
+import { Box, Button, Grid2, Typography } from '@mui/material';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -12,13 +12,12 @@ import {
     Legend,
     Filler
 } from 'chart.js';
-import { ListResourceDateResponse, ListResourceResponse, Resource, ResourceDate } from "../interfaces/Resource";
+import { ListResourceDateResponse, ListResourceResponse } from "../interfaces/Resource";
 import { resourceService } from "../services/resourceService";
-import { cacheService } from "../services/cacheService";
 import { BarsChart } from "../components/features/BarsChart";
 import PiesChart from "../components/features/PiesChart";
 import LinesChart from "../components/features/LinesChart";
-import { ListReservationResponse, ListReservationStatsResponse } from "../interfaces/Reservation";
+import { ListReservationStatsResponse } from "../interfaces/Reservation";
 import { reservationService } from "../services/reservationService";
 
 ChartJS.register(
