@@ -191,7 +191,7 @@ const ActivityFormPage: React.FC = () => {
             });
             setSuccess(true);
         }
-        catch (error: any) {
+        catch (error) {
             const apiError = error as FieldErrors;
             if (apiError && apiError.errors) {
                 const errorData = apiError.errors;
