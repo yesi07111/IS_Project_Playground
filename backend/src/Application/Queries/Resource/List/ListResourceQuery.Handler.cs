@@ -31,6 +31,14 @@ public class ListResourceQueryHandler : CommandHandler<ListResourceQuery, ListRe
         {
             resources = await GetAllResourceTypesAsync(resourceRepository);
         }
+        else if (query.UseCase == "NameFreq")
+        {
+            resources = await GetResourcesNameFreq(resourceRepository);
+        }
+        else if(query.UseCase == "ConditionFreq")
+        {
+            resources = await GetResourcesConditionFreq(resourceRepository);
+        }
         else if (AreAllPropertiesNull(query))
         {
             // Obtener todos los recursos si no hay filtros
@@ -43,7 +51,7 @@ public class ListResourceQueryHandler : CommandHandler<ListResourceQuery, ListRe
             resources = await resourceRepository.GetBySpecificationAsync(resourceSpecification, r => r.Facility);
         }
 
-        if (!(query.UseCase == "AllTypes"))
+        if (!(query.UseCase == "AllTypes") && !(query.UseCase == "NameFreq") && !(query.UseCase == "ConditionFreq"))
         {
             foreach (Domain.Entities.Resource resource in resources)
             {
@@ -82,6 +90,38 @@ public class ListResourceQueryHandler : CommandHandler<ListResourceQuery, ListRe
         return resources.Select(resource => resource.Type)
                          .Distinct()
                          .ToList();
+    }
+
+    private async Task<IEnumerable<object>> GetResourcesNameFreq(IRepository<Domain.Entities.Resource> resourceRepository)
+    {
+        var resources = await resourceRepository.GetAllAsync();
+
+        var result = resources
+            .GroupBy(r => r.Name)
+            .Select(g => new
+            {
+                Name = g.Key,
+                Frequency = g.First().UseFrequency
+            })
+            .ToList<object>();
+
+        return result;
+    }
+
+    private async Task<IEnumerable<object>> GetResourcesConditionFreq(IRepository<Domain.Entities.Resource> resourceRepository)
+    {
+        var resources = await resourceRepository.GetAllAsync();
+
+        var result = resources
+            .GroupBy(r => r.ResourceCondition)
+            .Select(g => new
+            {
+                Condition = g.Key,
+                Frequency = g.Count()
+            })
+            .ToList<object>();
+
+        return result;
     }
 
     private ISpecification<Domain.Entities.Resource> BuildResourceSpecification(ListResourceQuery query)

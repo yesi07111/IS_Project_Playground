@@ -27,6 +27,10 @@ export interface ListReservationResponse {
     result: ReservationDto[];
 }
 
+export interface ListReservationStatsResponse {
+    result: object[];
+}
+
 export interface UpdateReservationData {
     reservationId: string;
     state: string;

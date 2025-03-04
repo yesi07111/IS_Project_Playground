@@ -18,10 +18,10 @@ import { DaySelector } from '../components/features/DaySelector';
 import { FilterSelect } from '../components/features/StyledFilters';
 import { SearchBar } from '../components/features/StyledSearchBar';
 import { cacheService } from '../services/cacheService';
-import CreateActivityButton from '../components/features/CreateActivityButton';
 import { useAuth } from '../components/auth/authContext';
 import { DataPagesProps } from '../interfaces/Pages';
 import { dateService } from '../services/dateService';
+import { useNavigate } from 'react-router-dom';
 
 const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -53,6 +53,7 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
     const [isNew, setIsNew] = React.useState(false);
     const { isAuthenticated } = useAuth();
     const [pending, setPending] = React.useState(false);
+    const navigate = useNavigate();
 
     const rol = localStorage.getItem('authUserRole');
 
@@ -399,7 +400,7 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
         { label: "Pública o Privada", value: "Disponibilidad" },
         { label: "Nueva o No", value: "Nueva" },
         { label: "Capacidad Disponible", value: "Capacidad Disponible" },
-        ...(isAuthenticated && rol === 'Educator' ? [{ label: "Pendiente o no Pendiente", value: "Pendiente" }] : []),
+        ...(isAuthenticated && rol === 'Educator' || rol === 'Admin' ? [{ label: "Pendiente o no Pendiente", value: "Pendiente" }] : []),
     ];
 
     return (
@@ -771,9 +772,18 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
                 {/* Botón de "Crear Nueva Actividad" visible para Educadores */}
                 {
                     rol === 'Educator' && isAuthenticated && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-                            <CreateActivityButton />
-                        </Box>
+                        // <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+                        //     <CreateActivityButton />
+                        // </Box>
+                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => navigate(`/activity-form?useCase=${'CreateBoth'}`)}
+                        >
+                            Solicitar crear nueva actividad
+                        </Button>
+                    </Box>
                     )
                 }
 

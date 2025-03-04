@@ -98,7 +98,7 @@ public class UpdateActivityCommandHandler : CommandHandler<UpdateActivityCommand
                 }
 
                 dateTime = parsedDate.Date + parsedTime.TimeOfDay;
-                activityDate.DateTime = dateTime;
+                activityDate.DateTime = dateTime.ToUniversalTime();
             }
             activityDate.Pending = command.Pending;
 

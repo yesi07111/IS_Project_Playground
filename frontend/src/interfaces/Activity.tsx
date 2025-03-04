@@ -115,7 +115,7 @@ export interface ActivityData {
 export interface UpdateActivityData {
     useCase: string;
     activityId: string;
-    activityDateId: string
+    activityDateId: string;
     name: string;
     description: string;
     educator: string;
@@ -123,9 +123,9 @@ export interface UpdateActivityData {
     date?: Date;
     time?: Date;
     recommendedAge: number;
-    facility: string
-    pending: boolean
-    private: boolean
+    facility: string;
+    pending: boolean;
+    private: boolean;
 }
 
 export interface ActivityLinkProps {
@@ -145,7 +145,7 @@ export interface OnlyActivity {
     educatorUserName: string;
     type: string;
     recommendedAge: string;
-    itsPrivate: string;
+    itsPrivate: boolean;
     facilityName: string;
 }
 

@@ -34,17 +34,28 @@ const UpdateActivityFormPage: React.FC = () => {
     const [facilities, setFacilities] = useState<FacilityResponse[]>([]);
     const [educators, setEducators] = useState<{ id: string, displayName: string }[]>([]);
     const [searchParams] = useSearchParams();
+
     const useCase = searchParams.get('useCase');
     const id = searchParams.get('activityId');
+    const name = searchParams.get('name');
+    const description = searchParams.get('description');
+    const educatorFirstName = searchParams.get('educFN');
+    const educatorLastName = searchParams.get('educLN');
+    const educatorUserName = searchParams.get('educUN');
+    const type = searchParams.get('type');
+    const recommendedAge = searchParams.get('recAge');
+    const itsPrivate = searchParams.get('itsPrivate');
+    const facilityName = searchParams.get('facilityName');
 
     const [formData, setFormData] = useState({
-        name: '',
-        description: '',
-        educator: (role === 'Educator') ? educatorId : '',
-        type: '',
-        recommendedAge: null as number | null,
-        private: false,
-        facility: '',
+        name: name || '',
+        description: description || '',
+        educatorDis: `${educatorFirstName} ${educatorLastName} @${educatorUserName}`,
+        educator: '',
+        type: type || '',
+        recommendedAge: Number(recommendedAge) || null as number | null,
+        private: itsPrivate === 'true'? true : false,
+        facility: facilityName || '',
         facilityId: '',
     });
 
@@ -110,6 +121,9 @@ const UpdateActivityFormPage: React.FC = () => {
         let selectedName = '';
         let facilityId = '';
         let facility = null;
+        let selectedEducator = '';
+        let educator;
+        let educatorId = '';
 
         e.preventDefault();
         setError('');
@@ -117,7 +131,7 @@ const UpdateActivityFormPage: React.FC = () => {
 
         if (!formData.name ||
             !formData.description ||
-            !formData.educator ||
+            !formData.educatorDis ||
             !formData.type ||
             !formData.recommendedAge ||
             !formData.facility) {
@@ -130,7 +144,10 @@ const UpdateActivityFormPage: React.FC = () => {
         facilityId = facility ? facility.id : '';
         formData.facilityId = facilityId;
 
-        console.log('Datos enviados:', formData);
+        selectedEducator = formData.educatorDis;
+        educator = educators.find(item => item.displayName === selectedEducator);
+        educatorId = educator ? educator.id : '';
+        formData.educator = educatorId;
 
         try {
             const result = await activityService.updateActivity({
@@ -183,7 +200,7 @@ const UpdateActivityFormPage: React.FC = () => {
                 </Typography>
 
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                {success && role === 'Educator' && <Alert severity="success" sx={{ mb: 2 }}>Solicitud realizada con éxito.</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 2 }}>Actividad modificada con éxito.</Alert>}
 
                 <Box component="form" onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -278,14 +295,14 @@ const UpdateActivityFormPage: React.FC = () => {
                                 <InputLabel id="educator-select-label">Educador</InputLabel>
                                 <Select
                                     labelId="educator-select-label"
-                                    name="educator"
-                                    value={formData.educator || ''}
+                                    name="educatorDis"
+                                    value={formData.educatorDis} // Mostramos el display name
                                     onChange={handleChange}
                                     label="Educador"
                                     required
                                 >
                                     {educators.map((educator) => (
-                                        <MenuItem key={educator.id} value={educator.id}>
+                                        <MenuItem key={educator.id} value={educator.displayName}>
                                             {educator.displayName}
                                         </MenuItem>
                                     ))}

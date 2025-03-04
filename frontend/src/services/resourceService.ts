@@ -25,9 +25,20 @@ export const resourceService = {
         }
     },
 
-    getAllResourceDates: async (): Promise<ListResourceDateResponse> => {
+    getAllResourceDates: async (useCase: string): Promise<ListResourceDateResponse> => {
         try {
-            const response = await axios.get(`${API_URL}/resourceDate/get-all`);
+            const params = new URLSearchParams();
+            if (useCase === 'NameDayFreq') {
+                params.append('useCase', useCase);
+            }
+            else if (useCase === 'NameFreqMost') {
+                params.append('useCase', useCase);
+            }
+            else if (useCase === 'NameFreqLess') {
+                params.append('useCase', useCase);
+            }
+            const query = params.toString();
+            const response = await axios.get(`${API_URL}/resourceDate/get-all?${query}`);
             return response.data;
         }
         catch (error) {
@@ -124,6 +135,12 @@ function buildFilterQuery(filters: ResourceFilters[]) {
 
     filters.forEach(filter => {
         if (filter.type === 'AllTypes') {
+            params.append('useCase', filter.type);
+        }
+        else if (filter.type === 'NameFreq') {
+            params.append('useCase', filter.type);
+        }
+        else if (filter.type === 'ConditionFreq') {
             params.append('useCase', filter.type);
         }
         if (filter.type === 'Tipos de Instalaciones') {
