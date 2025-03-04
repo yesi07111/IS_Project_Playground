@@ -12,9 +12,9 @@ import CommentsContainer from '../components/features/CommentsContainer';
 import { DataPagesProps } from '../interfaces/Pages';
 import { dateService } from '../services/dateService';
 import UserLink from '../components/auth/UserLink';
-import Swal from 'sweetalert2';
-import { ReservationFormData } from '../interfaces/Reservation';
+import { ReservationDto, ReservationFormData } from '../interfaces/Reservation';
 import { reservationService } from '../services/reservationService';
+import ReservationModal from '../components/features/ReservationModal';
 
 const BackgroundImage = styled(Box)({
     position: 'absolute',
@@ -63,6 +63,8 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
     const { id, imagePath, useCase } = useParams<{ id: string; imagePath: string; useCase: string }>();
     const [activity, setActivity] = useState<ActivityDetail | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [reservation, setReservation] = useState<ReservationDto | null>(null);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
 
     const decodedImagePath = imagePath ? decodeURIComponent(imagePath) : '';
 
@@ -73,7 +75,6 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
             if (id && useCase) {
                 let activityDetail = cacheService.loadActivityDetail(id);
 
-
                 if (!activityDetail) {
                     const response = await activityService.getActivity(id, useCase);
                     activityDetail = response.result;
@@ -81,17 +82,32 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                 }
 
                 setActivity(activityDetail);
-
-                // Log activity comments and rating
             }
         } catch {
             setError('Error al cargar los detalles de la actividad');
         }
     }, [id, useCase]);
 
+    const fetchReservation = useCallback(async () => {
+        const userId = localStorage.getItem('authId') ?? '';
+        if (userId && id) {
+            const reservation = await reservationService.getReservation(id, userId)
+            if (reservation == null || reservation.result == null) {
+                setReservation(null);
+            }
+            else {
+                setReservation(reservation.result);
+            }
+        }
+        else {
+            setReservation(null);
+        }
+    }, []);
+
     useEffect(() => {
         fetchActivityDetail();
-    }, [fetchActivityDetail]);
+        fetchReservation();
+    }, [fetchActivityDetail, fetchReservation]);
 
     useEffect(() => {
         if (reload) {
@@ -99,73 +115,68 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
         }
     }, [reload, fetchActivityDetail]);
 
-    const handleReservation = async () => {
-        const availableSpots = activity ? activity.maximumCapacity - activity.currentCapacity : 0;
-
-        // Solicitar la cantidad de niños
-        const { value: amount } = await Swal.fire({
-            title: 'Reserva de Actividad',
-            text: 'Ingrese la cantidad de niños para la reserva:',
-            input: 'number',
-            inputAttributes: {
-                min: '1',
-                max: availableSpots.toString(),
-                step: '1'
-            },
-            showCancelButton: true,
-            confirmButtonText: 'Siguiente',
-            cancelButtonText: 'Cancelar',
-            preConfirm: (value) => {
-                const parsedValue = parseInt(value);
-                if (!value || isNaN(parsedValue) || parsedValue <= 0) {
-                    Swal.showValidationMessage('Por favor, ingrese un número válido.');
-                    return 0;
-                } else if (parsedValue > availableSpots) {
-                    Swal.showValidationMessage(`La cantidad de niños no puede superar la disponibilidad actual de ${availableSpots}.`);
-                    return 0;
-                }
-                return parsedValue;
-            }
-        });
-        if (!amount) {
-            return; // Si el usuario cancela o no ingresa un valor válido
+    const getStateEmoji = (state: string) => {
+        switch (state) {
+            case 'Pendiente':
+                return '⏳';
+            case 'Confirmada':
+                return '✅';
+            case 'Cancelada':
+                return '❌';
+            case 'Completada':
+                return '🎉';
+            default:
+                return '';
         }
+    };
 
-        // Solicitar comentarios adicionales
-        const { value: comments } = await Swal.fire({
-            title: 'Comentarios Adicionales',
-            text: 'Comentarios adicionales (Opcional):',
-            input: 'text',
-            showCancelButton: true,
-            confirmButtonText: 'Reservar',
-            cancelButtonText: 'Cancelar',
-            preConfirm: (value) => {
-                if (value.length > 150) {
-                    Swal.showValidationMessage('Los comentarios adicionales no pueden exceder los 150 caracteres.');
-                    return "";
-                }
-                return value;
-            }
-        });
+    const getStateColor = (state: string) => {
+        switch (state) {
+            case 'Pendiente':
+                return 'orange';
+            case 'Confirmada':
+                return 'green';
+            case 'Cancelada':
+                return 'red';
+            case 'Completada':
+                return 'blue';
+            default:
+                return 'black';
+        }
+    };
 
-        const formData: ReservationFormData = {
-            amount: parseInt(amount), // Asegúrate de que amount es un número
-            comments: comments || "Sin comentarios adicionales.",
-            userId: localStorage.getItem('authId') ?? "",
-            activityId: id ?? "",
+    const handleReservation = async (formData: { amount: number; comments: string }) => {
+        const userId = localStorage.getItem('authId') ?? "";
+        const activityId = id ?? '';
+
+        const reservationData: ReservationFormData = {
+            ...formData,
+            userId,
+            activityId
         };
 
         try {
-            const result = await reservationService.reserveActivityDate(formData);
+            const result = await reservationService.reserveActivityDate(reservationData);
             if (result.success) {
-                Swal.fire("Éxito", "Reserva realizada con éxito, está pendiente a revisión por parte de un administrador.", "success");
+                alert("Éxito: Reserva realizada con éxito, está pendiente a revisión por parte de un administrador.");
+                if (activityId && userId) {
+                    const reservation = await reservationService.getReservation(activityId, userId);
+                    console.log("Reserva realizada:");
+                    console.table(reservation);
+                    if (reservation == null || reservation.result == null) {
+                        setReservation(null);
+                    } else {
+                        setReservation(reservation.result);
+                    }
+                }
             } else {
-                Swal.fire("Fallo", "Ha ocurrido un error inesperado al intentar reservar, por favor intente de nuevo.", "error");
+                alert("Fallo: Ha ocurrido un error inesperado al intentar reservar, por favor intente de nuevo.");
             }
         } catch (error) {
             console.error("Ha ocurrido un error al intentar reservar la actividad: ", error);
         }
     };
+
 
     if (error) {
         return (
@@ -225,16 +236,6 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
             backgroundColor: '#f0f8ff',
         }}>
 
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => toPDF()}
-                >
-                    Exportar a PDF
-                </Button>
-            </Box>
-
             <BackgroundImage sx={{ backgroundImage: pattern1 }} />
             <BackgroundImage sx={{ backgroundImage: pattern2, opacity: 0.15 }} />
             <Container ref={targetRef} maxWidth="md" sx={{ zIndex: 1 }}>
@@ -249,9 +250,18 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                     <Typography variant="h5" component="div" sx={{ color: 'text.secondary', marginBottom: 2 }}>
                         🎨 Título: {activity.name}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
-                        📜 Descripción: {activity.description}
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                        <Typography variant="body1" color="text.secondary">
+                            📜 Descripción: {activity.description}
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => toPDF()}
+                        >
+                            Exportar a PDF
+                        </Button>
+                    </Box>
                 </SectionBox>
 
                 <SectionBox>
@@ -272,24 +282,77 @@ const ActivityInfoPage: React.FC<DataPagesProps> = ({ reload }) => {
                     <Typography variant="h6" sx={{ color: '#FFEA00', marginBottom: 1 }}>
                         🌐 Disponibilidad: {activity.isPublic}
                     </Typography>
+
                     <Typography variant="h6" sx={{ color: '#8a2be2' }}>
                         {isPastActivity ? '👥 Asistentes' : '👥 Capacidad'}: {activity.currentCapacity}/{activity.maximumCapacity}
                     </Typography>
-                    {!isPastActivity && availableSpots > 0 && (
+
+                    {reservation ? (
                         <>
-                            <Typography variant="body1" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
-                                ¡Quedan solo {availableSpots} plazas disponibles, reserva ahora!
-                            </Typography>
-                            <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={handleReservation}>
-                                Reservar
-                            </Button>
+                            {reservation.state === 'Completada' ? (
+                                <Typography variant="h6" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
+                                    ¡Gracias por su participación! {getStateEmoji(reservation.state)}
+                                </Typography>
+                            ) : reservation.state === 'Cancelada' ? (
+                                <>
+                                    <Typography variant="h6" sx={{ color: 'red', fontWeight: 'bold', marginTop: 2 }}>
+                                        Su reserva fue cancelada por su propia discreción o por un administrador debido a falta de capacidad en la instalación, sea el último caso nos disculpamos por las molestias. 😔
+                                    </Typography>
+
+                                    {!isPastActivity && availableSpots > 0 && (
+                                        <>
+                                            <Typography variant="h6" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
+                                                Todavía quedan {availableSpots} plazas disponibles, puede intentar reservar nuevamente.
+                                            </Typography>
+                                            {/* <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={handleReservation}>
+                                                Reservar
+                                            </Button> */}
+                                            <button color='primary' onClick={() => setModalIsOpen(true)}>Reservar</button>
+                                            <ReservationModal
+                                                isOpen={modalIsOpen}
+                                                onRequestClose={() => setModalIsOpen(false)}
+                                                availableSpots={availableSpots}
+                                                onSubmit={handleReservation}
+                                            />
+
+                                        </>
+                                    )}
+                                    {!isPastActivity && availableSpots === 0 && (
+                                        <Typography variant="h6" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
+                                            Esta actividad ya está llena, ¡una pena!
+                                        </Typography>
+                                    )}
+                                </>
+                            ) : (
+                                <Typography variant="h6" sx={{ marginTop: 1, color: getStateColor(reservation.state) }}>
+                                    ¡Ya tiene una reserva para esta actividad! 😊
+                                    <br />
+                                    Estado: {reservation.state} {getStateEmoji(reservation.state)}
+                                </Typography>
+                            )}
                         </>
-                    )}
-                    {!isPastActivity && availableSpots == 0 && (
+                    ) : (
                         <>
-                            <Typography variant="body1" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
-                                Esta actividad ya está llena, ¡una pena!
-                            </Typography>
+                            {!isPastActivity && availableSpots > 0 && (
+                                <>
+                                    <Typography variant="h6" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
+                                        ¡Quedan solo {availableSpots} plazas disponibles, reserva ahora!
+                                    </Typography>
+                                    <button color="primary" onClick={() => setModalIsOpen(true)}>Reservar</button>
+                                    <ReservationModal
+                                        isOpen={modalIsOpen}
+                                        onRequestClose={() => setModalIsOpen(false)}
+                                        availableSpots={availableSpots}
+                                        onSubmit={handleReservation}
+                                    />
+
+                                </>
+                            )}
+                            {!isPastActivity && availableSpots === 0 && (
+                                <Typography variant="h6" sx={{ color: '#ff8c00', fontWeight: 'bold', marginTop: 2 }}>
+                                    Esta actividad ya está llena, ¡una pena!
+                                </Typography>
+                            )}
                         </>
                     )}
                 </SectionBox>

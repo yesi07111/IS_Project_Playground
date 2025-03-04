@@ -2,6 +2,7 @@ import { Activity, ActivityDetail } from "../interfaces/Activity";
 import { Resource, ResourceDate } from "../interfaces/Resource";
 import { Facility } from "../interfaces/Facility";
 import { UserResponse } from "../interfaces/User";
+import { arrayRandomIndex } from "@tsparticles/engine";
 
 const CACHE_KEY_ACTIVITIES = 'cachedActivities';
 const CACHE_KEY_RESOURCES = 'catchedResources';
@@ -173,6 +174,22 @@ export const cacheService = {
     const cachedImages = localStorage.getItem(CACHE_KEY_PROFILE_IMAGES);
     const cachedImagesObject = cachedImages ? JSON.parse(cachedImages) : {};
     return cachedImagesObject[username] || { main: '', others: [] };
+  },
+
+  defaultImage: () => {
+    const defaultImages = ["/images/activities/default-1.jpg",
+      "/images/activities/default-2.jpg",
+      "/images/activities/default-3.jpg",
+      "/images/activities/default-4.jpg",
+      "/images/activities/default-5.jpg",
+      "/images/activities/default-6.jpg",
+      "/images/activities/default-7.jpg",
+      "/images/activities/default-8.jpg",
+      "/images/activities/default-9.jpg",
+      "/images/activities/default-10.jpg",
+      "/images/activities/default-11.jpg"]
+    const random = arrayRandomIndex(defaultImages)
+    return defaultImages[random]
   },
 
   clearCache: () => {

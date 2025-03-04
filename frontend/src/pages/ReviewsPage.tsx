@@ -354,8 +354,6 @@ const ReviewsPage: React.FC<DataPagesProps> = ({ reload }) => {
         { label: "Tipos de Actividades", value: "Tipos de Actividades" },
         { label: "Edad Recomendada", value: "Edad Recomendada" },
         { label: "Pública o Privada", value: "Disponibilidad" },
-        { label: "Nueva o No", value: "Nueva" },
-        { label: "Capacidad Disponible", value: "Capacidad Disponible" },
     ];
 
     return (

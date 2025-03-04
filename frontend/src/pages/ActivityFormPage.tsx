@@ -14,7 +14,6 @@ import {
     MenuItem,
     SelectChangeEvent,
     Grid,
-    Grid2
 } from '@mui/material';
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -176,7 +175,7 @@ const ActivityFormPage: React.FC = () => {
         console.log('Id de la actividad:', id);
 
         try {
-            const result = await activityService.createActivity({
+            await activityService.createActivity({
                 useCase: useCase || '',
                 activityId: useCase === 'CreateActivityDate' && id ? id : '',
                 name: formData.name,
