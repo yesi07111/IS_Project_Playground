@@ -24,11 +24,18 @@ import { activityService } from '../services/activityService';
 import { FacilityResponse } from '../interfaces/Facility';
 import { userService } from '../services/userService';
 import { useSearchParams } from 'react-router-dom';
+import { FieldErrors } from '../interfaces/Error';
+import { es } from 'date-fns/locale';
 
 const ActivityFormPage: React.FC = () => {
     const educatorId = localStorage.getItem('authId');
     const role = localStorage.getItem('authUserRole');
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+        statusCode: 0,
+        message: '',
+        errors: {}
+    });
     const [success, setSuccess] = useState(false);
     const [facilityNames, setFacilityNames] = useState<string[]>([]);
     const [facilities, setFacilities] = useState<FacilityResponse[]>([]);
@@ -36,6 +43,8 @@ const ActivityFormPage: React.FC = () => {
     const [searchParams] = useSearchParams();
     const useCase = searchParams.get('useCase');
     const id = searchParams.get('activityId');
+
+    console.log(useCase);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -129,16 +138,31 @@ const ActivityFormPage: React.FC = () => {
 
         e.preventDefault();
         setError('');
+        setFieldErrors({
+            statusCode: 0,
+            message: '',
+            errors: {}
+        });
         setSuccess(false);
 
-        if (!formData.name ||
-            !formData.description ||
-            !formData.educator ||
-            !formData.type ||
-            !formData.day ||
-            !formData.time ||
-            !formData.recommendedAge ||
-            !formData.facility) {
+        if (
+            (useCase !== 'CreateActivityDate' &&
+                (
+                    !formData.name ||
+                    !formData.description ||
+                    !formData.educator ||
+                    !formData.type ||
+                    !formData.recommendedAge ||
+                    !formData.facility
+                )
+            ) ||
+            (useCase !== 'CreateActivity' &&
+                (
+                    !formData.day ||
+                    !formData.time
+                )
+            )
+        ) {
             setError('Por favor, completa todos los campos obligatorios.');
             return;
         }
@@ -149,26 +173,39 @@ const ActivityFormPage: React.FC = () => {
         formData.facilityId = facilityId;
 
         console.log('Datos enviados:', formData);
+        console.log('Id de la actividad:', id);
 
         try {
             const result = await activityService.createActivity({
                 useCase: useCase || '',
-                activityId: useCase === 'CreateActivityDate' && id? id : '',
+                activityId: useCase === 'CreateActivityDate' && id ? id : '',
                 name: formData.name,
                 description: formData.description,
-                educator: formData.educator,
+                educator: formData.educator ? formData.educator : '',
                 type: formData.type,
-                date: formData.day,
-                time: formData.time,
-                recommendedAge: formData.recommendedAge,
+                date: formData.day ? formData.day : new Date,
+                time: formData.time ? formData.time : new Date,
+                recommendedAge: formData.recommendedAge ? formData.recommendedAge : 2,
                 facility: formData.facilityId,
                 pending: role === 'Educator',
                 private: formData.private
             });
             setSuccess(true);
         }
-        catch (error) {
-            setError('Hubo un error al crear la actividad');
+        catch (error: any) {
+            const apiError = error as FieldErrors;
+            if (apiError && apiError.errors) {
+                const errorData = apiError.errors;
+
+                setFieldErrors({
+                    statusCode: apiError.statusCode || 400,
+                    message: apiError.message || 'Ocurrieron errores de validación.',
+                    errors: errorData
+                });
+            }
+            else {
+                setError('Hubo un error al crear la actividad');
+            }
         }
     };
 
@@ -202,154 +239,178 @@ const ActivityFormPage: React.FC = () => {
                 </Typography>
 
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                {/* Errores de validación específicos de la API */}
+                {Object.keys(fieldErrors.errors).map((field) => (
+                    <Alert severity="error" key={field} sx={{ mb: 2 }}>
+                        {`${fieldErrors.errors[field].join(', ')}`}
+                    </Alert>
+                ))}
                 {success && role === 'Educator' && <Alert severity="success" sx={{ mb: 2 }}>Solicitud realizada con éxito.</Alert>}
+                {success && role === 'Admin' && <Alert severity="success" sx={{ mb: 2 }}>Actividad creada con éxito.</Alert>}
 
                 <Box component="form" onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Nombre"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                margin="normal"
-                                required
-                            />
-
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Descripción"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                                margin="normal"
-                                multiline
-                                rows={4}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Tipo"
-                                name="type"
-                                value={formData.type}
-                                onChange={handleChange}
-                                margin="normal"
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Edad Recomendada"
-                                name="recommendedAge"
-                                type="number"
-                                value={formData.recommendedAge}
-                                onChange={handleChange}
-                                margin="normal"
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <FormControl sx={{ ml: 2, minWidth: 200 }} variant="outlined">
-                                <InputLabel id="facility-name-select-label"> Instalación</InputLabel>
-                                <Select
-                                    labelId="facility-name-select-label"
-                                    name="facility"
-                                    value={formData.facility}
+                        {useCase !== 'CreateActivityDate' &&
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Nombre"
+                                    name="name"
+                                    value={formData.name}
                                     onChange={handleChange}
-                                    label="Instalación"
-                                    renderValue={(selected) => selected}
-                                    sx={{
-                                        minHeight: '56px',
-                                        maxHeight: '100vh',
-                                        '& .MuiSelect-select': {
-                                            paddingTop: '8px',
-                                            paddingBottom: '8px',
-                                            textAlign: 'left',
-                                            whiteSpace: 'normal',
-                                            display: 'block',
-                                            overflow: 'hidden',
-                                        },
-                                    }}
-                                    MenuProps={{
-                                        PaperProps: {
-                                            style: {
-                                                maxHeight: 224,
-                                                width: 250,
-                                            },
-                                        },
-                                    }}
-                                >
-                                    {facilityNames.map((typeOption) => (
-                                        <MenuItem key={typeOption} value={typeOption}>
-                                            {typeOption}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControl sx={{ ml: 2, minWidth: 200 }} variant="outlined">
-                                <InputLabel id="educator-select-label">Educador</InputLabel>
-                                <Select
-                                    labelId="educator-select-label"
-                                    name="educator"
-                                    value={formData.educator || ''}
-                                    onChange={handleChange}
-                                    label="Educador"
+                                    margin="normal"
                                     required
-                                >
-                                    {educators.map((educator) => (
-                                        <MenuItem key={educator.id} value={educator.id}>
-                                            {educator.displayName}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        name="private"
-                                        checked={formData.private}
+                                />
+                            </Grid>
+                        }
+                        {useCase !== 'CreateActivityDate' &&
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Descripción"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    margin="normal"
+                                    multiline
+                                    rows={4}
+                                    required
+                                />
+                            </Grid>
+                        }
+                        {useCase !== 'CreateActivityDate' &&
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Tipo"
+                                    name="type"
+                                    value={formData.type}
+                                    onChange={handleChange}
+                                    margin="normal"
+                                    required
+                                />
+                            </Grid>
+                        }
+                        {useCase !== 'CreateActivityDate' &&
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Edad Recomendada"
+                                    name="recommendedAge"
+                                    type="number"
+                                    value={formData.recommendedAge}
+                                    onChange={handleChange}
+                                    margin="normal"
+                                />
+                            </Grid>
+                        }
+                        {useCase !== 'CreateActivityDate' &&
+                            <Grid item xs={12} sm={6}>
+                                <FormControl sx={{ ml: 2, minWidth: 200 }} variant="outlined">
+                                    <InputLabel id="facility-name-select-label"> Instalación</InputLabel>
+                                    <Select
+                                        labelId="facility-name-select-label"
+                                        name="facility"
+                                        value={formData.facility}
                                         onChange={handleChange}
+                                        label="Instalación"
+                                        renderValue={(selected) => selected}
+                                        sx={{
+                                            minHeight: '56px',
+                                            maxHeight: '100vh',
+                                            '& .MuiSelect-select': {
+                                                paddingTop: '8px',
+                                                paddingBottom: '8px',
+                                                textAlign: 'left',
+                                                whiteSpace: 'normal',
+                                                display: 'block',
+                                                overflow: 'hidden',
+                                            },
+                                        }}
+                                        MenuProps={{
+                                            PaperProps: {
+                                                style: {
+                                                    maxHeight: 224,
+                                                    width: 250,
+                                                },
+                                            },
+                                        }}
+                                    >
+                                        {facilityNames.map((typeOption) => (
+                                            <MenuItem key={typeOption} value={typeOption}>
+                                                {typeOption}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        }
+                        {useCase !== 'CreateActivityDate' &&
+                            <Grid item xs={12}>
+                                <FormControl sx={{ ml: 2, minWidth: 200 }} variant="outlined">
+                                    <InputLabel id="educator-select-label">Educador</InputLabel>
+                                    <Select
+                                        labelId="educator-select-label"
+                                        name="educator"
+                                        value={formData.educator || ''}
+                                        onChange={handleChange}
+                                        label="Educador"
+                                        required
+                                    >
+                                        {educators.map((educator) => (
+                                            <MenuItem key={educator.id} value={educator.id}>
+                                                {educator.displayName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        }
+                        {useCase !== 'CreateActivityDate' &&
+                            <Grid item xs={12}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            name="private"
+                                            checked={formData.private}
+                                            onChange={handleChange}
+                                        />
+                                    }
+                                    label="Privada"
+                                />
+                            </Grid>
+                        }
+                        {useCase !== 'CreateActivity' &&
+                            <Grid item xs={12}>
+                                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Día de la actividad
+                                    </Typography>
+                                    <DatePicker
+                                        value={formData.day}
+                                        onChange={handleDateChange}
+                                        slotProps={{
+                                            textField: {
+                                                sx: { ml: 2 },
+                                            },
+                                        }}
                                     />
-                                }
-                                label="Privada"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Día de la actividad
-                                </Typography>
-                                <DatePicker
-                                    value={formData.day}
-                                    onChange={handleDateChange}
-                                    slotProps={{
-                                        textField: {
-                                            sx: { ml: 2 },
-                                        },
-                                    }}
-                                />
-                            </LocalizationProvider>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Hora de la actividad
-                                </Typography>
-                                <TimePicker
-                                    value={formData.time}
-                                    onChange={handleTimeChange}
-                                />
-                            </LocalizationProvider>
-                        </Grid>
+                                </LocalizationProvider>
+                            </Grid>
+                        }
+                        {useCase !== 'CreateActivity' &&
+                            <Grid item xs={12}>
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Hora de la actividad
+                                    </Typography>
+                                    <TimePicker
+                                        value={formData.time}
+                                        onChange={handleTimeChange}
+                                    />
+                                </LocalizationProvider>
+                            </Grid>
+                        }
                         <Grid item xs={12}>
                             <Button
                                 type="submit"

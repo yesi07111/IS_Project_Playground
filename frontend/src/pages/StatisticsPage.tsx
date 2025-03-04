@@ -18,7 +18,7 @@ import { cacheService } from "../services/cacheService";
 import { BarsChart } from "../components/features/BarsChart";
 import PiesChart from "../components/features/PiesChart";
 import LinesChart from "../components/features/LinesChart";
-import { ListReservationResponse } from "../interfaces/Reservation";
+import { ListReservationResponse, ListReservationStatsResponse } from "../interfaces/Reservation";
 import { reservationService } from "../services/reservationService";
 
 ChartJS.register(
@@ -47,226 +47,127 @@ const StatisticsPage: React.FC = () => {
     const [lastYearTop3, setLastYearTop3] = useState(false);
 
     //plots de recursos
-    const [resources, setResources] = useState<Resource[]>([]);
-    const [resourceDates, setResourceDates] = useState<ResourceDate[]>([]);
+    const [names, setNames] = useState<string[]>([]);
+    const [frequencies, setFrequencies] = useState<number[]>([]);
+    const [condition, setCondition] = useState<string[]>([]);
+    const [frequenciesC, setFrequenciesC] = useState<number[]>([]);
+    const [namesD, setNamesD] = useState<string[]>([]);
+    const [dates, setDates] = useState<string[][]>([]);
+    const [frequenciesD, setFrequenciesD] = useState<number[][]>([]);
+    const [namesT1, setNamesT1] = useState<string[]>([]);
+    const [frequenciesT1, setFrequenciesT1] = useState<number[]>([]);
+    const [namesT2, setNamesT2] = useState<string[]>([]);
+    const [frequenciesT2, setFrequenciesT2] = useState<number[]>([]);
 
     //plots de reservaciones
-    const reservation: ListReservationResponse = {
-        result: [
-            {
-                reservationId: '',
-                firstName: '',
-                lastName: '',
-                userName: '',
-                activityId: '',
-                activityName: '',
-                activityDate: '',
-                comments: '',
-                amount: 0,
-                state: '',
-                activityRecommendedAge: 0,
-            }
-        ]
-    }
-    const [reservations, setReservations] = useState<ListReservationResponse>(reservation);
-    const states = ["pendiente", "confirmada", "completada", "cancelada"];
+    const [activityDateInfo, setActivityDateInfo] = useState<string[]>([]);
+    const [reservationCount, setReservationCount] = useState<number[]>([]);
+    const [state, setState] = useState<string[]>([]);
+    const [ageGroup, setAgeGroup] = useState<string[][]>([]);
+    const [count, setCount] = useState<number[][]>([]);
 
-    // Extraer nombres de recursos y frecuencias de uso
-    const resourceNames = getResourceNames(resources);
-    const resourceUseFrequency = resources.map((resource) => resource.useFrequency);
-    const resourceConditions = Array.from(new Set(resources.map(resource => resource.condition)));
-    const frequency = fetchAllConditions(resources);
-    const days: Date[] = Array.from(new Set(resourceDates.map(resourceDate => resourceDate.date)));
-    days.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-    const resourceDateUseFrequency = processResourceData(resourceDates, days);
-
-    const fetchAllResources = async () => {
+    const fetchAllNamesFreq = async () => {
         try {
-            const response: ListResourceResponse = await resourceService.getAllResources([]);
-            const resourcesArray: Resource[] = Array.isArray(response.result)
-                ? response.result as Resource[]
-                : [];
+            const response: ListResourceResponse = await resourceService.getAllResources([{ type: 'NameFreq' }]);
+            const typedResult = response.result as { name: string; frequency: number }[];
 
-            console.table(resourcesArray);
+            const a1 = typedResult.map(item => item.name);
+            const a2 = typedResult.map(item => item.frequency);
 
-            cacheService.saveResources(resourcesArray);
-            setResources(resourcesArray);  // Guardamos los recursos en el estado
-
-        } catch (error) {
-            console.error('Error fetching resources:', error);
+            setNames(a1);
+            setFrequencies(a2);
+        }
+        catch (error) {
+            console.error('Error buscando los nombres y frecuencias de uso:', error);
         }
     }
 
-    const fetchAllResourceDates = async () => {
+    const fetchAllConditionsFreq = async () => {
         try {
-            const response: ListResourceDateResponse = await resourceService.getAllResourceDates()
-            const resourcesArray: ResourceDate[] = Array.isArray(response.result)
-                ? response.result as ResourceDate[]
-                : [];
+            const response: ListResourceResponse = await resourceService.getAllResources([{ type: 'ConditionFreq' }]);
+            const typedResult = response.result as { condition: string; frequency: number }[];
 
-            console.table(resourcesArray);
+            const a1 = typedResult.map(item => item.condition);
+            const a2 = typedResult.map(item => item.frequency);
 
-            cacheService.saveResourceDates(resourcesArray);
-            setResourceDates(resourcesArray);  // Guardamos los recursos en el est
+            setCondition(a1);
+            setFrequenciesC(a2);
+        }
+        catch (error) {
+            console.error('Error buscando los nombres y frecuencias de uso:', error);
+        }
+    }
+
+    const fetchAllResourceDates = async (useCase: string) => {
+        try {
+            const response: ListResourceDateResponse = await resourceService.getAllResourceDates(useCase);
+
+            if (useCase === 'NameDayFreq') {
+                const typedResult = response.result as { name: string, frequencies: { date: string, useFrequency: number }[] }[];
+
+                const a1 = typedResult.map(item => item.name);
+                const a2 = typedResult.map(item => item.frequencies.map(item => item.date));
+                const a3 = typedResult.map(item => item.frequencies.map(item => item.useFrequency));
+
+                setNamesD(a1);
+                setDates(a2);
+                setFrequenciesD(a3);
+            }
+            else if (useCase == 'NameFreqMost' || useCase == 'NameFreqLess') {
+                const typedResult = response.result as { name: string, totalFrequency: number }[];
+
+                const a1 = typedResult.map(item => item.name);
+                const a2 = typedResult.map(item => item.totalFrequency);
+
+                if (useCase == 'NameFreqMost') {
+                    setNamesT1(a1);
+                    setFrequenciesT1(a2);
+                }
+                else if (useCase == 'NameFreqLess') {
+                    setNamesT2(a1);
+                    setFrequenciesT2(a2);
+                }
+
+            }
         }
         catch (error) {
             console.error('Error fetching resources:', error);
         }
     }
 
-    function getResourceNames(resources: Resource[]) {
-        // 1. Agrupar recursos por ID
-        const groupedResources: { [id: string]: { name: string } } = {};
-
-        resources.forEach((resource) => {
-            if (!groupedResources[resource.id]) {
-                groupedResources[resource.id] = {
-                    name: resource.name,
-                };
-            }
-        });
-
-        const resourceDateNames: string[] = [];
-
-        Object.keys(groupedResources).forEach((id) => {
-            const resource = groupedResources[id];
-            resourceDateNames.push(resource.name);
-        });
-
-        return resourceDateNames;
-    }
-
-    function fetchAllConditions(resources: Resource[]) {
-        const counts: { [key: string]: number } = {};
-
-        resources.forEach(resource => {
-            counts[resource.condition] = (counts[resource.condition] || 0) + 1;
-        });
-
-        const frequencies = Object.values(counts);
-
-        return frequencies;
-    }
-
-    function processResourceData(resources: ResourceDate[], dates: Date[]): { resourceNames: string[]; resourceFrequencies: number[][] } {
-        // 1. Agrupar recursos por ID
-        const groupedResources: { [id: string]: { name: string; data: Map<string, number> } } = {};
-
-        resources.forEach((resource) => {
-            if (!groupedResources[resource.id]) {
-                groupedResources[resource.id] = {
-                    name: resource.name,
-                    data: new Map(), // Usamos un Map para asociar fecha con frecuencia de uso
-                };
-            }
-            // Guardamos la frecuencia de uso por fecha
-            groupedResources[resource.id].data.set(resource.date.toString(), resource.useFrequency);
-        });
-
-        // 2. Construir el array de nombres y las frecuencias
-        const resourceNames: string[] = [];
-        const resourceFrequencies: number[][] = [];
-
-        Object.keys(groupedResources).forEach((id) => {
-            const resource = groupedResources[id];
-            resourceNames.push(resource.name);
-
-            // Crear un array de frecuencias basado en las fechas dadas
-            const frequencies = dates.map((date) => {
-                const dateKey = date.toString(); // Convertimos la fecha a string ISO
-                return resource.data.get(dateKey) || 0; // Si no hay datos para esa fecha, asignar 0
-            });
-
-            resourceFrequencies.push(frequencies);
-        });
-
-        return { resourceNames, resourceFrequencies };
-    }
-
-    const lessAndMoreUsed = (resources: ResourceDate[]) => {
-        const haceUnAño = new Date();
-        haceUnAño.setFullYear(haceUnAño.getFullYear() - 1);
-
-        // 1. Filtrar los registros del último año
-        const resourcesLastYear = resources.filter(resource => new Date(resource.date) >= haceUnAño);
-        console.log(resourcesLastYear);
-
-        // 2. Agrupar por recurso y sumar frecuencia de uso
-        const totalFreq = resourcesLastYear.reduce((acc, resource) => {
-            acc[resource.name] = (acc[resource.name] || 0) + resource.useFrequency;
-            return acc;
-        }, {} as Record<string, number>);
-
-        // 3. Convertir en array y ordenar de mayor a menor uso
-        const resourcesSorted = Object.entries(totalFreq)
-            .map(([name, totalFreq]) => ({ name, totalFreq }))
-            .sort((a, b) => b.totalFreq - a.totalFreq);
-
-        // 4. Seleccionar los más y menos utilizados
-        const moreUsed = resourcesSorted.slice(0, 3); // Top 3
-        const lessUsed = resourcesSorted.slice(-3); // Últimos 3
-
-        return { moreUsed, lessUsed };
-    };
-
-    const { moreUsed, lessUsed } = lessAndMoreUsed(resourceDates);
-    console.log("Recursos más utilizados:", moreUsed);
-    console.log("Recursos menos utilizados:", lessUsed);
-
     //reservaciones
-    const fetchReservations = async () => {
+    const fetchReservationStats = async (useCase: string) => {
         try {
-            const response = await reservationService.getAllReservations("");
-            setReservations(response);
+            const response: ListReservationStatsResponse = await reservationService.getAllReservationStats(useCase);
+
+            if (useCase === 'ActDateResFreq') {
+
+                const typedResult = response.result as { activityDateInfo: string, reservationCount: number }[];
+                
+                const a1 = typedResult.map(item => item.activityDateInfo);
+                const a2 = typedResult.map(item => item.reservationCount);
+
+                setActivityDateInfo(a1);
+                setReservationCount(a2);
+
+            }
+            else if (useCase === 'ActDateResFreqAgeRangeWithState') {
+
+                const typedResult = response.result as { state: string, ageRanges: { ageGroup: string, count: number }[] }[];
+
+                const a1 = typedResult.map(item => item.state);
+                const a2 = typedResult.map(item => item.ageRanges.map(item => item.ageGroup));
+                const a3 = typedResult.map(item => item.ageRanges.map(item => item.count));
+
+                setState(a1);
+                setAgeGroup(a2);
+                setCount(a3);
+
+            }
         } catch (error) {
-            console.error('Error obteniendo las reservas:', error);
+            console.error('Error obteniendo las estadisticas:', error);
         }
     };
-
-    const processReservationData = (reservations: ListReservationResponse) => {
-        const groupedData = new Map<string, number>();
-
-        reservations.result.forEach(res => {
-            const key = `${res.activityName} - ${res.activityDate}`;
-            groupedData.set(key, (groupedData.get(key) || 0) + res.amount);
-        });
-
-        const activityDates = Array.from(groupedData.keys()); // Nombre de actividad + fecha
-        const reservFrequencies = Array.from(groupedData.values()); // Cantidad de reservas
-
-        return { activityDates, reservFrequencies };
-    };
-
-    const { activityDates, reservFrequencies } = processReservationData(reservations);
-
-    const getAgeRange = (age: number) => {
-        if (age <= 3) return "Infantes (0-3)";
-        if (age <= 6) return "Niños pequeños (4-6)";
-        if (age <= 9) return "Niños grandes (7-9)";
-        return "Pre-adolescentes (10-12)";
-    };
-
-    const processReservationData2 = (reservations: ListReservationResponse) => {
-        const groupedData: Record<string, Map<string, number>> = {
-            pendiente: new Map(),
-            confirmada: new Map(),
-            completada: new Map(),
-            cancelada: new Map()
-        };
-
-        reservations.result.forEach(res => {
-            const ageRange = getAgeRange(res.activityRecommendedAge);
-            const state = res.state.toLowerCase(); // Normalizamos a minúsculas
-
-            if (groupedData[state]) {
-                groupedData[state].set(ageRange, (groupedData[state].get(ageRange) || 0) + res.amount);
-            }
-        });
-
-        return groupedData;
-    };
-
-    const groupedReservations = processReservationData2(reservations);
 
     return (
         <Box
@@ -303,7 +204,7 @@ const StatisticsPage: React.FC = () => {
                         setResPerActivityPlot(false);
                         setResPerAgeRangePlot(false);
                         setLastYearTop3(false);
-                        fetchAllResources();
+                        fetchAllNamesFreq();
                     }}>
                     Frecuencia de uso de los recursos
                 </Button>
@@ -318,7 +219,7 @@ const StatisticsPage: React.FC = () => {
                         setResPerActivityPlot(false);
                         setResPerAgeRangePlot(false);
                         setLastYearTop3(false);
-                        fetchAllResources();
+                        fetchAllConditionsFreq();
                     }}>
                     Condición de los recursos
                 </Button>
@@ -333,7 +234,7 @@ const StatisticsPage: React.FC = () => {
                         setResPerActivityPlot(false);
                         setResPerAgeRangePlot(false);
                         setLastYearTop3(false);
-                        fetchAllResourceDates();
+                        fetchAllResourceDates('NameDayFreq');
                     }}>
                     Frecuencia de uso de los recursos por fecha
                 </Button>
@@ -348,7 +249,8 @@ const StatisticsPage: React.FC = () => {
                         setUseFrequencyDatePlot(false);
                         setConditionPlot(false);
                         setUseFrequencyPlot(false);
-                        fetchAllResourceDates();
+                        fetchAllResourceDates("NameFreqMost");
+                        fetchAllResourceDates("NameFreqLess");
                     }}>
                     Top 3 Recursos más y menos usados en el ultimo año
                 </Button>
@@ -363,7 +265,7 @@ const StatisticsPage: React.FC = () => {
                         setUseFrequencyPlot(false);
                         setResPerAgeRangePlot(false);
                         setLastYearTop3(false);
-                        fetchReservations();
+                        fetchReservationStats('ActDateResFreq');
                     }}>
                     Frecuencia de Reservas por cada Actividad
                 </Button>
@@ -378,7 +280,7 @@ const StatisticsPage: React.FC = () => {
                         setConditionPlot(false);
                         setUseFrequencyPlot(false);
                         setLastYearTop3(false);
-                        fetchReservations();
+                        fetchReservationStats('ActDateResFreqAgeRangeWithState');
                     }}>
                     Frecuencia de Estado de Reservas por Rangos de Edad
                 </Button>
@@ -393,7 +295,7 @@ const StatisticsPage: React.FC = () => {
             </Box>
 
             {/* Contenido principal */}
-            <Box 
+            <Box
                 ref={targetRef}
                 sx={{
                     flex: 1,
@@ -408,17 +310,17 @@ const StatisticsPage: React.FC = () => {
                 {/* Mostrar la gráfica solo si useFrequencyPlot es true */}
                 {useFrequencyPlot && (
                     <Box sx={{ width: "80%", height: "400px" }}>
-                        <BarsChart labels={resourceNames} data={resourceUseFrequency} label='Frecuencia de Uso' />
+                        <BarsChart labels={names} data={frequencies} label='Frecuencia de Uso' />
                     </Box>
                 )}
                 {conditionPlot && (
                     <Box sx={{ width: "80%", height: "400px" }}>
-                        <PiesChart labels={resourceConditions} data={frequency} label='Estado del recurso' />
+                        <PiesChart labels={condition} data={frequenciesC} label='Estado del recurso' />
                     </Box>
                 )}
                 {useFrequencyDatePlot && (
                     <Box sx={{ width: "80%", height: "400px" }}>
-                        <LinesChart resourceNames={resourceDateUseFrequency.resourceNames} days={days.map((date) => new Date(date).toLocaleDateString("es-ES"))} frequencies={resourceDateUseFrequency.resourceFrequencies} />
+                        <LinesChart resourceNames={namesD} days={dates} frequencies={frequenciesD} />
                     </Box>
                 )}
                 {lastYearTop3 && (
@@ -430,11 +332,11 @@ const StatisticsPage: React.FC = () => {
                         {/* Recursos Más Utilizados */}
                         <Typography variant="h5" sx={{ mb: 2 }}>🔥 Recursos Más Utilizados</Typography>
                         <Grid2 container spacing={3} justifyContent="center">
-                            {moreUsed.map((resource) => (
-                                <Grid2 container spacing={4} key={resource.name}>
+                            {namesT1.map((name, index) => (
+                                <Grid2 container spacing={4} key={name}>
                                     <Box sx={{ p: 2, bgcolor: "#e3f2fd", borderRadius: 2, textAlign: "center" }}>
-                                        <Typography variant="h6">{resource.name}</Typography>
-                                        <Typography>Frecuencia: {resource.totalFreq}</Typography>
+                                        <Typography variant="h6">{name}</Typography>
+                                        <Typography>Frecuencia: {frequenciesT1[index]}</Typography>
                                     </Box>
                                 </Grid2>
                             ))}
@@ -443,11 +345,11 @@ const StatisticsPage: React.FC = () => {
                         {/* Recursos Menos Utilizados */}
                         <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>❄️ Recursos Menos Utilizados</Typography>
                         <Grid2 container spacing={3} justifyContent="center">
-                            {lessUsed.map((resource) => (
-                                <Grid2 container spacing={4} key={resource.name}>
+                            {namesT2.map((name, index) => (
+                                <Grid2 container spacing={4} key={name}>
                                     <Box sx={{ p: 2, bgcolor: "#ffebee", borderRadius: 2, textAlign: "center" }}>
-                                        <Typography variant="h6">{resource.name}</Typography>
-                                        <Typography>Frecuencia: {resource.totalFreq}</Typography>
+                                        <Typography variant="h6">{name}</Typography>
+                                        <Typography>Frecuencia: {frequenciesT2[index]}</Typography>
                                     </Box>
                                 </Grid2>
                             ))}
@@ -456,19 +358,19 @@ const StatisticsPage: React.FC = () => {
                 )}
                 {resPerActivityPlot && (
                     <Box sx={{ width: "80%", margin: "auto", padding: 4 }}>
-                        <BarsChart labels={activityDates} data={reservFrequencies} label="Reservaciones por actividad y fecha" />
+                        <BarsChart labels={activityDateInfo} data={reservationCount} label="Reservaciones por actividad y fecha" />
                     </Box>
                 )}
                 {resPerAgeRangePlot && (
                     <Box sx={{ width: "80%", margin: "auto", padding: 4, display: "flex", flexDirection: "column", gap: 4 }}>
-                        {states.map((state) => (
+                        {state.map((state, index) => (
                             <Box key={state} sx={{ width: "100%", padding: 2, backgroundColor: "#f8f9fa", borderRadius: 2 }}>
                                 <Typography variant="h6" align="center" gutterBottom>
                                     Reservas {state.charAt(0).toUpperCase() + state.slice(1)}
                                 </Typography>
                                 <BarsChart
-                                    labels={Array.from(groupedReservations[state].keys())}
-                                    data={Array.from(groupedReservations[state].values())}
+                                    labels={ageGroup[index]}
+                                    data={count[index]}
                                     label={`Cantidad de reservas ${state}`}
                                 />
                             </Box>

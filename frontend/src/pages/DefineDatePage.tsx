@@ -16,6 +16,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { resourceService } from '../services/resourceService';
 import { FieldErrors } from '../interfaces/Error';
+import { es } from 'date-fns/locale';
 
 const DefineDatePage: React.FC = () => {
     const [error, setError] = useState('');
@@ -72,7 +73,7 @@ const DefineDatePage: React.FC = () => {
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
             <Box
                 sx={{
                     display: 'flex',

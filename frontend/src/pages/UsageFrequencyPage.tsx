@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import { resourceService } from '../services/resourceService';
 import { Message } from '@mui/icons-material';
 import { ResourceDate } from '../interfaces/ResourceDate';
+import { es } from 'date-fns/locale';
 
 const DefineUsageFrequencyPage = () => {
     const { resourceId } = useParams(); // Extrae el parámetro de la URL
@@ -43,7 +44,7 @@ const DefineUsageFrequencyPage = () => {
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
             <Box
                 sx={{
                     display: 'flex',

@@ -36,6 +36,7 @@ import ReservationsManagementPage from './pages/ReservationsPage';
 import ActivitiesManagementPage from './pages/ActivitiesManagementPage';
 import UpdateActivityFormPage from './pages/UpdateActivityFormPage';
 import ActivityDates from './pages/ActivityDates';
+import UpdateDateFormPage from './pages/UpdateDateFormPage';
 
 
 const theme = createTheme({
@@ -157,6 +158,7 @@ const App: React.FC = () => {
                 <Route path="/activitiesManagement" element={<ActivitiesManagementPage />} />
                 <Route path="/updateActivity" element={<UpdateActivityFormPage />} />
                 <Route path="/activityDates" element={<ActivityDates />} />
+                <Route path="/updateActivityDate" element={<UpdateDateFormPage />} />
                 <Route
                   path="/verify-email"
                   element={

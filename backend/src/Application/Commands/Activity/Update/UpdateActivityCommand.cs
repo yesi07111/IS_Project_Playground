@@ -16,6 +16,6 @@ public record UpdateActivityCommand : ICommand<GenericResponse>
     public string? Time { get; init; }
     public int RecommendedAge { get; init; }
     public string Facility { get; init; } = string.Empty;
-    public bool Pending { get; init; } = false;
-    public bool Private { get; init; } = false;
+    public bool Pending { get; init; } 
+    public bool Private { get; init; } 
 }

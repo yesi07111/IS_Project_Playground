@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ListReservationResponse, ReservationCreationResponse, ReservationFormData, UpdateReservationData } from '../interfaces/Reservation';
+import { ListReservationResponse, ListReservationStatsResponse, ReservationCreationResponse, ReservationFormData, UpdateReservationData } from '../interfaces/Reservation';
 import { UserActionResponse } from '../interfaces/Auth';
 
 const API_URL = 'http://localhost:5117/api';
@@ -19,6 +19,21 @@ export const reservationService = {
             }
         }
     },
+
+    getAllReservationStats: async (useCase: string): Promise<ListReservationStatsResponse> => {
+        try {
+            const params = new URLSearchParams({ useCase }).toString();
+            const response = await axios.get(`${API_URL}/reservation/get-stats?${params}`);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al obtener las estadisticas.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al obtener las estadisticas.';
+            }
+        }
+    },
+
     reserveActivityDate: async (data: ReservationFormData): Promise<ReservationCreationResponse> => {
         try {
             const response = await axios.post(`${API_URL}/reserve/activity`, data);
@@ -31,6 +46,7 @@ export const reservationService = {
             }
         }
     },
+
     cancelReservation: async (activityId: string, userId: string): Promise<UserActionResponse> => {
         try {
             const response = await axios.put(`${API_URL}/reservation/cancel`, { activityId, userId });

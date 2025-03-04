@@ -28,8 +28,9 @@ const LinesChart: React.FC<LinesChartProps> = ({ resourceNames, days, frequencie
         <div>
             {resourceNames.map((name, index) => {
                 // Construir los datos para el gráfico actual
+                const resourceDays = days[index];
                 const data = {
-                    labels: days,
+                    labels: resourceDays,
                     datasets: [
                         {
                             label: `Frecuencia de uso - ${name}`,

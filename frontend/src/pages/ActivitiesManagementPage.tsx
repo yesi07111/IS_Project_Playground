@@ -51,8 +51,8 @@ const ActivitiesManagementPage = () => {
         activity.educatorLastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.educatorUserName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.type.toString().includes(searchTerm) ||
-        activity.recommendedAge.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.itsPrivate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.recommendedAge.toString().includes(searchTerm.toLowerCase()) ||
+        activity.itsPrivate.toString().includes(searchTerm) ||
         activity.facilityName.toLowerCase().includes(searchTerm.toLowerCase())
     ));
 
@@ -71,8 +71,8 @@ const ActivitiesManagementPage = () => {
         navigate(`/activity-form?useCase=${'CreateActivity'}`);
     };
 
-    const handleUpdateActivity = (id: string) => {
-        navigate(`/updateActivity?useCase=${'UpdateActivity'}&activityId=${id}`);
+    const handleUpdateActivity = (id: string, name: string, description: string, educatorFirstName: string, educatorLastName: string, educatorUserName: string, type: string, recommendedAge: string, itsPrivate: boolean, facilityName: string) => {
+        navigate(`/updateActivity?useCase=${'UpdateActivity'}&activityId=${id}&name=${name}&description=${description}&educFN=${educatorFirstName}&educLN=${educatorLastName}&educUN=${educatorUserName}&type=${type}&recAge=${recommendedAge}&itsPrivate=${itsPrivate}&facilityName=${facilityName}`);
     };
 
     const handleDeleteActivity = (id: string) => {
@@ -152,13 +152,13 @@ const ActivitiesManagementPage = () => {
                                     { label: 'Educador Encargado', value: `${activity.educatorFirstName} ${activity.educatorLastName} (${activity.educatorUserName})` },
                                     { label: 'Tipo', value: activity.type },
                                     { label: 'Edad Recomendada', value: activity.recommendedAge },
-                                    { label: 'Privada', value: activity.itsPrivate },
+                                    { label: 'Privada', value: activity.itsPrivate ? 'Sí' : 'No' },
                                     { label: 'Instalación', value: activity.facilityName }
                                 ]}
                                 actions={[
                                     {
                                         label: 'Modificar actividad',
-                                        onClick: () => handleUpdateActivity(activity.id),
+                                        onClick: () => handleUpdateActivity(activity.id, activity.name, activity.description, activity.educatorFirstName, activity.educatorLastName, activity.educatorUserName, activity.type, activity.recommendedAge, activity.itsPrivate, activity.facilityName),
                                     },
                                     {
                                         label: 'Eliminar actividad permanentemente',

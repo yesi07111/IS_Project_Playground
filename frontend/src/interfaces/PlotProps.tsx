@@ -6,6 +6,6 @@ export interface PlotProps {
 
 export interface LinesChartProps {
     resourceNames: string[]; // Nombres de los recursos
-    days: string[];          // Lista de días (labels)
+    days: string[][];          // Lista de días (labels)
     frequencies: number[][]; // Frecuencias de uso por recurso
 }

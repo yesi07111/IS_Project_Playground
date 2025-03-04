@@ -40,5 +40,5 @@ export interface ResourceDate {
 }
 
 export interface ListResourceDateResponse{
-    result: ResourceDate[];
+    result: object[];
 }
