@@ -21,6 +21,12 @@ export interface ReservationDto {
     amount: number;
     state: string;
     activityRecommendedAge: number;
+    usedCapacity: number,
+    capacity: number;
+}
+
+export interface GetReservationResponse {
+    result: ReservationDto | null;
 }
 
 export interface ListReservationResponse {

@@ -1,11 +1,24 @@
 import axios from 'axios';
-import { ListReservationResponse, ListReservationStatsResponse, ReservationCreationResponse, ReservationFormData, UpdateReservationData } from '../interfaces/Reservation';
+import { GetReservationResponse, ListReservationResponse, ListReservationStatsResponse, ReservationCreationResponse, ReservationFormData, UpdateReservationData } from '../interfaces/Reservation';
 import { UserActionResponse } from '../interfaces/Auth';
 
 const API_URL = 'http://localhost:5117/api';
 
 export const reservationService = {
 
+    getReservation: async (id: string, userId: string): Promise<GetReservationResponse> => {
+        try {
+            const params = new URLSearchParams({ id, userId }).toString();
+            const response = await axios.get(`${API_URL}/reservation/get?${params}`);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw error.response.data || 'Error al obtener las reservas.';
+            } else {
+                throw 'Ha ocurrido un error inesperado al obtener las reservas.';
+            }
+        }
+    },
     getAllReservations: async (id: string): Promise<ListReservationResponse> => {
         try {
             const params = new URLSearchParams({ id }).toString();

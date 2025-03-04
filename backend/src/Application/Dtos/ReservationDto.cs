@@ -61,5 +61,8 @@ namespace Playground.Application.Dtos
         /// Obtiene o establece la edad recomendada para la actividad para la que se realiza la reserva.
         /// </summary>
         public int ActivityRecommendedAge { get; set; }
+
+        public int UsedCapacity { get; set; }
+        public int Capacity { get; set; }
     }
 }

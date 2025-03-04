@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePDF } from 'react-to-pdf';
 import { Box, Typography, Pagination, Grid2, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -30,6 +30,8 @@ const MyReservationPage = () => {
                 amount: 0,
                 state: '' as ReservationState,
                 activityRecommendedAge: 0,
+                usedCapacity: 0,
+                capacity: 0
             }
         ]
     }
@@ -40,53 +42,6 @@ const MyReservationPage = () => {
     const itemsPerPage = 6;
 
     const { toPDF, targetRef } = usePDF({ filename: 'MisReservas.pdf' });
-
-    const fetchActivityImages = useCallback(async (activityIds: string[]) => {
-        const cachedImages = cacheService.loadImages();
-        const cachedActivities = cacheService.loadActivities();
-        const missingIds = activityIds.filter(id => !cachedImages[id]);
-
-        if (missingIds.length > 0) {
-            try {
-                // Obtener actividades para ambos casos de uso
-                const responseReviewView = await activityService.getAllActivities([
-                    { type: 'Casos de Uso', useCase: 'ReviewView' }
-                ]);
-
-                const responseActivityView = await activityService.getAllActivities([
-                    { type: 'Casos de Uso', useCase: 'ActivityView' }
-                ]);
-
-                const activitiesArray = [
-                    ...(Array.isArray(responseReviewView.result) ? responseReviewView.result as Activity[] : []),
-                    ...(Array.isArray(responseActivityView.result) ? responseActivityView.result as Activity[] : [])
-                ];
-
-                const newImagesMap: { [id: string]: string } = {};
-                const newActivitiesMap: { [id: string]: Activity } = {};
-
-                activitiesArray.forEach(activity => {
-                    if (missingIds.includes(activity.id)) {
-                        newImagesMap[activity.id] = activity.image;
-                        newActivitiesMap[activity.id] = activity;
-                    }
-                });
-
-                const updatedImages = { ...cachedImages, ...newImagesMap };
-                const updatedActivities = [...cachedActivities, ...Object.values(newActivitiesMap)].filter((activity, index, self) =>
-                    index === self.findIndex((a) => a.id === activity.id)
-                );
-
-                cacheService.saveImages(updatedImages);
-                cacheService.saveActivities(updatedActivities);
-                setActivityImages(updatedImages);
-            } catch (error) {
-                console.error('Error obteniendo imágenes de actividades:', error);
-            }
-        } else {
-            setActivityImages(cachedImages);
-        }
-    }, []);
 
     useEffect(() => {
         const fetchReservations = async () => {
@@ -103,8 +58,58 @@ const MyReservationPage = () => {
             }
         };
 
+        const fetchActivityImages = async (activityIds: string[]) => {
+            const cachedImages = cacheService.loadImages();
+            const cachedActivities = cacheService.loadActivities();
+            const missingIds = activityIds.filter(id => !cachedImages[id]);
+
+            if (missingIds.length > 0) {
+                try {
+                    // Obtener actividades para ambos casos de uso
+                    const responseReviewView = await activityService.getAllActivities([
+                        { type: 'Casos de Uso', useCase: 'ReviewView' }
+                    ]);
+                    console.log("REVIEW VIEW RESPONSE")
+                    console.table(responseReviewView)
+                    const responseActivityView = await activityService.getAllActivities([
+                        { type: 'Casos de Uso', useCase: 'ActivityView' }
+                    ]);
+                    console.log("ACTIVITY VIEW RESPONSE")
+                    console.table(responseActivityView)
+                    const activitiesArray = [
+                        ...(Array.isArray(responseReviewView.result) ? responseReviewView.result as Activity[] : []),
+                        ...(Array.isArray(responseActivityView.result) ? responseActivityView.result as Activity[] : [])
+                    ];
+
+                    const newImagesMap: { [id: string]: string } = {};
+                    const newActivitiesMap: { [id: string]: Activity } = {};
+
+                    activitiesArray.forEach(activity => {
+                        if (missingIds.includes(activity.id)) {
+                            newImagesMap[activity.id] = activity.image || ''; // Asignar imagen si existe
+                            newActivitiesMap[activity.id] = activity;
+                        }
+                    });
+
+                    const updatedImages = { ...cachedImages, ...newImagesMap };
+                    const updatedActivities = [...cachedActivities, ...Object.values(newActivitiesMap)].filter((activity, index, self) =>
+                        index === self.findIndex((a) => a.id === activity.id)
+                    );
+
+                    cacheService.saveImages(updatedImages);
+                    cacheService.saveActivities(updatedActivities);
+                    setActivityImages(updatedImages);
+                } catch (error) {
+                    console.error('Error obteniendo imágenes de actividades:', error);
+                }
+            } else {
+                setActivityImages(cachedImages);
+            }
+        };
+
         fetchReservations();
-    }, [fetchActivityImages]);
+        fetchActivityImages(["0"]);
+    }, []);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -113,13 +118,12 @@ const MyReservationPage = () => {
 
     const filteredReservations = reservations.result
         .filter(reservation =>
-            reservation.state !== 'Cancelado' && // Filtrar las reservas canceladas
-            (
-                reservation.activityName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                reservation.comments.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                reservation.amount.toString().includes(searchTerm) ||
-                reservation.state.toLowerCase().includes(searchTerm.toLowerCase())
-            )
+        (
+            reservation.activityName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reservation.comments.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reservation.amount.toString().includes(searchTerm) ||
+            reservation.state.toLowerCase().includes(searchTerm.toLowerCase())
+        )
         )
         .sort((a, b) => {
             const order: Record<ReservationState, number> = { 'Pendiente': 1, 'Confirmada': 2, 'Completada': 3, 'Cancelado': 4 };
@@ -215,7 +219,10 @@ const MyReservationPage = () => {
             ) : (
                 <Grid2 ref={targetRef} container spacing={2} justifyContent="center">
                     {paginatedReservations.map((reservation, index) => {
-                        const activityImage = activityImages[reservation.activityId] || ''; // Obtener la imagen de la actividad
+                        let activityImage = activityImages[reservation.activityId] || ''; // Obtener la imagen de la actividad
+                        if (activityImage == '') {
+                            activityImage = cacheService.defaultImage();
+                        }
                         const viewSuffix = (reservation.state === 'Pendiente' || reservation.state === 'Confirmada') ? 'ActivityView' : 'ReviewView';
                         return (
                             <Grid2
@@ -267,7 +274,7 @@ const MyReservationPage = () => {
 
 const StyledBox = styled(Box)(({ theme }) => ({
     width: '100%',
-    height: '230px',
+    height: '280px',
     minWidth: '500px',
     minHeight: '200px',
     padding: theme.spacing(2),

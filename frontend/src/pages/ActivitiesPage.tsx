@@ -390,7 +390,6 @@ const ActivitiesPage: React.FC<DataPagesProps> = ({ reload }) => {
 
     const menuItems = [
         { label: "De Esta Semana", value: "De Esta Semana" },
-        { label: "Calificación", value: "Calificación" },
         { label: "Rango de Fecha", value: "Rango de Fecha" },
         { label: "Rango de Hora", value: "Rango de Hora" },
         { label: "Por Educadores", value: "Educadores" },

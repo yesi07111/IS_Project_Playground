@@ -36,6 +36,11 @@ public class CancelReservationCommandHandler(IRepositoryFactory repositoryFactor
             ThrowError("Reserva no encontrada.");
         }
 
+        if (reservation.ReservationState == ReservationStateSmartEnum.Confirmada.Name)
+        {
+            activityDate.ReservedPlaces = activityDate.ReservedPlaces - reservation.AmmountOfChildren;
+            activityDateRepository.Update(activityDate);
+        }
         reservation.ReservationState = ReservationStateSmartEnum.Cancelada.Name;
         reservationRepository.Update(reservation);
         unitOfWork.Commit();

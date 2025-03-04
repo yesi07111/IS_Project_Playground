@@ -212,6 +212,11 @@ namespace Playground.Domain.Specifications
             return new ActivityDateSpecification(activityDate => activityDate.Pending == IsPending);
         }
 
+        public static ISpecification<ActivityDate> ById(Guid Id)
+        {
+            return new ActivityDateSpecification(activityDate => activityDate.Id == Id);
+        }
+
         public static ActivityDateSpecification ByActivity(Guid? activityId)
         {
             if (activityId is null) return new ActivityDateSpecification(activityDate => activityDate.Activity == null);

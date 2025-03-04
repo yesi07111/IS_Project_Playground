@@ -2,10 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { usePDF } from 'react-to-pdf';
 import { ListReservationResponse, ReservationDto } from "../interfaces/Reservation";
 import { reservationService } from "../services/reservationService";
-import { Box, Grid, Pagination, Typography, Button, Grid2 } from "@mui/material";
+import { Box, Pagination, Typography, Button, Grid2 } from "@mui/material";
 import { SearchBar } from "../components/features/StyledSearchBar";
 import GenericCard from "../components/features/GenericCard";
 import { useAuth } from "../components/auth/authContext";
+import Swal from 'sweetalert2';
 
 type ReservationState = 'Pendiente' | 'Confirmada' | 'Completada' | 'Cancelado';
 
@@ -27,6 +28,8 @@ const ReservationsManagementPage = () => {
                 amount: 0,
                 state: '' as ReservationState,
                 activityRecommendedAge: 0,
+                usedCapacity: 0,
+                capacity: 0,
             }
         ]
     }
@@ -37,6 +40,7 @@ const ReservationsManagementPage = () => {
 
     const { toPDF, targetRef } = usePDF({ filename: 'Reservaciones.pdf' });
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchReservations = async () => {
         try {
             const response = await reservationService.getAllReservations("");
@@ -88,51 +92,93 @@ const ReservationsManagementPage = () => {
     };
 
     const handleConfirm = async (id: string) => {
-        const state = 'Confirmada';
-        try {
-            await reservationService.updateReservation({
-                reservationId: id,
-                state: state,
-            })
-            // Refresh reservations 
-            const response = await reservationService.getAllReservations("");
-            setReservations(response);
-        }
-        catch (error) {
-            console.error('Error confirmando la reservación:', error);
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¿Deseas confirmar esta reserva?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            const state = 'Confirmada';
+            try {
+                await reservationService.updateReservation({
+                    reservationId: id,
+                    state: state,
+                });
+                // Refresh reservations 
+                const response = await reservationService.getAllReservations("");
+                setReservations(response);
+                Swal.fire('Confirmada', 'La reserva ha sido confirmada.', 'success');
+            } catch (error) {
+                console.error('Error confirmando la reservación:', error);
+                Swal.fire('Error', 'Hubo un problema al confirmar la reserva.', 'error');
+            }
         }
     };
 
     const handleDecline = async (id: string) => {
-        const state = 'Cancelada';
-        try {
-            await reservationService.updateReservation({
-                reservationId: id,
-                state: state,
-            })
-            // Refresh reservations 
-            const response = await reservationService.getAllReservations("");
-            setReservations(response);
-        }
-        catch (error) {
-            console.error('Error confirmando la reservación:', error);
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¿Deseas cancelar esta reserva?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'Mantener'
+        });
+
+        if (result.isConfirmed) {
+            const state = 'Cancelada';
+            try {
+                await reservationService.updateReservation({
+                    reservationId: id,
+                    state: state,
+                });
+                // Refresh reservations 
+                const response = await reservationService.getAllReservations("");
+                setReservations(response);
+                Swal.fire('Cancelada', 'La reserva ha sido cancelada.', 'success');
+            } catch (error) {
+                console.error('Error cancelando la reservación:', error);
+                Swal.fire('Error', 'Hubo un problema al cancelar la reserva.', 'error');
+            }
         }
     };
 
     const handleDelete = async (id: string) => {
-        try {
-            await reservationService.deleteReservation(id)
-            // Refresh reservations 
-            const response = await reservationService.getAllReservations("");
-            setReservations(response);
-        }
-        catch (error) {
-            console.error('Error borrando la reservación:', error);
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción es permanente y no se puede deshacer. ¿Deseas eliminar esta reserva?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await reservationService.deleteReservation(id);
+                // Refresh reservations 
+                const response = await reservationService.getAllReservations("");
+                setReservations(response);
+                Swal.fire('Eliminada', 'La reserva ha sido eliminada permanentemente.', 'success');
+            } catch (error) {
+                console.error('Error borrando la reservación:', error);
+                Swal.fire('Error', 'Hubo un problema al eliminar la reserva.', 'error');
+            }
         }
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', minWidth: '100vw', bgcolor: 'background.default', p: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', minWidth: '100vw', bgcolor: 'background.default', p: 3, overflow: 'hidden' }}>
 
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
                 <Button
@@ -164,7 +210,6 @@ const ReservationsManagementPage = () => {
                                 justifyContent: 'center',
                             }}
                         >
-                            {/* <ResourceCard resource={resource} /> */}
                             <GenericCard
                                 title={`${reservation.firstName} ${reservation.lastName}`}
                                 fields={[
@@ -172,6 +217,7 @@ const ReservationsManagementPage = () => {
                                     { label: 'Actividad', value: `${reservation.activityName} ${reservation.activityDate}` },
                                     { label: 'Comentarios', value: reservation.comments },
                                     { label: 'Cantidad de Niños', value: reservation.amount },
+                                    { label: 'Capacidad actual', value: `${reservation.usedCapacity}/${reservation.capacity}` },
                                 ]}
                                 badge={{
                                     text: reservation.state,
@@ -188,14 +234,42 @@ const ReservationsManagementPage = () => {
                                     [
                                         ...(reservation.state === 'Pendiente'
                                             ? [
-                                                {
-                                                    label: 'Confirmar',
-                                                    onClick: () => handleConfirm(reservation.reservationId),
-                                                },
+                                                ...(reservation.usedCapacity + reservation.amount <= reservation.capacity
+                                                    ? [
+                                                        {
+                                                            label: 'Confirmar',
+                                                            onClick: () => handleConfirm(reservation.reservationId),
+                                                        }
+                                                    ]
+                                                    : []
+                                                ),
                                                 {
                                                     label: 'Declinar',
                                                     onClick: () => handleDecline(reservation.reservationId),
-                                                },
+                                                }
+                                            ]
+                                            : []
+                                        ),
+                                        ...(reservation.state === 'Confirmada'
+                                            ? [
+                                                {
+                                                    label: 'Cancelar',
+                                                    onClick: () => handleDecline(reservation.reservationId),
+                                                }
+                                            ]
+                                            : []
+                                        ),
+                                        ...(reservation.state === 'Cancelada'
+                                            ? [
+                                                ...(reservation.usedCapacity + reservation.amount <= reservation.capacity
+                                                    ? [
+                                                        {
+                                                            label: 'Confirmar',
+                                                            onClick: () => handleConfirm(reservation.reservationId),
+                                                        }
+                                                    ]
+                                                    : []
+                                                )
                                             ]
                                             : []
                                         ),
